@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 3.22)
+project(Xscript2)
+
+set(CMAKE_CXX_STANDARD 17)
+
+add_executable(Xscript2 main.cpp Frontend/Lexer.cpp Frontend/Lexer.hpp Share/XScriptException.cpp Share/XScriptException.hpp Share/Config.cpp Share/Config.hpp Share/Utils.cpp Share/Utils.hpp Executor/BytecodeStructure.cpp Executor/BytecodeStructure.hpp Executor/EnvironmentStackItem.cpp Executor/EnvironmentStackItem.hpp Executor/Environment.cpp Executor/Environment.hpp Executor/EnvironmentStack.cpp Executor/EnvironmentStack.hpp Executor/EnvironmentStackFramesInformation.cpp Executor/EnvironmentStackFramesInfomation.hpp Executor/ProgramCounterInformation.cpp Executor/ProgramCounterInformation.hpp Executor/EnvironmentHeap.cpp Executor/EnvironmentHeap.hpp Executor/EnvClassObject.cpp Executor/EnvClassObject.hpp Executor/EnvStringObject.cpp Executor/EnvStringObject.hpp Executor/EnvObject.cpp Executor/EnvObject.hpp Executor/EnvArrayObject.cpp Executor/EnvArrayObject.hpp Share/Exceptions/HeapOverflowException.cpp Share/Exceptions/HeapOverflowException.hpp Executor/BytecodeInterpreter.cpp Executor/BytecodeInterpreter.hpp Share/Exceptions/BytecodeInterpretError.cpp Share/Exceptions/BytecodeInterpretError.hpp)
