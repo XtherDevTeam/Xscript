@@ -299,14 +299,154 @@ namespace XScript {
                     InterpreterEnvironment.Stack.PushValueToStack(Left);
                     break;
                 }
-                case BytecodeStructure::InstructionEnum::logic_and:
+                case BytecodeStructure::InstructionEnum::logic_and: {
+                    /* Get operands and covert type to boolean */
+                    auto Right = InterpreterEnvironment.Stack.PopValueFromStack();
+                    switch (Right.Kind) {
+                        case EnvironmentStackItem::ItemKind::Integer:
+                            Right.Value.BoolVal = Right.Value.IntVal;
+                            Right.Kind = EnvironmentStackItem::ItemKind::Boolean;
+                            break;
+                        case EnvironmentStackItem::ItemKind::Decimal:
+                            Right.Value.BoolVal = static_cast<XBoolean>(Right.Value.DeciVal);
+                            Right.Kind = EnvironmentStackItem::ItemKind::Boolean;
+                            break;
+                        case EnvironmentStackItem::ItemKind::Boolean:
+                            break;
+                        case EnvironmentStackItem::ItemKind::HeapPointer:
+                            break;
+                        case EnvironmentStackItem::ItemKind::Null:
+                            Right.Value.BoolVal = false;
+                            Right.Kind = EnvironmentStackItem::ItemKind::Boolean;
+                            break;
+                    }
+                    auto Left = InterpreterEnvironment.Stack.PopValueFromStack();
+                    switch (Left.Kind) {
+                        case EnvironmentStackItem::ItemKind::Integer:
+                            Left.Value.BoolVal = Left.Value.IntVal;
+                            Left.Kind = EnvironmentStackItem::ItemKind::Boolean;
+                            break;
+                        case EnvironmentStackItem::ItemKind::Decimal:
+                            Left.Value.BoolVal = static_cast<XBoolean>(Left.Value.DeciVal);
+                            Left.Kind = EnvironmentStackItem::ItemKind::Boolean;
+                            break;
+                        case EnvironmentStackItem::ItemKind::Boolean:
+                            break;
+                        case EnvironmentStackItem::ItemKind::HeapPointer:
+                            break;
+                        case EnvironmentStackItem::ItemKind::Null:
+                            Left.Value.BoolVal = false;
+                            Left.Kind = EnvironmentStackItem::ItemKind::Boolean;
+                            break;
+                    }
+
+                    if (Right.Kind == EnvironmentStackItem::ItemKind::Boolean and
+                        Left.Kind == EnvironmentStackItem::ItemKind::Boolean) {
+                        Left.Value.BoolVal = Left.Value.BoolVal and Right.Value.BoolVal;
+                        InterpreterEnvironment.Stack.PushValueToStack(Left);
+                    } else {
+                        throw BytecodeInterpretError(
+                                L"calculation_mod: Cannot auto-covert types of operands to boolean.");
+                    }
                     break;
-                case BytecodeStructure::InstructionEnum::logic_or:
+                }
+                case BytecodeStructure::InstructionEnum::logic_or: {
+                    /* Get operands and covert type to boolean */
+                    auto Right = InterpreterEnvironment.Stack.PopValueFromStack();
+                    switch (Right.Kind) {
+                        case EnvironmentStackItem::ItemKind::Integer:
+                            Right.Value.BoolVal = Right.Value.IntVal;
+                            Right.Kind = EnvironmentStackItem::ItemKind::Boolean;
+                            break;
+                        case EnvironmentStackItem::ItemKind::Decimal:
+                            Right.Value.BoolVal = static_cast<XBoolean>(Right.Value.DeciVal);
+                            Right.Kind = EnvironmentStackItem::ItemKind::Boolean;
+                            break;
+                        case EnvironmentStackItem::ItemKind::Boolean:
+                            break;
+                        case EnvironmentStackItem::ItemKind::HeapPointer:
+                            break;
+                        case EnvironmentStackItem::ItemKind::Null:
+                            Right.Value.BoolVal = false;
+                            Right.Kind = EnvironmentStackItem::ItemKind::Boolean;
+                            break;
+                    }
+                    auto Left = InterpreterEnvironment.Stack.PopValueFromStack();
+                    switch (Left.Kind) {
+                        case EnvironmentStackItem::ItemKind::Integer:
+                            Left.Value.BoolVal = Left.Value.IntVal;
+                            Left.Kind = EnvironmentStackItem::ItemKind::Boolean;
+                            break;
+                        case EnvironmentStackItem::ItemKind::Decimal:
+                            Left.Value.BoolVal = static_cast<XBoolean>(Left.Value.DeciVal);
+                            Left.Kind = EnvironmentStackItem::ItemKind::Boolean;
+                            break;
+                        case EnvironmentStackItem::ItemKind::Boolean:
+                            break;
+                        case EnvironmentStackItem::ItemKind::HeapPointer:
+                            break;
+                        case EnvironmentStackItem::ItemKind::Null:
+                            Left.Value.BoolVal = false;
+                            Left.Kind = EnvironmentStackItem::ItemKind::Boolean;
+                            break;
+                    }
+
+                    if (Right.Kind == EnvironmentStackItem::ItemKind::Boolean and
+                        Left.Kind == EnvironmentStackItem::ItemKind::Boolean) {
+                        Left.Value.BoolVal = Left.Value.BoolVal or Right.Value.BoolVal;
+                        InterpreterEnvironment.Stack.PushValueToStack(Left);
+                    } else {
+                        throw BytecodeInterpretError(
+                                L"calculation_or: Cannot auto-covert types of operands to boolean.");
+                    }
                     break;
-                case BytecodeStructure::InstructionEnum::logic_equal:
+                }
+                case BytecodeStructure::InstructionEnum::logic_equal: {
+                    auto Right = InterpreterEnvironment.Stack.PopValueFromStack();
+                    auto Left = InterpreterEnvironment.Stack.PopValueFromStack();
+                    bool Result = false;
+
+                    if (Left.Kind == Right.Kind) {
+                        switch (Left.Kind) {
+                            case EnvironmentStackItem::ItemKind::Integer:
+                            case EnvironmentStackItem::ItemKind::Decimal:
+                            case EnvironmentStackItem::ItemKind::Boolean:
+                            case EnvironmentStackItem::ItemKind::Null:
+                                Result = Left.Value.IntVal == Right.Value.IntVal;
+                                break;
+                            case EnvironmentStackItem::ItemKind::HeapPointer:
+                                Result = InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal] ==
+                                         InterpreterEnvironment.Heap.HeapData[Right.Value.HeapPointerVal];
+                                break;
+                        }
+                    }
+                    InterpreterEnvironment.Stack.PushValueToStack(
+                            {EnvironmentStackItem::ItemKind::Boolean, (EnvironmentStackItem::ItemValue) {Result}});
                     break;
-                case BytecodeStructure::InstructionEnum::logic_not_equal:
+                }
+                case BytecodeStructure::InstructionEnum::logic_not_equal:{
+                    auto Right = InterpreterEnvironment.Stack.PopValueFromStack();
+                    auto Left = InterpreterEnvironment.Stack.PopValueFromStack();
+                    bool Result = false;
+
+                    if (Left.Kind == Right.Kind) {
+                        switch (Left.Kind) {
+                            case EnvironmentStackItem::ItemKind::Integer:
+                            case EnvironmentStackItem::ItemKind::Decimal:
+                            case EnvironmentStackItem::ItemKind::Boolean:
+                            case EnvironmentStackItem::ItemKind::Null:
+                                Result = Left.Value.IntVal != Right.Value.IntVal;
+                                break;
+                            case EnvironmentStackItem::ItemKind::HeapPointer:
+                                Result = InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal] !=
+                                         InterpreterEnvironment.Heap.HeapData[Right.Value.HeapPointerVal];
+                                break;
+                        }
+                    }
+                    InterpreterEnvironment.Stack.PushValueToStack(
+                            {EnvironmentStackItem::ItemKind::Boolean, (EnvironmentStackItem::ItemValue) {Result}});
                     break;
+                }
                 case BytecodeStructure::InstructionEnum::logic_great_equal:
                     break;
                 case BytecodeStructure::InstructionEnum::logic_less_equal:

@@ -53,6 +53,10 @@ namespace XScript {
         EnvObject(ObjectKind Kind, ObjectValue Value);
 
         void DestroyObject() const;
+
+        bool operator==(const EnvObject &RightHandSide) const;
+
+        bool operator!=(const EnvObject &RightHandSide) const;
     };
 
 } // XScript

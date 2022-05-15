@@ -12,10 +12,6 @@ namespace XScript {
 
     class EnvironmentStackItem {
 
-        EnvironmentStackItem();
-
-        EnvironmentStackItem(ItemKind Kind, ItemValue Value);
-
     public:
         enum class ItemKind : XInteger {
             Integer,
@@ -39,6 +35,10 @@ namespace XScript {
 
             explicit ItemValue(XHeapIndexType IdxVal);
         } Value;
+
+        EnvironmentStackItem();
+
+        EnvironmentStackItem(ItemKind Kind, ItemValue Value);
     };
 
 } // XScript
