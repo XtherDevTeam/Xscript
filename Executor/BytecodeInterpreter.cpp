@@ -424,7 +424,7 @@ namespace XScript {
                             {EnvironmentStackItem::ItemKind::Boolean, (EnvironmentStackItem::ItemValue) {Result}});
                     break;
                 }
-                case BytecodeStructure::InstructionEnum::logic_not_equal:{
+                case BytecodeStructure::InstructionEnum::logic_not_equal: {
                     auto Right = InterpreterEnvironment.Stack.PopValueFromStack();
                     auto Left = InterpreterEnvironment.Stack.PopValueFromStack();
                     bool Result = false;
@@ -447,14 +447,298 @@ namespace XScript {
                             {EnvironmentStackItem::ItemKind::Boolean, (EnvironmentStackItem::ItemValue) {Result}});
                     break;
                 }
-                case BytecodeStructure::InstructionEnum::logic_great_equal:
+                case BytecodeStructure::InstructionEnum::logic_great_equal: {
+                    auto Right = InterpreterEnvironment.Stack.PopValueFromStack();
+                    auto Left = InterpreterEnvironment.Stack.PopValueFromStack();
+                    bool Result = false;
+
+                    switch (Left.Kind) {
+                        case EnvironmentStackItem::ItemKind::Integer:
+                            switch (Right.Kind) {
+                                case EnvironmentStackItem::ItemKind::Integer:
+                                    Result = Left.Value.IntVal >= Right.Value.IntVal;
+                                    break;
+                                case EnvironmentStackItem::ItemKind::Decimal:
+                                    Result = static_cast<XDecimal>(Left.Value.IntVal) >= Right.Value.DeciVal;
+                                    break;
+                                case EnvironmentStackItem::ItemKind::Boolean:
+                                    Result = Left.Value.IntVal >= static_cast<XInteger>(Right.Value.BoolVal);
+                                    break;
+                                case EnvironmentStackItem::ItemKind::HeapPointer:
+                                    /* TODO: Add classes to XScript 2 */
+                                    throw BytecodeInterpretError(L"Cannot compare integers with a object.");
+                                case EnvironmentStackItem::ItemKind::Null:
+                                    throw BytecodeInterpretError(L"Cannot compare integers with a null value.");
+                            }
+                            InterpreterEnvironment.Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Boolean,
+                                                                           (EnvironmentStackItem::ItemValue) {Result}});
+                            break;
+                        case EnvironmentStackItem::ItemKind::Decimal:
+                            switch (Right.Kind) {
+                                case EnvironmentStackItem::ItemKind::Integer:
+                                    Result = Left.Value.DeciVal >= static_cast<XDecimal>(Right.Value.IntVal);
+                                    break;
+                                case EnvironmentStackItem::ItemKind::Decimal:
+                                    Result = Left.Value.DeciVal >= Right.Value.DeciVal;
+                                    break;
+                                case EnvironmentStackItem::ItemKind::Boolean:
+                                    Result = Left.Value.DeciVal >= static_cast<XDecimal>(Right.Value.BoolVal);
+                                    break;
+                                case EnvironmentStackItem::ItemKind::HeapPointer:
+                                    /* TODO: Add classes to XScript 2*/
+                                    throw BytecodeInterpretError(L"Cannot add integers with a object.");
+                                case EnvironmentStackItem::ItemKind::Null:
+                                    throw BytecodeInterpretError(L"Cannot add integers with a null value.");
+                            }
+                            InterpreterEnvironment.Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Boolean,
+                                                                           (EnvironmentStackItem::ItemValue) {Result}});
+                            break;
+                        case EnvironmentStackItem::ItemKind::Boolean:
+                            switch (Right.Kind) {
+                                case EnvironmentStackItem::ItemKind::Integer:
+                                    Result = static_cast<XInteger>(Left.Value.BoolVal) >= Right.Value.IntVal;
+                                    break;
+                                case EnvironmentStackItem::ItemKind::Decimal:
+                                    Result = static_cast<XDecimal>(Left.Value.BoolVal) >= Right.Value.DeciVal;
+                                    break;
+                                case EnvironmentStackItem::ItemKind::Boolean:
+                                    Result = Left.Value.BoolVal >= Right.Value.BoolVal;
+                                    break;
+                                case EnvironmentStackItem::ItemKind::HeapPointer:
+                                    throw BytecodeInterpretError(L"Cannot compare integers with a object.");
+                                case EnvironmentStackItem::ItemKind::Null:
+                                    throw BytecodeInterpretError(L"Cannot compare with a null value.");
+                            }
+                            InterpreterEnvironment.Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Boolean,
+                                                                           (EnvironmentStackItem::ItemValue) {Result}});
+                            break;
+                        case EnvironmentStackItem::ItemKind::HeapPointer:
+                            /* TODO: Add classes to XScript 2 */
+                            break;
+                        case EnvironmentStackItem::ItemKind::Null:
+                            throw BytecodeInterpretError(L"Cannot add elements with a null value.");
+                    }
                     break;
-                case BytecodeStructure::InstructionEnum::logic_less_equal:
+                }
+                case BytecodeStructure::InstructionEnum::logic_less_equal: {
+                    auto Right = InterpreterEnvironment.Stack.PopValueFromStack();
+                    auto Left = InterpreterEnvironment.Stack.PopValueFromStack();
+                    bool Result = false;
+
+                    switch (Left.Kind) {
+                        case EnvironmentStackItem::ItemKind::Integer:
+                            switch (Right.Kind) {
+                                case EnvironmentStackItem::ItemKind::Integer:
+                                    Result = Left.Value.IntVal <= Right.Value.IntVal;
+                                    break;
+                                case EnvironmentStackItem::ItemKind::Decimal:
+                                    Result = static_cast<XDecimal>(Left.Value.IntVal) <= Right.Value.DeciVal;
+                                    break;
+                                case EnvironmentStackItem::ItemKind::Boolean:
+                                    Result = Left.Value.IntVal <= static_cast<XInteger>(Right.Value.BoolVal);
+                                    break;
+                                case EnvironmentStackItem::ItemKind::HeapPointer:
+                                    /* TODO: Add classes to XScript 2 */
+                                    throw BytecodeInterpretError(L"Cannot compare integers with a object.");
+                                case EnvironmentStackItem::ItemKind::Null:
+                                    throw BytecodeInterpretError(L"Cannot compare integers with a null value.");
+                            }
+                            InterpreterEnvironment.Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Boolean,
+                                                                           (EnvironmentStackItem::ItemValue) {Result}});
+                            break;
+                        case EnvironmentStackItem::ItemKind::Decimal:
+                            switch (Right.Kind) {
+                                case EnvironmentStackItem::ItemKind::Integer:
+                                    Result = Left.Value.DeciVal <= static_cast<XDecimal>(Right.Value.IntVal);
+                                    break;
+                                case EnvironmentStackItem::ItemKind::Decimal:
+                                    Result = Left.Value.DeciVal <= Right.Value.DeciVal;
+                                    break;
+                                case EnvironmentStackItem::ItemKind::Boolean:
+                                    Result = Left.Value.DeciVal <= static_cast<XDecimal>(Right.Value.BoolVal);
+                                    break;
+                                case EnvironmentStackItem::ItemKind::HeapPointer:
+                                    /* TODO: Add classes to XScript 2*/
+                                    throw BytecodeInterpretError(L"Cannot add integers with a object.");
+                                case EnvironmentStackItem::ItemKind::Null:
+                                    throw BytecodeInterpretError(L"Cannot add integers with a null value.");
+                            }
+                            InterpreterEnvironment.Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Boolean,
+                                                                           (EnvironmentStackItem::ItemValue) {Result}});
+                            break;
+                        case EnvironmentStackItem::ItemKind::Boolean:
+                            switch (Right.Kind) {
+                                case EnvironmentStackItem::ItemKind::Integer:
+                                    Result = static_cast<XInteger>(Left.Value.BoolVal) <= Right.Value.IntVal;
+                                    break;
+                                case EnvironmentStackItem::ItemKind::Decimal:
+                                    Result = static_cast<XDecimal>(Left.Value.BoolVal) <= Right.Value.DeciVal;
+                                    break;
+                                case EnvironmentStackItem::ItemKind::Boolean:
+                                    Result = Left.Value.BoolVal <= Right.Value.BoolVal;
+                                    break;
+                                case EnvironmentStackItem::ItemKind::HeapPointer:
+                                    throw BytecodeInterpretError(L"Cannot compare integers with a object.");
+                                case EnvironmentStackItem::ItemKind::Null:
+                                    throw BytecodeInterpretError(L"Cannot compare with a null value.");
+                            }
+                            InterpreterEnvironment.Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Boolean,
+                                                                           (EnvironmentStackItem::ItemValue) {Result}});
+                            break;
+                        case EnvironmentStackItem::ItemKind::HeapPointer:
+                            /* TODO: Add classes to XScript 2 */
+                            break;
+                        case EnvironmentStackItem::ItemKind::Null:
+                            throw BytecodeInterpretError(L"Cannot add elements with a null value.");
+                    }
                     break;
-                case BytecodeStructure::InstructionEnum::logic_great:
+                }
+                case BytecodeStructure::InstructionEnum::logic_great: {
+                    auto Right = InterpreterEnvironment.Stack.PopValueFromStack();
+                    auto Left = InterpreterEnvironment.Stack.PopValueFromStack();
+                    bool Result = false;
+
+                    switch (Left.Kind) {
+                        case EnvironmentStackItem::ItemKind::Integer:
+                            switch (Right.Kind) {
+                                case EnvironmentStackItem::ItemKind::Integer:
+                                    Result = Left.Value.IntVal > Right.Value.IntVal;
+                                    break;
+                                case EnvironmentStackItem::ItemKind::Decimal:
+                                    Result = static_cast<XDecimal>(Left.Value.IntVal) > Right.Value.DeciVal;
+                                    break;
+                                case EnvironmentStackItem::ItemKind::Boolean:
+                                    Result = Left.Value.IntVal > static_cast<XInteger>(Right.Value.BoolVal);
+                                    break;
+                                case EnvironmentStackItem::ItemKind::HeapPointer:
+                                    /* TODO: Add classes to XScript 2 */
+                                    throw BytecodeInterpretError(L"Cannot compare integers with a object.");
+                                case EnvironmentStackItem::ItemKind::Null:
+                                    throw BytecodeInterpretError(L"Cannot compare integers with a null value.");
+                            }
+                            InterpreterEnvironment.Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Boolean,
+                                                                           (EnvironmentStackItem::ItemValue) {Result}});
+                            break;
+                        case EnvironmentStackItem::ItemKind::Decimal:
+                            switch (Right.Kind) {
+                                case EnvironmentStackItem::ItemKind::Integer:
+                                    Result = Left.Value.DeciVal > static_cast<XDecimal>(Right.Value.IntVal);
+                                    break;
+                                case EnvironmentStackItem::ItemKind::Decimal:
+                                    Result = Left.Value.DeciVal > Right.Value.DeciVal;
+                                    break;
+                                case EnvironmentStackItem::ItemKind::Boolean:
+                                    Result = Left.Value.DeciVal > static_cast<XDecimal>(Right.Value.BoolVal);
+                                    break;
+                                case EnvironmentStackItem::ItemKind::HeapPointer:
+                                    /* TODO: Add classes to XScript 2*/
+                                    throw BytecodeInterpretError(L"Cannot add integers with a object.");
+                                case EnvironmentStackItem::ItemKind::Null:
+                                    throw BytecodeInterpretError(L"Cannot add integers with a null value.");
+                            }
+                            InterpreterEnvironment.Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Boolean,
+                                                                           (EnvironmentStackItem::ItemValue) {Result}});
+                            break;
+                        case EnvironmentStackItem::ItemKind::Boolean:
+                            switch (Right.Kind) {
+                                case EnvironmentStackItem::ItemKind::Integer:
+                                    Result = static_cast<XInteger>(Left.Value.BoolVal) > Right.Value.IntVal;
+                                    break;
+                                case EnvironmentStackItem::ItemKind::Decimal:
+                                    Result = static_cast<XDecimal>(Left.Value.BoolVal) > Right.Value.DeciVal;
+                                    break;
+                                case EnvironmentStackItem::ItemKind::Boolean:
+                                    Result = Left.Value.BoolVal > Right.Value.BoolVal;
+                                    break;
+                                case EnvironmentStackItem::ItemKind::HeapPointer:
+                                    throw BytecodeInterpretError(L"Cannot compare integers with a object.");
+                                case EnvironmentStackItem::ItemKind::Null:
+                                    throw BytecodeInterpretError(L"Cannot compare with a null value.");
+                            }
+                            InterpreterEnvironment.Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Boolean,
+                                                                           (EnvironmentStackItem::ItemValue) {Result}});
+                            break;
+                        case EnvironmentStackItem::ItemKind::HeapPointer:
+                            /* TODO: Add classes to XScript 2 */
+                            break;
+                        case EnvironmentStackItem::ItemKind::Null:
+                            throw BytecodeInterpretError(L"Cannot add elements with a null value.");
+                    }
                     break;
-                case BytecodeStructure::InstructionEnum::logic_less:
+                }
+                case BytecodeStructure::InstructionEnum::logic_less: {
+                    auto Right = InterpreterEnvironment.Stack.PopValueFromStack();
+                    auto Left = InterpreterEnvironment.Stack.PopValueFromStack();
+                    bool Result = false;
+
+                    switch (Left.Kind) {
+                        case EnvironmentStackItem::ItemKind::Integer:
+                            switch (Right.Kind) {
+                                case EnvironmentStackItem::ItemKind::Integer:
+                                    Result = Left.Value.IntVal < Right.Value.IntVal;
+                                    break;
+                                case EnvironmentStackItem::ItemKind::Decimal:
+                                    Result = static_cast<XDecimal>(Left.Value.IntVal) < Right.Value.DeciVal;
+                                    break;
+                                case EnvironmentStackItem::ItemKind::Boolean:
+                                    Result = Left.Value.IntVal < static_cast<XInteger>(Right.Value.BoolVal);
+                                    break;
+                                case EnvironmentStackItem::ItemKind::HeapPointer:
+                                    /* TODO: Add classes to XScript 2 */
+                                    throw BytecodeInterpretError(L"Cannot compare integers with a object.");
+                                case EnvironmentStackItem::ItemKind::Null:
+                                    throw BytecodeInterpretError(L"Cannot compare integers with a null value.");
+                            }
+                            InterpreterEnvironment.Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Boolean,
+                                                                           (EnvironmentStackItem::ItemValue) {Result}});
+                            break;
+                        case EnvironmentStackItem::ItemKind::Decimal:
+                            switch (Right.Kind) {
+                                case EnvironmentStackItem::ItemKind::Integer:
+                                    Result = Left.Value.DeciVal < static_cast<XDecimal>(Right.Value.IntVal);
+                                    break;
+                                case EnvironmentStackItem::ItemKind::Decimal:
+                                    Result = Left.Value.DeciVal < Right.Value.DeciVal;
+                                    break;
+                                case EnvironmentStackItem::ItemKind::Boolean:
+                                    Result = Left.Value.DeciVal < static_cast<XDecimal>(Right.Value.BoolVal);
+                                    break;
+                                case EnvironmentStackItem::ItemKind::HeapPointer:
+                                    /* TODO: Add classes to XScript 2*/
+                                    throw BytecodeInterpretError(L"Cannot add integers with a object.");
+                                case EnvironmentStackItem::ItemKind::Null:
+                                    throw BytecodeInterpretError(L"Cannot add integers with a null value.");
+                            }
+                            InterpreterEnvironment.Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Boolean,
+                                                                           (EnvironmentStackItem::ItemValue) {Result}});
+                            break;
+                        case EnvironmentStackItem::ItemKind::Boolean:
+                            switch (Right.Kind) {
+                                case EnvironmentStackItem::ItemKind::Integer:
+                                    Result = static_cast<XInteger>(Left.Value.BoolVal) < Right.Value.IntVal;
+                                    break;
+                                case EnvironmentStackItem::ItemKind::Decimal:
+                                    Result = static_cast<XDecimal>(Left.Value.BoolVal) < Right.Value.DeciVal;
+                                    break;
+                                case EnvironmentStackItem::ItemKind::Boolean:
+                                    Result = Left.Value.BoolVal < Right.Value.BoolVal;
+                                    break;
+                                case EnvironmentStackItem::ItemKind::HeapPointer:
+                                    throw BytecodeInterpretError(L"Cannot compare integers with a object.");
+                                case EnvironmentStackItem::ItemKind::Null:
+                                    throw BytecodeInterpretError(L"Cannot compare with a null value.");
+                            }
+                            InterpreterEnvironment.Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Boolean,
+                                                                           (EnvironmentStackItem::ItemValue) {Result}});
+                            break;
+                        case EnvironmentStackItem::ItemKind::HeapPointer:
+                            /* TODO: Add classes to XScript 2 */
+                            break;
+                        case EnvironmentStackItem::ItemKind::Null:
+                            throw BytecodeInterpretError(L"Cannot add elements with a null value.");
+                    }
                     break;
+                }
                 case BytecodeStructure::InstructionEnum::binary_and:
                     break;
                 case BytecodeStructure::InstructionEnum::binary_or:
