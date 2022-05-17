@@ -11,7 +11,8 @@ namespace XScript {
     void BytecodeInterpreter::MainLoop() {
         while (InterpreterEnvironment.ProgramCounter.NowIndex !=
                InterpreterEnvironment.ProgramCounter.Pointer->size()) {
-            switch ((*InterpreterEnvironment.ProgramCounter.Pointer)[InterpreterEnvironment.ProgramCounter.NowIndex].Instruction) {
+            auto CurrentInstruction = (*InterpreterEnvironment.ProgramCounter.Pointer)[InterpreterEnvironment.ProgramCounter.NowIndex];
+            switch (CurrentInstruction.Instruction) {
                 case BytecodeStructure::InstructionEnum::calculation_add: {
                     auto Right = InterpreterEnvironment.Stack.PopValueFromStack();
                     auto Left = InterpreterEnvironment.Stack.PopValueFromStack();
@@ -747,18 +748,35 @@ namespace XScript {
                     break;
                 case BytecodeStructure::InstructionEnum::binary_not:
                     break;
-                case BytecodeStructure::InstructionEnum::stack_push_integer:
+                case BytecodeStructure::InstructionEnum::stack_push_integer: {
+                    InterpreterEnvironment.Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Integer,
+                                                                   (EnvironmentStackItem::ItemValue) {
+                                                                           CurrentInstruction.Param.IntValue}});
                     break;
-                case BytecodeStructure::InstructionEnum::stack_push_decimal:
+                }
+                case BytecodeStructure::InstructionEnum::stack_push_decimal: {
+                    InterpreterEnvironment.Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Decimal,
+                                                                   (EnvironmentStackItem::ItemValue) {
+                                                                           CurrentInstruction.Param.DeciValue}});
                     break;
-                case BytecodeStructure::InstructionEnum::stack_push_boolean:
+                }
+                case BytecodeStructure::InstructionEnum::stack_push_boolean: {
+                    InterpreterEnvironment.Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Boolean,
+                                                                   (EnvironmentStackItem::ItemValue) {
+                                                                           CurrentInstruction.Param.BoolValue}});
                     break;
-                case BytecodeStructure::InstructionEnum::stack_push_empty:
+                }
+                case BytecodeStructure::InstructionEnum::stack_push_empty: {
+                    InterpreterEnvironment.Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Null,
+                                                                   (EnvironmentStackItem::ItemValue) {(XIndexType) 0}});
                     break;
-                case BytecodeStructure::InstructionEnum::stack_pop:
+                }
+                case BytecodeStructure::InstructionEnum::stack_pop: {
+                    InterpreterEnvironment.Stack.PopValueFromStack();
                     break;
-                case BytecodeStructure::InstructionEnum::stack_duplicate:
-                    break;
+                }
+                case BytecodeStructure::InstructionEnum::stack_duplicate: {
+                }
                 case BytecodeStructure::InstructionEnum::stack_store:
                     break;
                 case BytecodeStructure::InstructionEnum::constants_load:
