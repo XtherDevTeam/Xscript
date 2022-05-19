@@ -13,6 +13,8 @@ namespace XScript {
 
     class EnvironmentStack {
     public:
+        EnvironmentStack(EnvironmentStackFramesInformation &FrameInfo);
+
         XArray<EnvironmentStackItem> Elements;
         XArray<EnvironmentStackFramesInformation> FramesInformation;
 
@@ -21,6 +23,8 @@ namespace XScript {
         void PushValueToStack(EnvironmentStackItem Item);
 
         EnvironmentStackItem PopValueFromStack();
+
+        EnvironmentStackItem GetValueFromStack(XIndexType IndexInFrame);
     };
 
 } // XScript

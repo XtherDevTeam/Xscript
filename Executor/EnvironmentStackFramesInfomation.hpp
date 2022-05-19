@@ -21,6 +21,10 @@ namespace XScript {
         } Kind;
 
         ProgramCounterInformation ReturnAddress;
+
+        XIndexType From{};
+
+        XIndexType Length{};
     };
 
 } // XScript

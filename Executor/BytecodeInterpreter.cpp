@@ -776,9 +776,17 @@ namespace XScript {
                     break;
                 }
                 case BytecodeStructure::InstructionEnum::stack_duplicate: {
-                }
-                case BytecodeStructure::InstructionEnum::stack_store:
+                    /* TODO: Complete the stack frames implementation */
+                    EnvironmentStackItem Element = InterpreterEnvironment.Stack.GetValueFromStack(
+                            CurrentInstruction.Param.HeapPointerValue);
+                    InterpreterEnvironment.Stack.PushValueToStack(Element);
                     break;
+                }
+                case BytecodeStructure::InstructionEnum::stack_store: {
+                    EnvironmentStackItem Element = InterpreterEnvironment.Stack.Elements.back();
+                    InterpreterEnvironment.Stack.Elements.pop_back();
+
+                }
                 case BytecodeStructure::InstructionEnum::constants_load:
                     break;
             }

@@ -14,7 +14,7 @@ namespace XScript {
     public:
         Environment &InterpreterEnvironment;
 
-        BytecodeInterpreter(Environment &interpreterEnvironment);
+        explicit BytecodeInterpreter(Environment &interpreterEnvironment);
 
         void MainLoop();
     };
