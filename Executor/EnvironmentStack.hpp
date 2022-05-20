@@ -25,6 +25,8 @@ namespace XScript {
         EnvironmentStackItem PopValueFromStack();
 
         EnvironmentStackItem GetValueFromStack(XIndexType IndexInFrame);
+
+        void StoreValueToIndex(XIndexType IndexInFrame, EnvironmentStackItem Item);
     };
 
 } // XScript

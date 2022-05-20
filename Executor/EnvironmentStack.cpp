@@ -5,7 +5,7 @@
 #include "EnvironmentStack.hpp"
 
 namespace XScript {
-    EnvironmentStack::EnvironmentStack(EnvironmentStackFramesInformation& FrameInfo) {
+    EnvironmentStack::EnvironmentStack(EnvironmentStackFramesInformation &FrameInfo) {
         FramesInformation.push_back(FrameInfo);
     }
 
@@ -24,8 +24,13 @@ namespace XScript {
         try {
             return Elements.at(RealPos);
         } catch (std::exception &E) {
-            throw ;
+            throw;
         }
+    }
+
+    void EnvironmentStack::StoreValueToIndex(XIndexType IndexInFrame, EnvironmentStackItem Item) {
+        XIndexType RealPos = FramesInformation.back().From + IndexInFrame;
+        Elements[RealPos] = Item;
     }
 
     EnvironmentStack::EnvironmentStack() = default;

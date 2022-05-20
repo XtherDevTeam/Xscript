@@ -312,13 +312,13 @@ namespace XScript {
                             Right.Value.BoolVal = static_cast<XBoolean>(Right.Value.DeciVal);
                             Right.Kind = EnvironmentStackItem::ItemKind::Boolean;
                             break;
-                        case EnvironmentStackItem::ItemKind::Boolean:
-                            break;
                         case EnvironmentStackItem::ItemKind::HeapPointer:
                             break;
                         case EnvironmentStackItem::ItemKind::Null:
                             Right.Value.BoolVal = false;
                             Right.Kind = EnvironmentStackItem::ItemKind::Boolean;
+                            break;
+                        case EnvironmentStackItem::ItemKind::Boolean:
                             break;
                     }
                     auto Left = InterpreterEnvironment.Stack.PopValueFromStack();
@@ -331,13 +331,14 @@ namespace XScript {
                             Left.Value.BoolVal = static_cast<XBoolean>(Left.Value.DeciVal);
                             Left.Kind = EnvironmentStackItem::ItemKind::Boolean;
                             break;
-                        case EnvironmentStackItem::ItemKind::Boolean:
-                            break;
                         case EnvironmentStackItem::ItemKind::HeapPointer:
                             break;
                         case EnvironmentStackItem::ItemKind::Null:
                             Left.Value.BoolVal = false;
                             Left.Kind = EnvironmentStackItem::ItemKind::Boolean;
+                            break;
+                        case EnvironmentStackItem::ItemKind::Boolean:
+                            /* don't need to covert boolean value */
                             break;
                     }
 
@@ -363,13 +364,14 @@ namespace XScript {
                             Right.Value.BoolVal = static_cast<XBoolean>(Right.Value.DeciVal);
                             Right.Kind = EnvironmentStackItem::ItemKind::Boolean;
                             break;
-                        case EnvironmentStackItem::ItemKind::Boolean:
-                            break;
                         case EnvironmentStackItem::ItemKind::HeapPointer:
                             break;
                         case EnvironmentStackItem::ItemKind::Null:
                             Right.Value.BoolVal = false;
                             Right.Kind = EnvironmentStackItem::ItemKind::Boolean;
+                            break;
+                        case EnvironmentStackItem::ItemKind::Boolean:
+                            /* don't need to covert boolean value to boolean value */
                             break;
                     }
                     auto Left = InterpreterEnvironment.Stack.PopValueFromStack();
@@ -382,13 +384,14 @@ namespace XScript {
                             Left.Value.BoolVal = static_cast<XBoolean>(Left.Value.DeciVal);
                             Left.Kind = EnvironmentStackItem::ItemKind::Boolean;
                             break;
-                        case EnvironmentStackItem::ItemKind::Boolean:
-                            break;
                         case EnvironmentStackItem::ItemKind::HeapPointer:
                             break;
                         case EnvironmentStackItem::ItemKind::Null:
                             Left.Value.BoolVal = false;
                             Left.Kind = EnvironmentStackItem::ItemKind::Boolean;
+                            break;
+                        case EnvironmentStackItem::ItemKind::Boolean:
+                            /* don't need to covert boolean value */
                             break;
                     }
 
@@ -740,14 +743,71 @@ namespace XScript {
                     }
                     break;
                 }
-                case BytecodeStructure::InstructionEnum::binary_and:
+                case BytecodeStructure::InstructionEnum::binary_and: {
+                    /* get two operands from the stack */
+                    auto Right = InterpreterEnvironment.Stack.PopValueFromStack();
+                    auto Left = InterpreterEnvironment.Stack.PopValueFromStack();
+
+                    if (Right.Kind != EnvironmentStackItem::ItemKind::HeapPointer and
+                        Right.Kind != EnvironmentStackItem::ItemKind::Null and
+                        Left.Kind != EnvironmentStackItem::ItemKind::HeapPointer and
+                        Left.Kind != EnvironmentStackItem::ItemKind::Null) {
+                        Left.Value.IntVal = Left.Value.IntVal & Right.Value.IntVal;
+                    } else {
+                        throw BytecodeInterpretError(L"binary_and: unexpected operands");
+                    }
+                    InterpreterEnvironment.Stack.PushValueToStack(Left);
+
                     break;
-                case BytecodeStructure::InstructionEnum::binary_or:
+                }
+                case BytecodeStructure::InstructionEnum::binary_or: {
+                    /* get two operands from the stack */
+                    auto Right = InterpreterEnvironment.Stack.PopValueFromStack();
+                    auto Left = InterpreterEnvironment.Stack.PopValueFromStack();
+
+                    if (Right.Kind != EnvironmentStackItem::ItemKind::HeapPointer and
+                        Right.Kind != EnvironmentStackItem::ItemKind::Null and
+                        Left.Kind != EnvironmentStackItem::ItemKind::HeapPointer and
+                        Left.Kind != EnvironmentStackItem::ItemKind::Null) {
+                        Left.Value.IntVal = Left.Value.IntVal | Right.Value.IntVal;
+                    } else {
+                        throw BytecodeInterpretError(L"binary_and: unexpected operands");
+                    }
+                    InterpreterEnvironment.Stack.PushValueToStack(Left);
+
                     break;
-                case BytecodeStructure::InstructionEnum::binary_xor:
+                }
+                case BytecodeStructure::InstructionEnum::binary_xor: {
+                    /* get two operands from the stack */
+                    auto Right = InterpreterEnvironment.Stack.PopValueFromStack();
+                    auto Left = InterpreterEnvironment.Stack.PopValueFromStack();
+
+                    if (Right.Kind != EnvironmentStackItem::ItemKind::HeapPointer and
+                        Right.Kind != EnvironmentStackItem::ItemKind::Null and
+                        Left.Kind != EnvironmentStackItem::ItemKind::HeapPointer and
+                        Left.Kind != EnvironmentStackItem::ItemKind::Null) {
+                        Left.Value.IntVal = Left.Value.IntVal ^ Right.Value.IntVal;
+                    } else {
+                        throw BytecodeInterpretError(L"binary_and: unexpected operands");
+                    }
+                    InterpreterEnvironment.Stack.PushValueToStack(Left);
+
                     break;
-                case BytecodeStructure::InstructionEnum::binary_not:
+                }
+                case BytecodeStructure::InstructionEnum::binary_not: {
+                    /* get operand from the stack */
+                    auto Left = InterpreterEnvironment.Stack.PopValueFromStack();
+
+                    if (Left.Kind != EnvironmentStackItem::ItemKind::HeapPointer and
+                        Left.Kind != EnvironmentStackItem::ItemKind::Null) {
+                        Left.Value.IntVal = !Left.Value.IntVal;
+                    } else {
+                        throw BytecodeInterpretError(L"binary_and: unexpected operands");
+                    }
+                    InterpreterEnvironment.Stack.PushValueToStack(Left);
+
                     break;
+                }
                 case BytecodeStructure::InstructionEnum::stack_push_integer: {
                     InterpreterEnvironment.Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Integer,
                                                                    (EnvironmentStackItem::ItemValue) {
@@ -785,7 +845,8 @@ namespace XScript {
                 case BytecodeStructure::InstructionEnum::stack_store: {
                     EnvironmentStackItem Element = InterpreterEnvironment.Stack.Elements.back();
                     InterpreterEnvironment.Stack.Elements.pop_back();
-
+                    InterpreterEnvironment.Stack.StoreValueToIndex(CurrentInstruction.Param.HeapPointerValue, Element);
+                    break;
                 }
                 case BytecodeStructure::InstructionEnum::constants_load:
                     break;
