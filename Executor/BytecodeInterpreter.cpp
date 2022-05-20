@@ -12,6 +12,7 @@ namespace XScript {
         while (InterpreterEnvironment.ProgramCounter.NowIndex !=
                InterpreterEnvironment.ProgramCounter.Pointer->size()) {
             auto CurrentInstruction = (*InterpreterEnvironment.ProgramCounter.Pointer)[InterpreterEnvironment.ProgramCounter.NowIndex];
+            /* process commands */
             switch (CurrentInstruction.Instruction) {
                 case BytecodeStructure::InstructionEnum::calculation_add: {
                     auto Right = InterpreterEnvironment.Stack.PopValueFromStack();
@@ -851,6 +852,7 @@ namespace XScript {
                 case BytecodeStructure::InstructionEnum::constants_load:
                     break;
             }
+            InterpreterEnvironment.ProgramCounter.NowIndex++;
         }
     }
 } // XScript

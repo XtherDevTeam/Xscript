@@ -18,14 +18,20 @@ namespace XScript {
         enum class FrameKind : XInteger {
             FunctionStackFrame,
             MethodStackFrame
-        } Kind;
+        } Kind{};
 
         ProgramCounterInformation ReturnAddress;
 
         XIndexType From{};
 
         XIndexType Length{};
+
+        EnvironmentStackFramesInformation(
+                EnvironmentStackFramesInformation::FrameKind kind, XIndexType from, XIndexType length,
+                ProgramCounterInformation returnAddress);
     };
+
+
 
 } // XScript
 

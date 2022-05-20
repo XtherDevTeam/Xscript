@@ -54,6 +54,8 @@ namespace XScript {
         } Instruction;
 
         InstructionParam Param;
+
+        BytecodeStructure(BytecodeStructure::InstructionEnum instruction, InstructionParam param);
     };
 } // XScript
 

@@ -11,9 +11,15 @@
 
 namespace XScript {
 
+    /**
+     * Environment Stack of XScript Bytecode Interpreter
+     *
+     * @warning
+     * You MUST create a initial frame manually before you use it.
+     */
     class EnvironmentStack {
     public:
-        EnvironmentStack(EnvironmentStackFramesInformation &FrameInfo);
+        explicit EnvironmentStack(EnvironmentStackFramesInformation &FrameInfo);
 
         XArray<EnvironmentStackItem> Elements;
         XArray<EnvironmentStackFramesInformation> FramesInformation;

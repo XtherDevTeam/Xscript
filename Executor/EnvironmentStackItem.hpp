@@ -39,6 +39,8 @@ namespace XScript {
         EnvironmentStackItem();
 
         EnvironmentStackItem(ItemKind Kind, ItemValue Value);
+
+        XString ToString() const;
     };
 
 } // XScript

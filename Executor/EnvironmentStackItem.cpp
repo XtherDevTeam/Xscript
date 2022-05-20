@@ -30,4 +30,19 @@ namespace XScript {
     EnvironmentStackItem::EnvironmentStackItem() : Kind(ItemKind::Null), Value(static_cast<XHeapIndexType>(0)) {
 
     }
+
+    XString EnvironmentStackItem::ToString() const {
+        switch (Kind) {
+            case ItemKind::Integer:
+                return L"<XInteger value=" + std::to_wstring(Value.IntVal) + L">";
+            case ItemKind::Decimal:
+                return L"<XDecimal value=" + std::to_wstring(Value.DeciVal) + L">";
+            case ItemKind::Boolean:
+                return L"<XBoolean value=" + std::to_wstring(Value.BoolVal) + L">";
+            case ItemKind::HeapPointer:
+                return L"<XPointer value=" + std::to_wstring(Value.HeapPointerVal) + L">";
+            case ItemKind::Null:
+                return L"<XNull>";
+        }
+    }
 } // XScript

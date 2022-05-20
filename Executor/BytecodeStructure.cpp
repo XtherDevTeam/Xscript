@@ -13,4 +13,7 @@ namespace XScript {
 
     BytecodeStructure::InstructionParam::InstructionParam(XHeapIndexType heapPointerValue) : HeapPointerValue(
             heapPointerValue) {}
+
+    BytecodeStructure::BytecodeStructure(BytecodeStructure::InstructionEnum instruction, InstructionParam param)
+            : Instruction(instruction), Param(param) {}
 } // XScript

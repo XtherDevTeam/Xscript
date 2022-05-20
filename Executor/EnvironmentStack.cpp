@@ -12,11 +12,13 @@ namespace XScript {
     EnvironmentStackItem EnvironmentStack::PopValueFromStack() {
         auto R = Elements.back();
         Elements.pop_back();
+        FramesInformation.back().Length--;
         return R;
     }
 
     void EnvironmentStack::PushValueToStack(EnvironmentStackItem Item) {
         Elements.push_back(Item);
+        FramesInformation.back().Length++;
     }
 
     EnvironmentStackItem EnvironmentStack::GetValueFromStack(XIndexType IndexInFrame) {

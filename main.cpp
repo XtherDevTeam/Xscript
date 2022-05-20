@@ -1,6 +1,11 @@
 #include <iostream>
 
+/* XScript 2 Project includes */
+#include "Tests/BasicTests.hpp"
+
 int main() {
-    std::cout << "Hello, World!" << std::endl;
+    auto Test = XScript::Instance::Tests::CreateCalcTest();
+    Test.Run();
+    std::cout << XScript::wstring2string(Test.InterpreterEnvironment.Stack.Elements.back().ToString()) << std::endl;
     return 0;
 }
