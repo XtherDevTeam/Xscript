@@ -12,10 +12,12 @@ namespace XScript {
             return Locals.size() - 1;
         }
 
-        SymbolItem CompilerEnvironment::GetLocal(const XString &Name) {
+        std::pair<XIndexType , SymbolItem> CompilerEnvironment::GetLocal(const XString &Name) {
+            XIndexType I = 0;
             for (auto &Index : Locals) {
                 if (Index.first == Name)
-                    return Index.second;
+                    return {I, Index.second};
+                I++;
             }
             throw XScript::InternalException(L"Cannot find a local variable named " + Name + L" while compiling");
         }

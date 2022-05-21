@@ -42,4 +42,16 @@ namespace XScript {
     bool IsAlpha(wchar_t Char) {
         return ((Char >= L'A' && Char <= L'Z') || (Char >= L'a' && Char <= 'z') || Char == L'_');
     }
+
+    XInteger XStringToXInteger(const XString &T) {
+        char* MakeStdlibHappyXD;
+        const std::string P = wstring2string(T);
+        return strtol(P.data(), &MakeStdlibHappyXD, 10);
+    }
+
+    XDecimal XStringToXDecimal(const XString &T) {
+        char* MakeStdlibHappyXD;
+        const std::string P = wstring2string(T);
+        return strtof(P.data(), &MakeStdlibHappyXD);
+    }
 } // XScript

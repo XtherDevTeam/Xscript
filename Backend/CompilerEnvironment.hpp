@@ -21,7 +21,7 @@ namespace XScript::Compiler {
 
         XIndexType PushLocal(const XString &Name, const SymbolItem& Item);
 
-        SymbolItem GetLocal(const XString &Name);
+        std::pair<XIndexType, SymbolItem> GetLocal(const XString &Name);
     };
 
 } // Compiler

@@ -11,27 +11,27 @@
 
 namespace XScript::Compiler {
 
-        class CompilingTimePackageStructure {
-        public:
-            XArray<std::pair<XString, CompilingTimeFunction>> Functions;
+    class CompilingTimePackageStructure {
+    public:
+        XArray<std::pair<XString, CompilingTimeFunction>> Functions;
 
-            XArray<std::pair<XString, CompilingTimeClass>> Classes;
+        XArray<std::pair<XString, CompilingTimeClass>> Classes;
 
-            XArray<std::pair<XString, SymbolItem>> Statics;
+        XArray<std::pair<XString, SymbolItem>> Statics;
 
-            XIndexType PushFunction(const XString& FunctionName, const CompilingTimeFunction& Function);
+        XIndexType PushFunction(const XString &FunctionName, const CompilingTimeFunction &Function);
 
-            XIndexType PushClass(const XString& Name, const CompilingTimeClass& Item);
+        XIndexType PushClass(const XString &Name, const CompilingTimeClass &Item);
 
-            XIndexType PushStatic(const XString& Name, const SymbolItem& Item);
+        XIndexType PushStatic(const XString &Name, const SymbolItem &Item);
 
-            CompilingTimeFunction& GetFunction(const XString& Name);
+        std::pair<XIndexType, CompilingTimeFunction &> GetFunction(const XString &Name);
 
-            CompilingTimeClass& GetClass(const XString& Name);
+        std::pair<XIndexType, CompilingTimeClass &> GetClass(const XString &Name);
 
-            SymbolItem& GetStatic(const XString& Name);
-        };
+        std::pair<XIndexType, SymbolItem &> GetStatic(const XString &Name);
+    };
 
-    } // Compiler
+} // Compiler
 
 #endif //XSCRIPT2_COMPILINGTIMEPACKAGESTRUCTURE_HPP

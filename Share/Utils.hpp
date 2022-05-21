@@ -18,6 +18,10 @@ namespace XScript {
 
     bool IsAlpha(wchar_t Char);
 
+    XInteger XStringToXInteger(const XString& T);
+
+    XDecimal XStringToXDecimal(const XString& T);
+
 } // XScript
 
 #endif //XSCRIPT2_UTILS_HPP

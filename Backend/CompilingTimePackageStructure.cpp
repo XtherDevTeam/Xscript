@@ -25,23 +25,32 @@ namespace XScript {
             return Statics.size() - 1;
         }
 
-        CompilingTimeFunction &CompilingTimePackageStructure::GetFunction(const XString &Name) {
-            for (auto &Index : Functions) {
-                if (Index.first == Name) return Index.second;
+        std::pair<XIndexType, CompilingTimeFunction &> CompilingTimePackageStructure::GetFunction(const XString &Name) {
+            XIndexType I = 0;
+            for (auto &Index: Functions) {
+                if (Index.first == Name)
+                    return {I, Index.second};
+                I++;
             }
             throw XScript::InternalException(L"Cannot find a function named " + Name + L" in package");
         }
 
-        CompilingTimeClass &CompilingTimePackageStructure::GetClass(const XString &Name) {
-            for (auto &Index : Classes) {
-                if (Index.first == Name) return Index.second;
+        std::pair<XIndexType, CompilingTimeClass &> CompilingTimePackageStructure::GetClass(const XString &Name) {
+            XIndexType I = 0;
+            for (auto &Index: Classes) {
+                if (Index.first == Name)
+                    return {I, Index.second};
+                I++;
             }
             throw XScript::InternalException(L"Cannot find a class named " + Name + L" in package");
         }
 
-        SymbolItem &CompilingTimePackageStructure::GetStatic(const XString &Name) {
-            for (auto &Index : Statics) {
-                if (Index.first == Name) return Index.second;
+        std::pair<XIndexType, SymbolItem &> CompilingTimePackageStructure::GetStatic(const XString &Name) {
+            XIndexType I = 0;
+            for (auto &Index: Statics) {
+                if (Index.first == Name)
+                    return {I, Index.second};
+                I++;
             }
             throw XScript::InternalException(L"Cannot find a static member named " + Name + L" in package");
         }
