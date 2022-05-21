@@ -12,14 +12,14 @@ namespace XScript {
     class EnvArrayObject {
     public:
         XIndexType Length;
-        XHeapIndexType* Elements;
+        XHeapIndexType *Elements;
 
         EnvArrayObject();
 
         explicit EnvArrayObject(XIndexType Length);
     };
 
-    EnvArrayObject* CreateEnvArrayObject(XIndexType Length);
+    EnvArrayObject *CreateEnvArrayObject(XIndexType Length);
 
     /**
      * Free an environment array object.
@@ -32,7 +32,7 @@ namespace XScript {
      * @warning
      * It WON'T FREE THE ORIGINAL OBJECT!
      */
-    EnvArrayObject* AddElementToBack(EnvArrayObject* Object, XHeapIndexType ToInsert);
+    EnvArrayObject *AddElementToBack(EnvArrayObject *Object, XHeapIndexType ToInsert);
 
 } // XScript
 

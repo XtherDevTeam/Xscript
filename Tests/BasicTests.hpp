@@ -7,16 +7,11 @@
 
 #include "BasicTestFramework.hpp"
 
-namespace XScript {
-    namespace Instance {
-        namespace Tests {
+namespace XScript::Instance::Tests {
 
             XScript::Instance::BasicTestFramework CreateCalcTest();
 
 
-
-        } // XScript
-    } // Instance
-} // Tests
+        } // Tests
 
 #endif //XSCRIPT2_BASICTESTS_HPP

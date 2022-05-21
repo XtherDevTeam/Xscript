@@ -12,7 +12,7 @@ namespace XScript {
 
     class ProgramCounterInformation {
     public:
-        XArray<BytecodeStructure>* Pointer;
+        XArray<BytecodeStructure> *Pointer;
         XIndexType NowIndex;
 
         explicit ProgramCounterInformation(XArray<BytecodeStructure> &NewCounter);

@@ -12,19 +12,20 @@ namespace XScript {
     class BytecodeStructure {
     public:
         union InstructionParam {
-            InstructionParam(XInteger intValue);
+            explicit InstructionParam(XInteger intValue);
 
-            InstructionParam(XDecimal deciValue);
+            explicit InstructionParam(XDecimal deciValue);
 
-            InstructionParam(XBoolean boolValue);
+            explicit InstructionParam(XBoolean boolValue);
 
-            InstructionParam(XHeapIndexType heapPointerValue);
+            explicit InstructionParam(XHeapIndexType heapPointerValue);
 
             XInteger IntValue;
             XDecimal DeciValue;
             XBoolean BoolValue;
             XHeapIndexType HeapPointerValue;
         };
+
         enum class InstructionEnum : XInteger {
             calculation_add,
             calculation_sub,

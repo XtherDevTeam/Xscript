@@ -40,10 +40,10 @@ namespace XScript {
         return Object;
     }
 
-    EnvStringObject *CreateEnvStringObjectFromXString(const XString& Str) {
+    EnvStringObject *CreateEnvStringObjectFromXString(const XString &Str) {
         auto Object = CreateEnvStringObject(Str.length());
         auto Pointer = Object->Dest;
-        for (XCharacter Index : Str) {
+        for (XCharacter Index: Str) {
             *Pointer = Index;
             Pointer++;
         }

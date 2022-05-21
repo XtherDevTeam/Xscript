@@ -32,7 +32,6 @@ namespace XScript {
     };
 
 
-
 } // XScript
 
 #endif //XSCRIPT2_ENVIRONMENTSTACKFRAMESINFOMATION_HPP

@@ -18,9 +18,9 @@ namespace XScript {
     public:
         XScriptException();
 
-        explicit XScriptException(const XString&  String);
+        explicit XScriptException(const XString &String);
 
-        [[nodiscard]] const char * what() const noexcept override;
+        [[nodiscard]] const char *what() const noexcept override;
     };
 
 } // XScript

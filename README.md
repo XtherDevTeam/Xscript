@@ -1,6 +1,5 @@
 ### XScript 2
 
-
 XScript 2 is the Next Generation XScript Programming Language.
 
 ### The goal of XScript 2

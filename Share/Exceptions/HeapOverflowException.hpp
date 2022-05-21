@@ -13,7 +13,7 @@ namespace XScript {
     public:
         explicit HeapOverflowException(const XString &String);
 
-        [[nodiscard]] const char * what() const noexcept override;
+        [[nodiscard]] const char *what() const noexcept override;
     };
 
 } // XScript

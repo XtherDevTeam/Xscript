@@ -7,8 +7,7 @@
 
 #include "../Executor/BytecodeInterpreter.hpp"
 
-namespace XScript {
-    namespace Instance {
+namespace XScript::Instance {
 
         class BasicTestFramework {
         public:
@@ -21,7 +20,6 @@ namespace XScript {
             void Run();
         };
 
-    } // XScript
-} // Instance
+    } // Instance
 
 #endif //XSCRIPT2_BASICTESTFRAMEWORK_HPP

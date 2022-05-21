@@ -4,18 +4,16 @@
 
 #include "BasicTestFramework.hpp"
 
-namespace XScript {
-    namespace Instance {
+namespace XScript::Instance {
 
         BasicTestFramework::BasicTestFramework() : Interpreter(InterpreterEnvironment) {
             InterpreterEnvironment.Stack.FramesInformation.push_back((EnvironmentStackFramesInformation) {
                     EnvironmentStackFramesInformation::FrameKind::FunctionStackFrame, 0, 0, {}});
 
-            InterpreterEnvironment.ProgramCounter = (ProgramCounterInformation){Commands};
+            InterpreterEnvironment.ProgramCounter = (ProgramCounterInformation) {Commands};
         }
 
         void BasicTestFramework::Run() {
             Interpreter.MainLoop();
         }
-    } // XScript
-} // Instance
+    } // Instance

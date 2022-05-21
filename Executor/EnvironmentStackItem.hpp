@@ -40,7 +40,7 @@ namespace XScript {
 
         EnvironmentStackItem(ItemKind Kind, ItemValue Value);
 
-        XString ToString() const;
+        [[nodiscard]] XString ToString() const;
     };
 
 } // XScript

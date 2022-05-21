@@ -37,7 +37,7 @@ namespace XScript {
 
     EnvStringObject *MergeEnvStringObject(EnvStringObject *Left, EnvStringObject *Right);
 
-    EnvStringObject *CreateEnvStringObjectFromXString(const XString& Str);
+    EnvStringObject *CreateEnvStringObjectFromXString(const XString &Str);
 } // XScript
 
 #endif //XSCRIPT2_ENVSTRINGOBJECT_HPP

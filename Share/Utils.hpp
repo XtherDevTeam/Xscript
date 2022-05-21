@@ -10,9 +10,9 @@
 #include <cstring>
 
 namespace XScript {
-    std::string wstring2string(const std::wstring& ws);
+    std::string wstring2string(const std::wstring &ws);
 
-    std::wstring string2wstring(const std::string& s);
+    std::wstring string2wstring(const std::string &s);
 
     bool IsDigit(wchar_t Char);
 
