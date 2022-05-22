@@ -18,11 +18,11 @@ namespace XScript {
 
     bool IsAlpha(wchar_t Char);
 
-    XInteger XStringToXInteger(const XString& T);
+    XInteger XStringToXInteger(const XString &T);
 
-    XDecimal XStringToXDecimal(const XString& T);
+    XDecimal XStringToXDecimal(const XString &T);
 
-    XIndexType Hash(const XString& T);
+    XIndexType Hash(const XString &T);
 
     /**
      * Merge R into the back of L
@@ -30,7 +30,11 @@ namespace XScript {
      * @param R The Object to merge
      */
     template<typename T>
-    void MergeArray(XArray<T>& L, const XArray<T>& R);
+    void MergeArray(XArray<T> &L, const XArray<T> &R) {
+        for (auto &Element : R) {
+            L.push_back(Element);
+        }
+    }
 
 } // XScript
 

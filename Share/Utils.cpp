@@ -58,11 +58,4 @@ namespace XScript {
     XIndexType Hash(const XString &T) {
         return std::hash<XString>()(T);
     }
-
-    template<typename T>
-    void MergeArray(XArray<T> &L, const XArray<T> &R) {
-        for (auto &Element : R) {
-            L.push_back(Element);
-        }
-    }
 } // XScript
