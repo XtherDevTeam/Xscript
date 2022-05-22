@@ -70,6 +70,8 @@ namespace XScript {
         InstructionParam Param;
 
         BytecodeStructure(BytecodeStructure::InstructionEnum instruction, InstructionParam param);
+
+        [[nodiscard]] XString ToString() const;
     };
 } // XScript
 

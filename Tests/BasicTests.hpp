@@ -9,9 +9,9 @@
 
 namespace XScript::Instance::Tests {
 
-            XScript::Instance::BasicTestFramework CreateCalcTest();
+    XScript::Instance::BasicTestFramework CreateCalcTest();
 
-
-        } // Tests
+    XScript::Instance::BasicTestFramework CreateCustomTest(XArray<BytecodeStructure> Commands);
+} // Tests
 
 #endif //XSCRIPT2_BASICTESTS_HPP

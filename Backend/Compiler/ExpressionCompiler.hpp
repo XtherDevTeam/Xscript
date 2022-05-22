@@ -10,6 +10,7 @@
 namespace XScript::Compiler {
 
     class ExpressionCompiler : BaseCompiler {
+    public:
         explicit ExpressionCompiler(CompilerEnvironment& Environment);
 
         XArray <BytecodeStructure> ParseMemberExpression(AST &Target, bool IsMemberExpression);

@@ -4,6 +4,8 @@
 
 #include "BasicTests.hpp"
 
+#include <utility>
+
 namespace XScript::Instance::Tests {
     XScript::Instance::BasicTestFramework CreateCalcTest() {
         XScript::Instance::BasicTestFramework Result;
@@ -15,6 +17,12 @@ namespace XScript::Instance::Tests {
                 (BytecodeStructure) {BytecodeStructure::InstructionEnum::calculation_add,
                                      (BytecodeStructure::InstructionParam) {(XIndexType) 0}},
         };
+        return Result;
+    }
+
+    XScript::Instance::BasicTestFramework CreateCustomTest(XArray<BytecodeStructure> Commands) {
+        XScript::Instance::BasicTestFramework Result;
+        Result.Commands = std::move(Commands);
         return Result;
     }
 } // Tests

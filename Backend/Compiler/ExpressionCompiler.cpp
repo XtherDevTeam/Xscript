@@ -163,6 +163,16 @@ namespace XScript::Compiler {
                                                               (BytecodeStructure::InstructionParam) {(XIndexType) 0}});
                         break;
                     }
+                    case Lexer::TokenKind::LogicOr: {
+                        Result.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::logic_or,
+                                                              (BytecodeStructure::InstructionParam) {(XIndexType) 0}});
+                        break;
+                    }
+                    case Lexer::TokenKind::LogicAnd: {
+                        Result.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::logic_and,
+                                                              (BytecodeStructure::InstructionParam) {(XIndexType) 0}});
+                        break;
+                    }
                     default: {
                         /* never run into here */
                         break;
@@ -200,6 +210,7 @@ namespace XScript::Compiler {
             }
 
             case AST::TreeType::AssignmentExpression:
+
                 break;
 
             default:
