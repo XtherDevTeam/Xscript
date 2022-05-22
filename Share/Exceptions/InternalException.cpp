@@ -8,4 +8,8 @@ namespace XScript {
     InternalException::InternalException(const XString &Str) : XScriptException(Str) {
 
     }
+
+    const char *InternalException::what() const noexcept {
+        return String.data();
+    }
 } // XScript

@@ -22,6 +22,16 @@ namespace XScript {
 
     XDecimal XStringToXDecimal(const XString& T);
 
+    XIndexType Hash(const XString& T);
+
+    /**
+     * Merge R into the back of L
+     * @tparam T Original object
+     * @param R The Object to merge
+     */
+    template<typename T>
+    void MergeArray(XArray<T>& L, const XArray<T>& R);
+
 } // XScript
 
 #endif //XSCRIPT2_UTILS_HPP

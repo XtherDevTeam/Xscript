@@ -32,6 +32,9 @@ namespace XScript {
             calculation_mul,
             calculation_div,
             calculation_mod,
+            calculation_negate,
+            calculation_increment,
+            calculation_decrement,
             logic_and,
             logic_or,
             logic_equal,
@@ -44,6 +47,8 @@ namespace XScript {
             binary_or,
             binary_xor,
             binary_not,
+            binary_lm,
+            binary_rm,
             stack_push_integer,
             stack_push_decimal,
             stack_push_boolean,
@@ -52,6 +57,14 @@ namespace XScript {
             stack_duplicate,
             stack_store,
             constants_load,
+            class_new,
+            class_get_member,
+            list_new,
+            list_get_member,
+            list_remove_index,
+            list_push,
+            list_pop,
+            object_lvalue2rvalue
         } Instruction;
 
         InstructionParam Param;

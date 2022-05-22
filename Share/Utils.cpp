@@ -44,14 +44,25 @@ namespace XScript {
     }
 
     XInteger XStringToXInteger(const XString &T) {
-        char* MakeStdlibHappyXD;
+        char *MakeStdlibHappyXD;
         const std::string P = wstring2string(T);
         return strtol(P.data(), &MakeStdlibHappyXD, 10);
     }
 
     XDecimal XStringToXDecimal(const XString &T) {
-        char* MakeStdlibHappyXD;
+        char *MakeStdlibHappyXD;
         const std::string P = wstring2string(T);
         return strtof(P.data(), &MakeStdlibHappyXD);
+    }
+
+    XIndexType Hash(const XString &T) {
+        return std::hash<XString>()(T);
+    }
+
+    template<typename T>
+    void MergeArray(XArray<T> &L, const XArray<T> &R) {
+        for (auto &Element : R) {
+            L.push_back(Element);
+        }
     }
 } // XScript
