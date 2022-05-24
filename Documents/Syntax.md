@@ -193,3 +193,63 @@ Expression ::= LogicExpression
              | AssignmentExpression
 ```
 
+### VariableStatementNodeGenerator
+
+Status: `Unimplmented`
+
+Syntax:
+
+```
+VariableStatementNodeGenerator ::= "var" Identifier
+```
+
+### VariableDefinitionStatement
+
+Status: `Unimplmented`
+
+Syntax:
+
+```
+VariableDefinitionStatement ::= "var" Identifier TokenEqual Expression
+```
+
+### WhileStatement
+
+Status: `Unimplmented`
+
+Syntax:
+
+```
+WhileStatement ::= "while" "(" Expression ")" CodeBlock
+```
+
+### ForStatement
+
+Status: `Unimplmented`
+
+Syntax:
+
+```
+ForStatement ::= "for" "(" Statement ";" Expression ";" Statement ")" CodeBlock
+```
+
+### IfStatement
+
+Status: `Unimplmented`
+
+Syntax:
+
+```
+IfStatement ::= "if" "(" Expression ")" CodeBlock
+```
+
+### IfElseStatement
+
+Status: `Unimplmented`
+
+Syntax:
+
+```
+IfElseStatement ::= "if" "(" Expression ")" CodeBlock "else" Statement
+```
+

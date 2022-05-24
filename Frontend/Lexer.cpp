@@ -293,10 +293,10 @@ namespace XScript {
                                                                                                         Value)) {}
 
     bool Lexer::Token::operator==(const Lexer::Token &rhs) const {
-        return (Line == rhs.Line && Column == rhs.Column && Kind == rhs.Kind && Value == rhs.Value);
+        return (Kind == rhs.Kind && Value == rhs.Value);
     }
 
     bool Lexer::Token::operator!=(const Lexer::Token &rhs) const {
-        return (Line != rhs.Line && Column != rhs.Column && Kind == rhs.Kind && Value == rhs.Value);
+        return (Kind == rhs.Kind && Value == rhs.Value);
     }
 } // XScript
