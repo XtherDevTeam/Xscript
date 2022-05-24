@@ -209,9 +209,42 @@ namespace XScript::Compiler {
                 break;
             }
 
-            case AST::TreeType::AssignmentExpression:
+            case AST::TreeType::AssignmentExpression: {
+                /* Push lvalue into stack */
+                MergeArray(Result, ParseMemberExpression(Target.Subtrees[0], false));
+                MergeArray(Result, Generate(Target.Subtrees[0]));
+                MergeArray(Result, Generate(Target.Subtrees[2]));
 
+                switch (Target.Subtrees[1].Node.Kind) {
+                    case Lexer::TokenKind::AdditionAssignment:
+                        Result.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::calculation_add,
+                                                              (BytecodeStructure::InstructionParam) {(XIndexType) 0}});
+                        break;
+                    case Lexer::TokenKind::SubtractionAssignment:
+                        Result.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::calculation_sub,
+                                                              (BytecodeStructure::InstructionParam) {(XIndexType) 0}});
+                        break;
+                    case Lexer::TokenKind::MultiplicationAssignment:
+                        Result.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::calculation_mul,
+                                                              (BytecodeStructure::InstructionParam) {(XIndexType) 0}});
+                        break;
+                    case Lexer::TokenKind::DivisionAssignment:
+                        Result.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::calculation_div,
+                                                              (BytecodeStructure::InstructionParam) {(XIndexType) 0}});
+                        break;
+                    case Lexer::TokenKind::RemainderAssignment:
+                        Result.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::calculation_mod,
+                                                              (BytecodeStructure::InstructionParam) {(XIndexType) 0}});
+                        break;
+                    default:
+                        /* never run into here */
+                        break;
+                }
+
+                Result.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::stack_store,
+                                                      (BytecodeStructure::InstructionParam) {(XIndexType) 0}});
                 break;
+            }
 
             default:
                 throw XScript::CompilerError(Target.GetFirstNotNullToken().Line,
