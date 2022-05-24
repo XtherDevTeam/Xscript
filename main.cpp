@@ -4,19 +4,20 @@
 #include "Tests/BasicTests.hpp"
 #include "Frontend/Lexer.hpp"
 #include "Frontend/AST.hpp"
-#include "Frontend/Parsers/IndexExpressionNodeGenerator.hpp"
 #include "Backend/Compiler/ExpressionCompiler.hpp"
+#include "Frontend/Parsers/StatementNodeGenerator.hpp"
+#include "Backend/Compiler/StatementCompiler.hpp"
 
 int main() {
     /* AST Test */
-    XScript::XString Str = L"1 + 1 + 4 + 514 - 1";
+    XScript::XString Str = L"var Hello = 1 + 1 + 4 + 514";
     XScript::Lexer Lex{Str};
     Lex.Scan();
-    XScript::AST Tree{XScript::Generator::ExpressionNodeGenerator{Lex}.Parse()};
+    XScript::AST Tree{XScript::Generator::StatementNodeGenerator{Lex}.Parse()};
 
     /* Compiler Test */
     XScript::Compiler::CompilerEnvironment Environment{};
-    XScript::Compiler::ExpressionCompiler Compiler{Environment};
+    XScript::Compiler::StatementCompiler Compiler{Environment};
     auto Result = Compiler.Generate(Tree);
     for (auto &I: Result) {
         std::cout << XScript::wstring2string(I.ToString()) << std::endl;

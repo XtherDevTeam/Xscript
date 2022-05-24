@@ -19,7 +19,8 @@ namespace XScript {
                 Class,
                 Function,
                 String,
-                List
+                List,
+                Unknown
             } Kind;
 
             XIndexType ClassIndex{};

@@ -11,6 +11,7 @@ namespace XScript {
     namespace Generator {
 
         class StatementNodeGenerator : BaseGenerator {
+        public:
             explicit StatementNodeGenerator(Lexer &L);
 
             AST Parse() override;
