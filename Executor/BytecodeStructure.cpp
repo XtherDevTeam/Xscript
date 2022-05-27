@@ -198,7 +198,7 @@ namespace XScript {
                 Result += L"debugger";
                 ParamType = H;
                 break;
-            case InstructionEnum::stack_store_static:
+            case InstructionEnum::static_store:
                 Result += L"stack_store_static";
                 ParamType = H;
                 break;

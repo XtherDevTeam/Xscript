@@ -71,7 +71,7 @@ namespace XScript {
             pc_jump_if_false,
             pc_jump,
             debugger,
-            stack_store_static,
+            static_store,
         } Instruction;
 
         InstructionParam Param;

@@ -2,7 +2,7 @@
 // Created by Jerry Chou on 2022/5/14.
 //
 
-#include <iostream>
+//#include <iostream>
 #include "BytecodeInterpreter.hpp"
 
 namespace XScript {
@@ -14,7 +14,7 @@ namespace XScript {
                InterpreterEnvironment.ProgramCounter.Pointer->size()) {
             auto CurrentInstruction = (*InterpreterEnvironment.ProgramCounter.Pointer)[InterpreterEnvironment.ProgramCounter.NowIndex];
             /* process commands */
-            std::cout << "VMInstruction: " << wstring2string(CurrentInstruction.ToString()) << std::endl;
+//            std::cout << "VMInstruction: " << wstring2string(CurrentInstruction.ToString()) << std::endl;
 
             switch (CurrentInstruction.Instruction) {
                 case BytecodeStructure::InstructionEnum::calculation_add: {
@@ -855,15 +855,20 @@ namespace XScript {
                     break;
                 }
                 case BytecodeStructure::InstructionEnum::stack_store: {
-                    EnvironmentStackItem Element = InterpreterEnvironment.Stack.Elements.back();
-                    InterpreterEnvironment.Stack.Elements.pop_back();
+                    EnvironmentStackItem Element = InterpreterEnvironment.Stack.PopValueFromStack();
                     InterpreterEnvironment.Stack.StoreValueToIndex(CurrentInstruction.Param.HeapPointerValue, Element);
                     break;
                 }
+                case BytecodeStructure::InstructionEnum::static_store: {
+                    EnvironmentStackItem Element = InterpreterEnvironment.Stack.PopValueFromStack();
+                    /* TODO: Add packages to XScript2 */
+                    break;
+                }
+
                 case BytecodeStructure::InstructionEnum::constants_load:
                     break;
                 case BytecodeStructure::InstructionEnum::calculation_negate: {
-                    EnvironmentStackItem Element = InterpreterEnvironment.Stack.Elements.back();
+                    EnvironmentStackItem Element = InterpreterEnvironment.Stack.PopValueFromStack();
                     switch (Element.Kind) {
                         case EnvironmentStackItem::ItemKind::Integer:
                             Element.Value.IntVal = -Element.Value.IntVal;
@@ -888,7 +893,7 @@ namespace XScript {
                     break;
 
                 case BytecodeStructure::InstructionEnum::pc_jump_if_true: {
-                    EnvironmentStackItem Element = InterpreterEnvironment.Stack.Elements.back();
+                    EnvironmentStackItem Element = InterpreterEnvironment.Stack.PopValueFromStack();
                     bool Flag = false;
                     switch (Element.Kind) {
                         case EnvironmentStackItem::ItemKind::Integer:
@@ -908,11 +913,14 @@ namespace XScript {
                             break;
                     }
 
-                    if (Flag) InterpreterEnvironment.ProgramCounter.NowIndex += CurrentInstruction.Param.IntValue;
-                    continue; // 防止NowIndex更新ProgramCounter
+                    if (Flag) {
+                        InterpreterEnvironment.ProgramCounter.NowIndex += CurrentInstruction.Param.IntValue;
+                        continue; // 防止NowIndex更新ProgramCounter
+                    }
+                    break;
                 }
                 case BytecodeStructure::InstructionEnum::pc_jump_if_false: {
-                    EnvironmentStackItem Element = InterpreterEnvironment.Stack.Elements.back();
+                    EnvironmentStackItem Element = InterpreterEnvironment.Stack.PopValueFromStack();
                     bool Flag = false;
                     switch (Element.Kind) {
                         case EnvironmentStackItem::ItemKind::Integer:
@@ -932,8 +940,11 @@ namespace XScript {
                             break;
                     }
 
-                    if (!Flag) InterpreterEnvironment.ProgramCounter.NowIndex += CurrentInstruction.Param.IntValue;
-                    continue; // 防止NowIndex更新ProgramCounter
+                    if (!Flag) {
+                        InterpreterEnvironment.ProgramCounter.NowIndex += CurrentInstruction.Param.IntValue;
+                        continue; // 防止NowIndex更新ProgramCounter
+                    }
+                    break;
                 }
                 case BytecodeStructure::InstructionEnum::pc_jump: {
                     InterpreterEnvironment.ProgramCounter.NowIndex += CurrentInstruction.Param.IntValue;

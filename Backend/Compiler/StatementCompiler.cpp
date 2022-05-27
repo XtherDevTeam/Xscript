@@ -137,19 +137,20 @@ namespace XScript {
 
             MergeArray(Condition, ExpressionCompiler(Environment).Generate(Target.Subtrees[0]));
 
-            MergeArray(Condition, GenerateForCodeBlock(Target.Subtrees[1]));
+            MergeArray(CodeBlock, GenerateForCodeBlock(Target.Subtrees[1]));
+
+            Condition.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::pc_jump_if_false,
+                                                     (BytecodeStructure::InstructionParam) {
+                                                             (XInteger) CodeBlock.size() + 2}});
 
             MergeArray(Result, Condition);
             /* 为跳回命令reserve一个命令单位 */
-            Result.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::pc_jump_if_false,
-                                                  (BytecodeStructure::InstructionParam) {
-                                                          (XInteger) CodeBlock.size() + 2}});
 
             MergeArray(Result, CodeBlock);
             /* jump back to the condition block */
             Result.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::pc_jump,
                                                   (BytecodeStructure::InstructionParam) {
-                                                          (XInteger) -(CodeBlock.size() + 1 + Condition.size())}});
+                                                          (XInteger) -(CodeBlock.size() + Condition.size())}});
 
             return Result;
         }

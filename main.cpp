@@ -1,4 +1,5 @@
 #include <iostream>
+#include <chrono>
 
 /* XScript 2 Project includes */
 #include "Tests/BasicTests.hpp"
@@ -11,7 +12,7 @@
 
 int main() {
     /* AST Test */
-    XScript::XString Str = L"{ var I = 0; var J = 1; J = I; }";
+    XScript::XString Str = L"{ var I = 0; while (I <= 1000000) { I = I + 1; }; }";
     XScript::Lexer Lex{Str};
     Lex.Scan();
     XScript::AST Tree{};
@@ -31,8 +32,10 @@ int main() {
             std::cout << XScript::wstring2string(I.ToString()) << std::endl;
         }
         auto Test = XScript::Instance::Tests::CreateCustomTest(Result);
+        auto Start = std::chrono::system_clock::now();
         Test.Run();
-        std::cout << XScript::wstring2string(Test.InterpreterEnvironment.Stack.Elements.back().ToString()) << std::endl;
+        auto End = std::chrono::system_clock::now() - Start;
+        std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(End).count() << std::endl;
     } catch (XScript::InternalException &E) {
         std::cout << E.what() << std::endl;
     } catch (XScript::BytecodeInterpretError &E) {

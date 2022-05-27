@@ -37,7 +37,12 @@ namespace XScript {
     }
 
     void EnvironmentStack::StoreValueToIndex(XIndexType IndexInFrame, EnvironmentStackItem Item) {
-        XIndexType RealPos = FramesInformation.back().From + IndexInFrame;
+        XIndexType FromStackFrame = FramesInformation.size() - 1;
+        while (FromStackFrame > 0 and (FramesInformation[FromStackFrame].Kind == EnvironmentStackFramesInformation::FrameKind::CodeBlockStackFrame)) {
+            FromStackFrame--;
+        }
+
+        XIndexType RealPos = FramesInformation[FromStackFrame].From + IndexInFrame;
         Elements[RealPos] = Item;
     }
 
