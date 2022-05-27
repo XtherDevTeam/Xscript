@@ -4,6 +4,9 @@
 
 #include "StatementNodeGenerator.hpp"
 #include "VariableStatementNodeGenerator.hpp"
+#include "IfStatementNodeGenerator.hpp"
+#include "ExpressionNodeGenerator.hpp"
+#include "CodeBlockNodeGenerator.hpp"
 
 namespace XScript {
     namespace Generator {
@@ -14,6 +17,18 @@ namespace XScript {
         AST StatementNodeGenerator::Parse() {
             AST Result{};
             Result = VariableStatementNodeGenerator(L).Parse();
+            if (!Result.IsNotMatchNode())
+                return Result;
+
+            Result = IfStatementNodeGenerator(L).Parse();
+            if (!Result.IsNotMatchNode())
+                return Result;
+
+            Result = CodeBlockNodeGenerator(L).Parse();
+            if (!Result.IsNotMatchNode())
+                return Result;
+
+            Result = ExpressionNodeGenerator(L).Parse();
             if (!Result.IsNotMatchNode())
                 return Result;
 

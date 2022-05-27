@@ -17,12 +17,6 @@ Status: `Implmented`
 
 Syntax: `Identifier ::= TokenIdentifier`
 
-### TypeCastingExpression
-
-Status: `Implmented`
-
-Syntax: `TypeCastingExpression ::= TokenLeftParentheses Expression TokenRightParentheses TokenTypeCastingSign TypeSpecifier`
-
 ### Arguments
 
 Status: `Implmented`
@@ -195,7 +189,7 @@ Expression ::= LogicExpression
 
 ### VariableStatementNodeGenerator
 
-Status: `Unimplmented`
+Status: `Implmented`
 
 Syntax:
 
@@ -205,7 +199,7 @@ VariableStatementNodeGenerator ::= "var" Identifier
 
 ### VariableDefinitionStatement
 
-Status: `Unimplmented`
+Status: `Implmented`
 
 Syntax:
 
@@ -235,7 +229,7 @@ ForStatement ::= "for" "(" Statement ";" Expression ";" Statement ")" CodeBlock
 
 ### IfStatement
 
-Status: `Unimplmented`
+Status: `Implmented`
 
 Syntax:
 
@@ -245,7 +239,7 @@ IfStatement ::= "if" "(" Expression ")" CodeBlock
 
 ### IfElseStatement
 
-Status: `Unimplmented`
+Status: `Implmented`
 
 Syntax:
 
@@ -253,3 +247,12 @@ Syntax:
 IfElseStatement ::= "if" "(" Expression ")" CodeBlock "else" Statement
 ```
 
+### CodeBlock
+
+Status: `Implmented`
+
+Syntax:
+
+```
+CodeBlock ::= "{" { Statement ";" } "}"
+```

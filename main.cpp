@@ -10,10 +10,13 @@
 
 int main() {
     /* AST Test */
-    XScript::XString Str = L"var Hello = 1 + 1 + 4 + 514";
+    XScript::XString Str = L"if (True) { var i = 0; };";
     XScript::Lexer Lex{Str};
     Lex.Scan();
-    XScript::AST Tree{XScript::Generator::StatementNodeGenerator{Lex}.Parse()};
+    XScript::AST Tree{};
+    try { Tree = {XScript::Generator::StatementNodeGenerator{Lex}.Parse()}; } catch (XScript::ParserException &E) {
+        std::cout << E.what() << "wdnmd\n";
+    }
 
     /* Compiler Test */
     XScript::Compiler::CompilerEnvironment Environment{};
