@@ -19,6 +19,14 @@ namespace XScript {
             XArray<BytecodeStructure> GenerateForVariableDeclaration(AST &Target);
 
             XArray<BytecodeStructure> GenerateForVariableDefinition(AST &Target);
+
+            XArray<BytecodeStructure> GenerateForIfStatement(AST &Target);
+
+            XArray<BytecodeStructure> GenerateForIfElseStatement(AST &Target);
+
+            XArray<BytecodeStructure> GenerateForWhileStatement(AST &Target);
+
+            XArray<BytecodeStructure> GenerateForCodeBlock(AST &Target);
         };
 
     } // XScript

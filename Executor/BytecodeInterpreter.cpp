@@ -2,6 +2,7 @@
 // Created by Jerry Chou on 2022/5/14.
 //
 
+#include <iostream>
 #include "BytecodeInterpreter.hpp"
 
 namespace XScript {
@@ -13,6 +14,8 @@ namespace XScript {
                InterpreterEnvironment.ProgramCounter.Pointer->size()) {
             auto CurrentInstruction = (*InterpreterEnvironment.ProgramCounter.Pointer)[InterpreterEnvironment.ProgramCounter.NowIndex];
             /* process commands */
+            std::cout << "VMInstruction: " << wstring2string(CurrentInstruction.ToString()) << std::endl;
+
             switch (CurrentInstruction.Instruction) {
                 case BytecodeStructure::InstructionEnum::calculation_add: {
                     auto Right = InterpreterEnvironment.Stack.PopValueFromStack();
@@ -836,6 +839,14 @@ namespace XScript {
                     InterpreterEnvironment.Stack.PopValueFromStack();
                     break;
                 }
+                case BytecodeStructure::InstructionEnum::stack_push_frame: {
+                    InterpreterEnvironment.Stack.PushFrame(InterpreterEnvironment.ProgramCounter);
+                    break;
+                }
+                case BytecodeStructure::InstructionEnum::stack_pop_frame: {
+                    InterpreterEnvironment.Stack.PopFrame();
+                    break;
+                }
                 case BytecodeStructure::InstructionEnum::stack_duplicate: {
                     /* TODO: Complete the stack frames implementation */
                     EnvironmentStackItem Element = InterpreterEnvironment.Stack.GetValueFromStack(
@@ -851,6 +862,83 @@ namespace XScript {
                 }
                 case BytecodeStructure::InstructionEnum::constants_load:
                     break;
+                case BytecodeStructure::InstructionEnum::calculation_negate: {
+                    EnvironmentStackItem Element = InterpreterEnvironment.Stack.Elements.back();
+                    switch (Element.Kind) {
+                        case EnvironmentStackItem::ItemKind::Integer:
+                            Element.Value.IntVal = -Element.Value.IntVal;
+                            break;
+                        case EnvironmentStackItem::ItemKind::Decimal:
+                            Element.Value.DeciVal = -Element.Value.DeciVal;
+                            break;
+                        case EnvironmentStackItem::ItemKind::Boolean:
+                            Element.Value.BoolVal = -Element.Value.BoolVal;
+                            break;
+                        case EnvironmentStackItem::ItemKind::HeapPointer:
+                        case EnvironmentStackItem::ItemKind::Null:
+                            throw BytecodeInterpretError(L"calculation_negate: Unexpected input.");
+                    }
+                    InterpreterEnvironment.Stack.PushValueToStack(Element);
+                    break;
+                }
+
+                case BytecodeStructure::InstructionEnum::calculation_increment:
+                    break;
+                case BytecodeStructure::InstructionEnum::calculation_decrement:
+                    break;
+
+                case BytecodeStructure::InstructionEnum::pc_jump_if_true: {
+                    EnvironmentStackItem Element = InterpreterEnvironment.Stack.Elements.back();
+                    bool Flag = false;
+                    switch (Element.Kind) {
+                        case EnvironmentStackItem::ItemKind::Integer:
+                            Flag = Element.Value.IntVal;
+                            break;
+                        case EnvironmentStackItem::ItemKind::Decimal:
+                            Flag = static_cast<XInteger>(Element.Value.DeciVal);
+                            break;
+                        case EnvironmentStackItem::ItemKind::Boolean:
+                            Flag = Element.Value.BoolVal;
+                            break;
+                        case EnvironmentStackItem::ItemKind::HeapPointer:
+                            Flag = Element.Value.HeapPointerVal;
+                            break;
+                        case EnvironmentStackItem::ItemKind::Null:
+                            Flag = false;
+                            break;
+                    }
+
+                    if (Flag) InterpreterEnvironment.ProgramCounter.NowIndex += CurrentInstruction.Param.IntValue;
+                    continue; // 防止NowIndex更新ProgramCounter
+                }
+                case BytecodeStructure::InstructionEnum::pc_jump_if_false: {
+                    EnvironmentStackItem Element = InterpreterEnvironment.Stack.Elements.back();
+                    bool Flag = false;
+                    switch (Element.Kind) {
+                        case EnvironmentStackItem::ItemKind::Integer:
+                            Flag = Element.Value.IntVal;
+                            break;
+                        case EnvironmentStackItem::ItemKind::Decimal:
+                            Flag = static_cast<XInteger>(Element.Value.DeciVal);
+                            break;
+                        case EnvironmentStackItem::ItemKind::Boolean:
+                            Flag = Element.Value.BoolVal;
+                            break;
+                        case EnvironmentStackItem::ItemKind::HeapPointer:
+                            Flag = Element.Value.HeapPointerVal;
+                            break;
+                        case EnvironmentStackItem::ItemKind::Null:
+                            Flag = false;
+                            break;
+                    }
+
+                    if (!Flag) InterpreterEnvironment.ProgramCounter.NowIndex += CurrentInstruction.Param.IntValue;
+                    continue; // 防止NowIndex更新ProgramCounter
+                }
+                case BytecodeStructure::InstructionEnum::pc_jump: {
+                    InterpreterEnvironment.ProgramCounter.NowIndex += CurrentInstruction.Param.IntValue;
+                    continue; // 防止NowIndex更新ProgramCounter
+                }
             }
             InterpreterEnvironment.ProgramCounter.NowIndex++;
         }

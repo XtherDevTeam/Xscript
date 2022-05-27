@@ -5,7 +5,7 @@
 #include "XScriptException.hpp"
 
 namespace XScript {
-    XScriptException::XScriptException(const XString &String) {
+    XScriptException::XScriptException(const XString &String) : String(wstring2string(String)) {
 
     }
 

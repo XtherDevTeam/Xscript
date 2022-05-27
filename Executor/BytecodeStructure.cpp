@@ -150,6 +150,10 @@ namespace XScript {
                 Result += L"class_get_member";
                 ParamType = H;
                 break;
+            case InstructionEnum::class_assign_member:
+                Result += L"class_assign_member";
+                ParamType = H;
+                break;
             case InstructionEnum::list_new:
                 Result += L"list_new";
                 ParamType = N;
@@ -170,9 +174,33 @@ namespace XScript {
                 Result += L"list_pop";
                 ParamType = N;
                 break;
-            case InstructionEnum::object_lvalue2rvalue:
-                Result += L"object_lvalue2rvalue";
+            case InstructionEnum::pc_jump_if_true:
+                Result += L"pc_jump_if_true";
+                ParamType = I;
+                break;
+            case InstructionEnum::pc_jump_if_false:
+                Result += L"pc_jump_if_false";
+                ParamType = I;
+                break;
+            case InstructionEnum::pc_jump:
+                Result += L"pc_jump";
+                ParamType = I;
+                break;
+            case InstructionEnum::stack_push_frame:
+                Result += L"stack_push_frame";
                 ParamType = N;
+                break;
+            case InstructionEnum::stack_pop_frame:
+                Result += L"stack_pop_frame";
+                ParamType = N;
+                break;
+            case InstructionEnum::debugger:
+                Result += L"debugger";
+                ParamType = H;
+                break;
+            case InstructionEnum::stack_store_static:
+                Result += L"stack_store_static";
+                ParamType = H;
                 break;
         }
 

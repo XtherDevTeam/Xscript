@@ -11,6 +11,6 @@ namespace XScript {
     }
 
     const char *HeapOverflowException::what() const noexcept {
-        return this->String.c_str();
+        return XScriptException::what();
     }
 } // XScript

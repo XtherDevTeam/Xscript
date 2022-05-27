@@ -10,6 +10,6 @@ namespace XScript {
     }
 
     const char *InternalException::what() const noexcept {
-        return String.data();
+        return XScriptException::what();
     }
 } // XScript

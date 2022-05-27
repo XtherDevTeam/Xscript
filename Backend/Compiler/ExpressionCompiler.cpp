@@ -20,8 +20,6 @@ namespace XScript::Compiler {
             case AST::TreeType::FunctionCallingExpression:
             case AST::TreeType::MemberExpression: {
                 MergeArray(Result, ParseMemberExpression(Target, false));
-                Result.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::object_lvalue2rvalue,
-                                                      (BytecodeStructure::InstructionParam) {(XIndexType) 0}});
                 break;
             }
 
@@ -211,7 +209,6 @@ namespace XScript::Compiler {
 
             case AST::TreeType::AssignmentExpression: {
                 /* Push lvalue into stack */
-                MergeArray(Result, ParseMemberExpression(Target.Subtrees[0], false));
                 MergeArray(Result, Generate(Target.Subtrees[0]));
                 MergeArray(Result, Generate(Target.Subtrees[2]));
 
@@ -241,8 +238,7 @@ namespace XScript::Compiler {
                         break;
                 }
 
-                Result.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::stack_store,
-                                                      (BytecodeStructure::InstructionParam) {(XIndexType) 0}});
+                MergeArray(Result, ParseMemberExpressionEndWithAssignment(Target.Subtrees[0], false));
                 break;
             }
 
@@ -297,6 +293,62 @@ namespace XScript::Compiler {
             case AST::TreeType::MemberExpression: {
                 MergeArray(Result, ParseMemberExpression(Target.Subtrees[0], IsMemberExpression));
                 MergeArray(Result, ParseMemberExpression(Target.Subtrees[2], true));
+                break;
+            }
+
+            default:
+                throw CompilerError(Target.GetFirstNotNullToken().Line,
+                                    Target.GetFirstNotNullToken().Column,
+                                    L"ParserMemberExpression: Unexpected AST Type");
+        }
+        return Result;
+    }
+
+    XArray<BytecodeStructure>
+    ExpressionCompiler::ParseMemberExpressionEndWithAssignment(AST &Target, bool IsMemberExpression) {
+        XArray<BytecodeStructure> Result;
+
+        switch (Target.Type) {
+            case AST::TreeType::Identifier: {
+                if (IsMemberExpression) {
+                    Result.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::class_assign_member,
+                                                          (BytecodeStructure::InstructionParam) {
+                                                                  Hash(Target.Node.Value)}});
+                } else {
+                    try {
+                        /* If variable doesn't exist, then GetLocal will throw an error */
+                        auto Item = Environment.GetLocal(Target.Node.Value);
+                        Result.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::stack_store,
+                                                              (BytecodeStructure::InstructionParam) {Item.first}});
+                    } catch (InternalException &E) {
+                        try {
+                            /* If variable doesn't exist, then GetStatic will throw an error */
+                            auto Item = Environment.MainPackage.GetStatic(Target.Node.Value);
+                            Result.push_back(
+                                    (BytecodeStructure) {BytecodeStructure::InstructionEnum::stack_store_static,
+                                                         (BytecodeStructure::InstructionParam) {Item.first}});
+                        } catch (InternalException &E) {
+                            throw CompilerError(Target.Node.Line, Target.Node.Column, string2wstring(E.what()));
+                        }
+                    }
+                }
+                break;
+            }
+            case AST::TreeType::IndexExpression: {
+                XArray<BytecodeStructure> Index = Generate(Target.Subtrees[1]);
+                MergeArray(Result, Index);
+                Result.push_back(
+                        (BytecodeStructure) {BytecodeStructure::InstructionEnum::list_get_member,
+                                             (BytecodeStructure::InstructionParam) {(XIndexType) 0}});
+                break;
+            }
+            case AST::TreeType::FunctionCallingExpression: {
+                /* TODO: Complete here. */
+                break;
+            }
+            case AST::TreeType::MemberExpression: {
+                MergeArray(Result, ParseMemberExpressionEndWithAssignment(Target.Subtrees[0], IsMemberExpression));
+                MergeArray(Result, ParseMemberExpressionEndWithAssignment(Target.Subtrees[2], true));
                 break;
             }
 

@@ -7,6 +7,7 @@
 #include "IfStatementNodeGenerator.hpp"
 #include "ExpressionNodeGenerator.hpp"
 #include "CodeBlockNodeGenerator.hpp"
+#include "WhileStatementNodeGenerator.hpp"
 
 namespace XScript {
     namespace Generator {
@@ -21,6 +22,10 @@ namespace XScript {
                 return Result;
 
             Result = IfStatementNodeGenerator(L).Parse();
+            if (!Result.IsNotMatchNode())
+                return Result;
+
+            Result = WhileStatementNodeGenerator(L).Parse();
             if (!Result.IsNotMatchNode())
                 return Result;
 

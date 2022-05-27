@@ -8,4 +8,8 @@ namespace XScript {
     BytecodeInterpretError::BytecodeInterpretError(const XString &String) : XScriptException(String) {
 
     }
+
+    const char *BytecodeInterpretError::what() const noexcept {
+        return XScriptException::what();
+    }
 } // XScript

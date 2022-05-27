@@ -17,7 +17,8 @@ namespace XScript {
     public:
         enum class FrameKind : XInteger {
             FunctionStackFrame,
-            MethodStackFrame
+            MethodStackFrame,
+            CodeBlockStackFrame,
         } Kind{};
 
         ProgramCounterInformation ReturnAddress;

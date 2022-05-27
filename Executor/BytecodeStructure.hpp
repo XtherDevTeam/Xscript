@@ -56,15 +56,22 @@ namespace XScript {
             stack_pop,
             stack_duplicate,
             stack_store,
+            stack_push_frame,
+            stack_pop_frame,
             constants_load,
             class_new,
             class_get_member,
+            class_assign_member,
             list_new,
             list_get_member,
             list_remove_index,
             list_push,
             list_pop,
-            object_lvalue2rvalue
+            pc_jump_if_true,
+            pc_jump_if_false,
+            pc_jump,
+            debugger,
+            stack_store_static,
         } Instruction;
 
         InstructionParam Param;

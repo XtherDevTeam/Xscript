@@ -12,6 +12,8 @@ namespace XScript {
     class BytecodeInterpretError : XScriptException {
     public:
         explicit BytecodeInterpretError(const XString &String);
+
+        [[nodiscard]] const char * what() const noexcept override;
     };
 
 } // XScript
