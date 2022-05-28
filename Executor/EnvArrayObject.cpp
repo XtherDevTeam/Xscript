@@ -1,39 +1,23 @@
 //
-// Created by Jerry Chou on 2022/5/14.
+// Created by Jerry Chou on 2022/5/28.
 //
 
 #include "EnvArrayObject.hpp"
 
 namespace XScript {
-    EnvArrayObject::EnvArrayObject() : Length(0), Elements(nullptr) {
-
+    XIndexType EnvArrayObject::Length() const {
+        return Elements.size();
     }
 
-    EnvArrayObject::EnvArrayObject(XIndexType Length) : Length(Length) {
-        Elements = (XHeapIndexType *) (this + 1);
+    EnvArrayObject::EnvArrayObject(XIndexType Length) {
+        Elements.resize(Length);
     }
 
-    EnvArrayObject *CreateEnvArrayObject(XIndexType Length) {
-        auto *Object = (EnvArrayObject *) malloc(sizeof(EnvArrayObject) + sizeof(XHeapIndexType) * Length);
-        *Object = (EnvArrayObject) {Length};
-        return Object;
+    EnvArrayObject *NewEnvArrayObject(XIndexType Size) {
+        return new EnvArrayObject(Size);
     }
 
     void FreeEnvArrayObject(EnvArrayObject *Object) {
-        free(Object);
+        delete Object;
     }
-
-    EnvArrayObject *AddElementToBack(EnvArrayObject *Object, XHeapIndexType ToInsert) {
-        auto *NewObject = (EnvArrayObject *) malloc(
-                sizeof(EnvArrayObject) + sizeof(XHeapIndexType) * Object->Length + 1);
-        *NewObject = (EnvArrayObject) {Object->Length + 1};
-        auto Pointer = NewObject->Elements;
-        for (XIndexType Index = 0; Index < Object->Length; ++Index) {
-            *Pointer = Object->Elements[Index];
-            Pointer++;
-        }
-        *Pointer = ToInsert;
-        return Object;
-    }
-
 } // XScript

@@ -27,6 +27,7 @@ namespace XScript {
 
                 if (L.LastToken.Kind != Lexer::TokenKind::RightBracket)
                     MakeException(L"ListLiteralNodeGenerator: InvalidSyntax -> Expected a right bracket");
+                L.Scan();
 
                 return Result;
             } else {

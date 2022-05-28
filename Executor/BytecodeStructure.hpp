@@ -70,6 +70,7 @@ namespace XScript {
             pc_jump,
             debugger,
             static_store,
+            object_lvalue2rvalue,
         } Instruction;
 
         InstructionParam Param;

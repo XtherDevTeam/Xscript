@@ -51,9 +51,10 @@ namespace XScript {
                 /* TODO: Add classes to XScript 2 */
                 break;
             case ObjectKind::ArrayObject:
-                if (Value.ArrayObjectPointer->Length != RightHandSide.Value.ArrayObjectPointer->Length) return false;
-                for (auto Left = Value.ArrayObjectPointer->Elements, Right = RightHandSide.Value.ArrayObjectPointer->Elements;
-                     Left != Value.ArrayObjectPointer->Elements + Value.ArrayObjectPointer->Length; ++Left, ++Right) {
+                if (Value.ArrayObjectPointer->Length() != RightHandSide.Value.ArrayObjectPointer->Length())
+                    return false;
+                for (auto Left = Value.ArrayObjectPointer->Elements.begin(), Right = RightHandSide.Value.ArrayObjectPointer->Elements.begin();
+                     Left != Value.ArrayObjectPointer->Elements.end(); ++Left, ++Right) {
                     if (*Left != *Right)
                         return false;
                 }

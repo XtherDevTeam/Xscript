@@ -28,7 +28,7 @@ namespace XScript {
                 /* TODO: Add classes to XScript2 */
                 break;
             case EnvObject::ObjectKind::ArrayObject:
-                for (XIndexType Index = 0; Index < HeapData[Object].Value.ArrayObjectPointer->Length; ++Index) {
+                for (XIndexType Index = 0; Index < HeapData[Object].Value.ArrayObjectPointer->Length(); ++Index) {
                     PopElement(HeapData[Object].Value.ArrayObjectPointer->Elements[Index]);
                 }
                 break;

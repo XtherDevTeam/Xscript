@@ -20,6 +20,8 @@ namespace XScript::Compiler {
             case AST::TreeType::FunctionCallingExpression:
             case AST::TreeType::MemberExpression: {
                 MergeArray(Result, ParseMemberExpression(Target, false));
+                Result.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::object_lvalue2rvalue,
+                                                      (BytecodeStructure::InstructionParam) {(XIndexType) 0}});
                 break;
             }
 
@@ -254,7 +256,8 @@ namespace XScript::Compiler {
 
             default:
                 throw XScript::CompilerError(Target.GetFirstNotNullToken().Line,
-                                             Target.GetFirstNotNullToken().Column, L"ExpressionCompiler: Unexpected AST Type");
+                                             Target.GetFirstNotNullToken().Column,
+                                             L"ExpressionCompiler: Unexpected AST Type");
         }
         return Result;
     }
@@ -290,7 +293,9 @@ namespace XScript::Compiler {
             }
             case AST::TreeType::IndexExpression: {
                 XArray<BytecodeStructure> Index = Generate(Target.Subtrees[1]);
+                XArray<BytecodeStructure> Node = ParseMemberExpression(Target.Subtrees[0], IsMemberExpression);
                 MergeArray(Result, Index);
+                MergeArray(Result, Node);
                 Result.push_back(
                         (BytecodeStructure) {BytecodeStructure::InstructionEnum::list_get_member,
                                              (BytecodeStructure::InstructionParam) {(XIndexType) 0}});
@@ -345,11 +350,7 @@ namespace XScript::Compiler {
                 break;
             }
             case AST::TreeType::IndexExpression: {
-                XArray<BytecodeStructure> Index = Generate(Target.Subtrees[1]);
-                MergeArray(Result, Index);
-                Result.push_back(
-                        (BytecodeStructure) {BytecodeStructure::InstructionEnum::list_get_member,
-                                             (BytecodeStructure::InstructionParam) {(XIndexType) 0}});
+                /* TODO: Add command object_store */
                 break;
             }
             case AST::TreeType::FunctionCallingExpression: {

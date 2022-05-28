@@ -884,6 +884,134 @@ namespace XScript {
                 case BytecodeStructure::InstructionEnum::calculation_decrement:
                     break;
 
+                case BytecodeStructure::InstructionEnum::list_new: {
+                    EnvironmentStackItem ListItem{};
+                    ListItem.Kind = EnvironmentStackItem::ItemKind::HeapPointer;
+                    ListItem.Value.HeapPointerVal = InterpreterEnvironment.Heap.PushElement(
+                            (EnvObject) {EnvObject::ObjectKind::ArrayObject,
+                                         (EnvObject::ObjectValue) {NewEnvArrayObject(
+                                                 CurrentInstruction.Param.HeapPointerValue)}});
+                    for (XIndexType I = 0; I < CurrentInstruction.Param.HeapPointerValue; I++) {
+                        EnvironmentStackItem Item = InterpreterEnvironment.Stack.PopValueFromStack();
+                        EnvObject Object;
+                        switch (Item.Kind) {
+                            case EnvironmentStackItem::ItemKind::Integer:
+                                Object.Kind = EnvObject::ObjectKind::Integer;
+                                Object.Value.IntegerValue = Item.Value.IntVal;
+                                break;
+                            case EnvironmentStackItem::ItemKind::Decimal:
+                                Object.Kind = EnvObject::ObjectKind::Decimal;
+                                Object.Value.IntegerValue = Item.Value.IntVal;
+                                break;
+                            case EnvironmentStackItem::ItemKind::Boolean:
+                                Object.Kind = EnvObject::ObjectKind::Boolean;
+                                Object.Value.IntegerValue = Item.Value.IntVal;
+                                break;
+                            case EnvironmentStackItem::ItemKind::HeapPointer:
+                                Object = InterpreterEnvironment.Heap.HeapData[Item.Value.HeapPointerVal];
+                                break;
+                            case EnvironmentStackItem::ItemKind::Null:
+                                Object.Kind = EnvObject::ObjectKind::Integer;
+                                break;
+                        }
+
+                        InterpreterEnvironment.Heap.HeapData[ListItem.Value.HeapPointerVal].Value.ArrayObjectPointer->Elements[I] =
+                                InterpreterEnvironment.Heap.PushElement(Object);
+                    }
+                    InterpreterEnvironment.Stack.PushValueToStack(ListItem);
+                    break;
+                }
+                case BytecodeStructure::InstructionEnum::list_pop: {
+                    EnvironmentStackItem ListItem = InterpreterEnvironment.Stack.PopValueFromStack();
+                    if (ListItem.Kind == EnvironmentStackItem::ItemKind::HeapPointer and
+                        InterpreterEnvironment.Heap.HeapData[ListItem.Value.HeapPointerVal].Kind ==
+                        EnvObject::ObjectKind::ArrayObject) {
+                        InterpreterEnvironment.Heap.HeapData[ListItem.Value.HeapPointerVal].Value.ArrayObjectPointer->Elements.pop_back();
+                    }
+                    break;
+                }
+                case BytecodeStructure::InstructionEnum::list_push: {
+                    EnvironmentStackItem ListItem = InterpreterEnvironment.Stack.PopValueFromStack();
+                    if (ListItem.Kind == EnvironmentStackItem::ItemKind::HeapPointer and
+                        InterpreterEnvironment.Heap.HeapData[ListItem.Value.HeapPointerVal].Kind ==
+                        EnvObject::ObjectKind::ArrayObject) {
+                        EnvironmentStackItem Item = InterpreterEnvironment.Stack.PopValueFromStack();
+                        EnvObject Object{};
+                        switch (Item.Kind) {
+                            case EnvironmentStackItem::ItemKind::Integer:
+                                Object.Kind = EnvObject::ObjectKind::Integer;
+                                Object.Value.IntegerValue = Item.Value.IntVal;
+                                break;
+                            case EnvironmentStackItem::ItemKind::Decimal:
+                                Object.Kind = EnvObject::ObjectKind::Decimal;
+                                Object.Value.IntegerValue = Item.Value.IntVal;
+                                break;
+                            case EnvironmentStackItem::ItemKind::Boolean:
+                                Object.Kind = EnvObject::ObjectKind::Boolean;
+                                Object.Value.IntegerValue = Item.Value.IntVal;
+                                break;
+                            case EnvironmentStackItem::ItemKind::HeapPointer:
+                                Object = InterpreterEnvironment.Heap.HeapData[Item.Value.HeapPointerVal];
+                                break;
+                            case EnvironmentStackItem::ItemKind::Null:
+                                Object.Kind = EnvObject::ObjectKind::Integer;
+                                break;
+                        }
+
+                        InterpreterEnvironment.Heap.HeapData[ListItem.Value.HeapPointerVal].Value.ArrayObjectPointer->Elements.push_back(
+                                InterpreterEnvironment.Heap.PushElement(Object));
+                    }
+                    break;
+                }
+                case BytecodeStructure::InstructionEnum::list_get_member: {
+                    EnvironmentStackItem ListItem = InterpreterEnvironment.Stack.PopValueFromStack();
+                    if (ListItem.Kind == EnvironmentStackItem::ItemKind::HeapPointer and
+                        InterpreterEnvironment.Heap.HeapData[ListItem.Value.HeapPointerVal].Kind ==
+                        EnvObject::ObjectKind::ArrayObject) {
+                        EnvironmentStackItem Index = InterpreterEnvironment.Stack.PopValueFromStack();
+                        /* 不做类型检查 */
+                        EnvironmentStackItem Item{EnvironmentStackItem::ItemKind::HeapPointer,
+                                                  (EnvironmentStackItem::ItemValue) {
+                                                          InterpreterEnvironment.Heap.HeapData[ListItem.Value.HeapPointerVal].Value.ArrayObjectPointer->Elements[Index.Value.IntVal]}};
+
+                        InterpreterEnvironment.Stack.PushValueToStack(Item);
+                    } else {
+                        throw BytecodeInterpretError(L"list_get_member: Unknown item type");
+                    }
+                    break;
+                }
+
+                case BytecodeStructure::InstructionEnum::object_lvalue2rvalue: {
+                    EnvironmentStackItem Item = InterpreterEnvironment.Stack.PopValueFromStack();
+
+                    if (Item.Kind == EnvironmentStackItem::ItemKind::HeapPointer) {
+                        auto Object = InterpreterEnvironment.Heap.HeapData[Item.Value.HeapPointerVal];
+                        switch (Object.Kind) {
+                            case EnvObject::ObjectKind::ClassObject:
+                            case EnvObject::ObjectKind::ArrayObject:
+                            case EnvObject::ObjectKind::StringObject:
+                                break;
+                            case EnvObject::ObjectKind::Integer:
+                                Item.Kind = EnvironmentStackItem::ItemKind::Integer;
+                                Item.Value.IntVal = Object.Value.IntegerValue;
+                                break;
+                            case EnvObject::ObjectKind::Decimal:
+                                Item.Kind = EnvironmentStackItem::ItemKind::Decimal;
+                                Item.Value.IntVal = Object.Value.IntegerValue;
+                                break;
+                            case EnvObject::ObjectKind::Boolean:
+                                Item.Kind = EnvironmentStackItem::ItemKind::Boolean;
+                                Item.Value.IntVal = Object.Value.IntegerValue;
+                                break;
+                        }
+
+                        /* 如果为基础类型则转换为rvalue，否则保持原状 */
+                        InterpreterEnvironment.Stack.PushValueToStack(Item);
+                    } else {
+                        throw BytecodeInterpretError(L"object_lvalue2rvalue: Unknown item type");
+                    }
+                }
+
                 case BytecodeStructure::InstructionEnum::pc_jump_if_true: {
                     EnvironmentStackItem Element = InterpreterEnvironment.Stack.PopValueFromStack();
                     bool Flag = false;

@@ -194,6 +194,10 @@ namespace XScript {
                 Result += L"stack_store_static";
                 ParamType = H;
                 break;
+            case InstructionEnum::object_lvalue2rvalue:
+                Result += L"object_lvalue2rvalue";
+                ParamType = N;
+                break;
         }
 
         Result = L"<XCommand Instruction=" + Result;

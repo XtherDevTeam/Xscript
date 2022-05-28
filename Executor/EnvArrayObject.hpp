@@ -1,5 +1,5 @@
 //
-// Created by Jerry Chou on 2022/5/14.
+// Created by Jerry Chou on 2022/5/28.
 //
 
 #ifndef XSCRIPT2_ENVARRAYOBJECT_HPP
@@ -11,28 +11,16 @@ namespace XScript {
 
     class EnvArrayObject {
     public:
-        XIndexType Length;
-        XHeapIndexType *Elements;
+        XArray<XHeapIndexType> Elements;
 
-        EnvArrayObject();
+        [[nodiscard]] XIndexType Length() const;
 
         explicit EnvArrayObject(XIndexType Length);
     };
 
-    EnvArrayObject *CreateEnvArrayObject(XIndexType Length);
+    EnvArrayObject* NewEnvArrayObject(XIndexType Size);
 
-    /**
-     * Free an environment array object.
-     * @param Object Object to free.
-     */
     void FreeEnvArrayObject(EnvArrayObject *Object);
-
-    /**
-     * Create a new object with the original elements and the element to insert.
-     * @warning
-     * It WON'T FREE THE ORIGINAL OBJECT!
-     */
-    EnvArrayObject *AddElementToBack(EnvArrayObject *Object, XHeapIndexType ToInsert);
 
 } // XScript
 
