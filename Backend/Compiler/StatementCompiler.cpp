@@ -101,7 +101,7 @@ namespace XScript {
             // 如果条件不满足，则跳转到代码块的后面
             Result.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::pc_jump_if_false,
                                                   (BytecodeStructure::InstructionParam) {
-                                                          (XInteger) CodeBlock.size() + 1}});
+                                                          (XInteger) {static_cast<XInteger>(CodeBlock.size() + 1)}}});
 
             MergeArray(Result, CodeBlock);
 
@@ -119,7 +119,7 @@ namespace XScript {
             // 如果条件不满足，则跳转到ElseBlock
             Result.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::pc_jump_if_false,
                                                   (BytecodeStructure::InstructionParam) {
-                                                          (XInteger) CodeBlock.size() + 1}});
+                                                          (XInteger) {static_cast<XInteger>(CodeBlock.size() + 1)}}});
 
             MergeArray(Result, CodeBlock);
 
@@ -158,7 +158,8 @@ namespace XScript {
 
             Condition.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::pc_jump_if_false,
                                                      (BytecodeStructure::InstructionParam) {
-                                                             (XInteger) CodeBlock.size() + 2}});
+                                                             (XInteger) {
+                                                                     static_cast<XInteger>(CodeBlock.size() + 2)}}});
 
             MergeArray(Result, Condition);
             /* 为跳回命令reserve一个命令单位 */
@@ -167,7 +168,8 @@ namespace XScript {
             /* jump back to the condition block */
             Result.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::pc_jump,
                                                   (BytecodeStructure::InstructionParam) {
-                                                          (XInteger) -(CodeBlock.size() + Condition.size())}});
+                                                          (XInteger) {static_cast<XInteger>(-(CodeBlock.size() +
+                                                                                              Condition.size()))}}});
 
             return Result;
         }
@@ -189,7 +191,9 @@ namespace XScript {
              */
             Condition.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::pc_jump_if_false,
                                                      (BytecodeStructure::InstructionParam) {
-                                                             (XInteger) CodeBlock.size() + AfterStatement.size() + 2}});
+                                                             (XInteger) {static_cast<XInteger>(CodeBlock.size() +
+                                                                                               AfterStatement.size() +
+                                                                                               2)}}});
 
             MergeArray(Result, Condition);
 
@@ -199,8 +203,9 @@ namespace XScript {
             /* jump back to the condition block */
             Result.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::pc_jump,
                                                   (BytecodeStructure::InstructionParam) {
-                                                          (XInteger) -(AfterStatement.size() + CodeBlock.size() +
-                                                                       Condition.size())}});
+                                                          (XInteger) {static_cast<XInteger>(-(AfterStatement.size() +
+                                                                                              CodeBlock.size() +
+                                                                                              Condition.size()))}}});
 
             /**
              * Restore local symbol index
