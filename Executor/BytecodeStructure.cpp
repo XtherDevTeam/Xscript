@@ -202,6 +202,11 @@ namespace XScript {
                 Result += L"object_store";
                 ParamType = N;
                 break;
+            case InstructionEnum::fake_command_continue:
+            case InstructionEnum::fake_command_break:
+                /* dummy branch */
+                ParamType = N;
+                break;
         }
 
         Result = L"<XCommand Instruction=" + Result;
@@ -227,5 +232,18 @@ namespace XScript {
                 break;
         }
         return Result;
+    }
+
+    bool BytecodeStructure::operator==(const BytecodeStructure &rhs) const {
+        return (Instruction == rhs.Instruction and Param.HeapPointerValue == rhs.Param.HeapPointerValue);
+    }
+
+    bool BytecodeStructure::operator!=(const BytecodeStructure &rhs) const {
+        return (Instruction != rhs.Instruction or Param.HeapPointerValue != rhs.Param.HeapPointerValue);
+    }
+
+    BytecodeStructure &BytecodeStructure::operator=(const BytecodeStructure &rhs) {
+        Instruction = rhs.Instruction;
+        Param.HeapPointerValue = rhs.Param.HeapPointerValue;
     }
 } // XScript

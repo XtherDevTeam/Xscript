@@ -61,6 +61,12 @@ namespace XScript {
                 case AST::TreeType::CodeBlockStatement: {
                     return GenerateForCodeBlock(Target);
                 }
+                case AST::TreeType::BreakStatement: {
+                    return GenerateForBreakStatement(Target);
+                }
+                case AST::TreeType::ContinueStatement: {
+                    return GenerateForContinueStatement(Target);
+                }
                 default: {
                     throw InternalException(L"StatementCompiler::Generate : Invalid invoke");
                 }
@@ -156,6 +162,23 @@ namespace XScript {
 
             MergeArray(CodeBlock, GenerateForCodeBlock(Target.Subtrees[1]));
 
+            /**
+             * Preprocessing for code block
+             */
+            for (XIndexType I = 0; I < CodeBlock.size(); I++) {
+                auto &Command = CodeBlock[I];
+
+                if (Command.Instruction == BytecodeStructure::InstructionEnum::fake_command_break) {
+                    Command.Instruction = BytecodeStructure::InstructionEnum::pc_jump;
+                    Command.Param = (BytecodeStructure::InstructionParam) {
+                            static_cast<XInteger>(CodeBlock.size() - I + 1)};
+                } else if (Command.Instruction == BytecodeStructure::InstructionEnum::fake_command_continue) {
+                    Command.Instruction = BytecodeStructure::InstructionEnum::pc_jump;
+                    Command.Param = (BytecodeStructure::InstructionParam) {
+                            static_cast<XInteger>(CodeBlock.size() - I)};
+                }
+            }
+
             Condition.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::pc_jump_if_false,
                                                      (BytecodeStructure::InstructionParam) {
                                                              (XInteger) {
@@ -183,6 +206,23 @@ namespace XScript {
             Condition = ExpressionCompiler(Environment).Generate(Target.Subtrees[1]);
             AfterStatement = Generate(Target.Subtrees[2]);
             CodeBlock = GenerateForCodeBlock(Target.Subtrees[3]);
+
+            /**
+             * Preprocessing for code block
+             */
+            for (XIndexType I = 0; I < CodeBlock.size(); I++) {
+                auto &Command = CodeBlock[I];
+
+                if (Command.Instruction == BytecodeStructure::InstructionEnum::fake_command_break) {
+                    Command.Instruction = BytecodeStructure::InstructionEnum::pc_jump;
+                    Command.Param = (BytecodeStructure::InstructionParam) {
+                            static_cast<XInteger>(CodeBlock.size() - I + AfterStatement.size() + 1)};
+                } else if (Command.Instruction == BytecodeStructure::InstructionEnum::fake_command_continue) {
+                    Command.Instruction = BytecodeStructure::InstructionEnum::pc_jump;
+                    Command.Param = (BytecodeStructure::InstructionParam) {
+                            static_cast<XInteger>(CodeBlock.size() - I)};
+                }
+            }
 
             MergeArray(Result, InitialStatement);
 
@@ -216,6 +256,20 @@ namespace XScript {
                 Environment.Locals.pop_back();
             }
 
+            return Result;
+        }
+
+        XArray<BytecodeStructure> StatementCompiler::GenerateForBreakStatement(AST &Target) {
+            XArray<BytecodeStructure> Result;
+            Result.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::fake_command_break,
+                                                  (BytecodeStructure::InstructionParam) {(XHeapIndexType) 0}});
+            return Result;
+        }
+
+        XArray<BytecodeStructure> StatementCompiler::GenerateForContinueStatement(XScript::AST &Target) {
+            XArray<BytecodeStructure> Result;
+            Result.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::fake_command_continue,
+                                                  (BytecodeStructure::InstructionParam) {(XHeapIndexType) 0}});
             return Result;
         }
     } // XScript

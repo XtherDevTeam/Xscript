@@ -29,6 +29,10 @@ namespace XScript {
             XArray<BytecodeStructure> GenerateForForStatement(AST &Target);
 
             XArray<BytecodeStructure> GenerateForCodeBlock(AST &Target);
+
+            static XArray<BytecodeStructure> GenerateForBreakStatement(AST &Target);
+
+            static XArray<BytecodeStructure> GenerateForContinueStatement(AST &Target);
         };
 
     } // XScript

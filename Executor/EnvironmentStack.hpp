@@ -26,13 +26,31 @@ namespace XScript {
 
         EnvironmentStack();
 
-        void PushValueToStack(EnvironmentStackItem Item);
+        inline void PushValueToStack(EnvironmentStackItem Item) {
+            Elements.push_back(Item);
+            FramesInformation.back().Length++;
+        }
 
-        EnvironmentStackItem PopValueFromStack();
+        inline EnvironmentStackItem PopValueFromStack() {
+            auto R = Elements[Elements.size() - 1];
+            Elements.pop_back();
+            FramesInformation.back().Length--;
+            return R;
+        }
 
-        EnvironmentStackItem GetValueFromStack(XIndexType IndexInFrame);
+        inline EnvironmentStackItem GetValueFromStack(XIndexType IndexInFrame) {
+            XIndexType RealPos = FramesInformation[FramesInformation.size() - 1].From + IndexInFrame;
+            try {
+                return Elements.at(RealPos);
+            } catch (std::exception &E) {
+                throw;
+            }
+        }
 
-        void StoreValueToIndex(XIndexType IndexInFrame, EnvironmentStackItem Item);
+        inline void StoreValueToIndex(XIndexType IndexInFrame, EnvironmentStackItem Item) {
+            XIndexType RealPos = FramesInformation[FramesInformation.size() - 1].From + IndexInFrame;
+            Elements[RealPos] = Item;
+        }
 
     };
 

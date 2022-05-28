@@ -72,6 +72,8 @@ namespace XScript {
             static_store,
             object_lvalue2rvalue,
             object_store,
+            fake_command_continue,
+            fake_command_break,
         } Instruction;
 
         InstructionParam Param;
@@ -79,6 +81,12 @@ namespace XScript {
         BytecodeStructure(BytecodeStructure::InstructionEnum instruction, InstructionParam param);
 
         [[nodiscard]] XString ToString() const;
+
+        bool operator==(const BytecodeStructure &rhs) const;
+
+        bool operator!=(const BytecodeStructure &rhs) const;
+
+        BytecodeStructure & operator=(const BytecodeStructure &rhs);
     };
 } // XScript
 

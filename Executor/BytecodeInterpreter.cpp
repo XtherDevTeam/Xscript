@@ -2,7 +2,7 @@
 // Created by Jerry Chou on 2022/5/14.
 //
 
-#include <iostream>
+//#include <iostream>
 #include "BytecodeInterpreter.hpp"
 
 namespace XScript {
@@ -14,7 +14,7 @@ namespace XScript {
                InterpreterEnvironment.ProgramCounter.Pointer->size()) {
             auto CurrentInstruction = (*InterpreterEnvironment.ProgramCounter.Pointer)[InterpreterEnvironment.ProgramCounter.NowIndex];
             /* process commands */
-            std::cout << "VMInstruction: " << wstring2string(CurrentInstruction.ToString()) << std::endl;
+//            std::cout << "VMInstruction: " << wstring2string(CurrentInstruction.ToString()) << std::endl;
 
             switch (CurrentInstruction.Instruction) {
                 case BytecodeStructure::InstructionEnum::calculation_add: {
@@ -1052,7 +1052,7 @@ namespace XScript {
                         /* 如果为基础类型则转换为rvalue，否则保持原状 */
                         InterpreterEnvironment.Stack.PushValueToStack(Item);
                     } else {
-                        throw BytecodeInterpretError(L"object_lvalue2rvalue: Unknown item type");
+                        InterpreterEnvironment.Stack.PushValueToStack(Item);
                     }
                     break;
                 }

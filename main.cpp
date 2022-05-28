@@ -9,10 +9,11 @@
 #include "Frontend/Parsers/StatementNodeGenerator.hpp"
 #include "Backend/Compiler/StatementCompiler.hpp"
 #include "Share/Exceptions/InternalException.hpp"
+#include "Share/Exceptions/CompilerError.hpp"
 
 int main() {
     /* AST Test */
-    XScript::XString Str = L"{ var i = [114, 514, 1919810]; i[0] = 114514; }";
+    XScript::XString Str = L"{ var I = 0; while (I < 1000000) { I += 1; } }";
     XScript::Lexer Lex{Str};
     Lex.Scan();
     XScript::AST Tree{};
@@ -39,6 +40,8 @@ int main() {
     } catch (XScript::InternalException &E) {
         std::cout << E.what() << std::endl;
     } catch (XScript::BytecodeInterpretError &E) {
+        std::cout << E.what() << std::endl;
+    } catch (XScript::CompilerError &E) {
         std::cout << E.what() << std::endl;
     }
     return 0;
