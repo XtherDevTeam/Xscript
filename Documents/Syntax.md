@@ -253,6 +253,26 @@ Syntax:
 IfElseStatement ::= "if" "(" Expression ")" CodeBlock "else" Statement
 ```
 
+### BreakStatement
+
+Status: `Implmented`
+
+Syntax:
+
+```
+BreakStatement ::= "break"
+```
+
+### ContinueStatement
+
+Status: `Implmented`
+
+Syntax:
+
+```
+ContinueStatement ::= "continue"
+```
+
 ### CodeBlock
 
 Status: `Implmented`

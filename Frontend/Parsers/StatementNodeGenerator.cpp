@@ -9,6 +9,8 @@
 #include "CodeBlockNodeGenerator.hpp"
 #include "WhileStatementNodeGenerator.hpp"
 #include "ForStatementNodeGenerator.hpp"
+#include "BreakStatementNodeGenerator.hpp"
+#include "ContinueStatementNodeGenerator.hpp"
 
 namespace XScript {
     namespace Generator {
@@ -31,6 +33,14 @@ namespace XScript {
                 return Result;
 
             Result = ForStatementNodeGenerator(L).Parse();
+            if (!Result.IsNotMatchNode())
+                return Result;
+
+            Result = BreakStatementNodeGenerator(L).Parse();
+            if (!Result.IsNotMatchNode())
+                return Result;
+
+            Result = ContinueStatementNodeGenerator(L).Parse();
             if (!Result.IsNotMatchNode())
                 return Result;
 
