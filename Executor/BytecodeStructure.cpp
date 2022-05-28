@@ -198,6 +198,10 @@ namespace XScript {
                 Result += L"object_lvalue2rvalue";
                 ParamType = N;
                 break;
+            case InstructionEnum::object_store:
+                Result += L"object_store";
+                ParamType = N;
+                break;
         }
 
         Result = L"<XCommand Instruction=" + Result;

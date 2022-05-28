@@ -326,9 +326,14 @@ namespace XScript::Compiler {
         switch (Target.Type) {
             case AST::TreeType::Identifier: {
                 if (IsMemberExpression) {
-                    Result.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::class_assign_member,
+                    Result.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::class_get_member,
                                                           (BytecodeStructure::InstructionParam) {
                                                                   Hash(Target.Node.Value)}});
+
+                    Result.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::object_store,
+                                                          (BytecodeStructure::InstructionParam) {
+                                                                  (BytecodeStructure::InstructionParam) {
+                                                                          (XHeapIndexType) 0}}});
                 } else {
                     try {
                         /* If variable doesn't exist, then GetLocal will throw an error */
@@ -350,7 +355,11 @@ namespace XScript::Compiler {
                 break;
             }
             case AST::TreeType::IndexExpression: {
-                /* TODO: Add command object_store */
+                MergeArray(Result, ParseMemberExpression(Target.Subtrees[0], IsMemberExpression));
+                MergeArray(Result, Generate(Target.Subtrees[1]));
+                Result.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::object_store,
+                                                      (BytecodeStructure::InstructionParam) {
+                                                              (XHeapIndexType) 0}});
                 break;
             }
             case AST::TreeType::FunctionCallingExpression: {

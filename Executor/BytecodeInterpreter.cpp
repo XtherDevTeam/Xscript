@@ -2,7 +2,7 @@
 // Created by Jerry Chou on 2022/5/14.
 //
 
-//#include <iostream>
+#include <iostream>
 #include "BytecodeInterpreter.hpp"
 
 namespace XScript {
@@ -14,7 +14,7 @@ namespace XScript {
                InterpreterEnvironment.ProgramCounter.Pointer->size()) {
             auto CurrentInstruction = (*InterpreterEnvironment.ProgramCounter.Pointer)[InterpreterEnvironment.ProgramCounter.NowIndex];
             /* process commands */
-//            std::cout << "VMInstruction: " << wstring2string(CurrentInstruction.ToString()) << std::endl;
+            std::cout << "VMInstruction: " << wstring2string(CurrentInstruction.ToString()) << std::endl;
 
             switch (CurrentInstruction.Instruction) {
                 case BytecodeStructure::InstructionEnum::calculation_add: {
@@ -931,7 +931,7 @@ namespace XScript {
                                 break;
                         }
 
-                        InterpreterEnvironment.Heap.HeapData[ListItem.Value.HeapPointerVal].Value.ArrayObjectPointer->Elements[I] =
+                        InterpreterEnvironment.Heap.HeapData[ListItem.Value.HeapPointerVal].Value.ArrayObjectPointer->Elements[CurrentInstruction.Param.HeapPointerValue - I] =
                                 InterpreterEnvironment.Heap.PushElement(Object);
                     }
                     InterpreterEnvironment.Stack.PushValueToStack(ListItem);
@@ -997,6 +997,34 @@ namespace XScript {
                     break;
                 }
 
+                case BytecodeStructure::InstructionEnum::object_store: {
+                    EnvironmentStackItem RightValue = InterpreterEnvironment.Stack.PopValueFromStack();
+                    EnvironmentStackItem LeftValue = InterpreterEnvironment.Stack.PopValueFromStack();
+
+                    switch (RightValue.Kind) {
+                        case EnvironmentStackItem::ItemKind::Integer:
+                            InterpreterEnvironment.Heap.HeapData[LeftValue.Value.HeapPointerVal] = (EnvObject) {
+                                    EnvObject::ObjectKind::Integer,
+                                    (EnvObject::ObjectValue) {RightValue.Value.IntVal}};
+                            break;
+                        case EnvironmentStackItem::ItemKind::Decimal:
+                            InterpreterEnvironment.Heap.HeapData[LeftValue.Value.HeapPointerVal] = (EnvObject) {
+                                    EnvObject::ObjectKind::Decimal,
+                                    (EnvObject::ObjectValue) {RightValue.Value.DeciVal}};
+                            break;
+                        case EnvironmentStackItem::ItemKind::Boolean:
+                            InterpreterEnvironment.Heap.HeapData[LeftValue.Value.HeapPointerVal] = (EnvObject) {
+                                    EnvObject::ObjectKind::Boolean,
+                                    (EnvObject::ObjectValue) {RightValue.Value.BoolVal}};
+                            break;
+                        case EnvironmentStackItem::ItemKind::HeapPointer:
+                            InterpreterEnvironment.Heap.HeapData[LeftValue.Value.HeapPointerVal] = InterpreterEnvironment.Heap.HeapData[RightValue.Value.HeapPointerVal];
+                            break;
+                        case EnvironmentStackItem::ItemKind::Null:
+                            throw BytecodeInterpretError(L"object_store: cannot assign null to a heap value");
+                    }
+                    break;
+                }
                 case BytecodeStructure::InstructionEnum::object_lvalue2rvalue: {
                     EnvironmentStackItem Item = InterpreterEnvironment.Stack.PopValueFromStack();
 
@@ -1026,6 +1054,7 @@ namespace XScript {
                     } else {
                         throw BytecodeInterpretError(L"object_lvalue2rvalue: Unknown item type");
                     }
+                    break;
                 }
 
                 case BytecodeStructure::InstructionEnum::pc_jump_if_true: {

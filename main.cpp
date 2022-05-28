@@ -12,7 +12,7 @@
 
 int main() {
     /* AST Test */
-    XScript::XString Str = L"{ var i = [114, 514, 1919810]; i[0]; }";
+    XScript::XString Str = L"{ var i = [114, 514, 1919810]; i[0] = 114514; }";
     XScript::Lexer Lex{Str};
     Lex.Scan();
     XScript::AST Tree{};

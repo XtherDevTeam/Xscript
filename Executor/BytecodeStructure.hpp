@@ -71,6 +71,7 @@ namespace XScript {
             debugger,
             static_store,
             object_lvalue2rvalue,
+            object_store,
         } Instruction;
 
         InstructionParam Param;
