@@ -48,6 +48,9 @@ namespace XScript {
                 case AST::TreeType::WhileStatement: {
                     return GenerateForWhileStatement(Target);
                 }
+                case AST::TreeType::ForStatement: {
+                    return GenerateForForStatement(Target);
+                }
                 case AST::TreeType::CodeBlockStatement: {
                     return GenerateForCodeBlock(Target);
                 }
@@ -119,6 +122,8 @@ namespace XScript {
         }
 
         XArray<BytecodeStructure> StatementCompiler::GenerateForCodeBlock(AST &Target) {
+            XIndexType NowLocals = Environment.Locals.size();
+
             XArray<BytecodeStructure> Result;
             Result.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::stack_push_frame,
                                                   (BytecodeStructure::InstructionParam) {(XHeapIndexType) 0}});
@@ -129,6 +134,14 @@ namespace XScript {
 
             Result.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::stack_pop_frame,
                                                   (BytecodeStructure::InstructionParam) {(XHeapIndexType) 0}});
+
+            /**
+             * Restore local symbol index
+             */
+            for (XIndexType I = 0; I < Environment.Locals.size() - NowLocals; I++) {
+                Environment.Locals.pop_back();
+            }
+
             return Result;
         }
 
@@ -151,6 +164,52 @@ namespace XScript {
             Result.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::pc_jump,
                                                   (BytecodeStructure::InstructionParam) {
                                                           (XInteger) -(CodeBlock.size() + Condition.size())}});
+
+            return Result;
+        }
+
+        XArray<BytecodeStructure> StatementCompiler::GenerateForForStatement(AST &Target) {
+            XIndexType NowLocals = Environment.Locals.size();
+
+            XArray<BytecodeStructure> Result, InitialStatement, Condition, AfterStatement, CodeBlock;
+
+            Result.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::stack_push_frame,
+                                                  (BytecodeStructure::InstructionParam) {(XHeapIndexType) 0}});
+
+            InitialStatement = Generate(Target.Subtrees[0]);
+            Condition = ExpressionCompiler(Environment).Generate(Target.Subtrees[1]);
+            AfterStatement = Generate(Target.Subtrees[2]);
+            CodeBlock = GenerateForCodeBlock(Target.Subtrees[3]);
+
+            MergeArray(Result, InitialStatement);
+
+            /**
+             * reserve one command for jump-back command
+             */
+            Condition.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::pc_jump_if_false,
+                                                     (BytecodeStructure::InstructionParam) {
+                                                             (XInteger) CodeBlock.size() + AfterStatement.size() + 2}});
+
+            MergeArray(Result, Condition);
+
+            MergeArray(Result, CodeBlock);
+            MergeArray(Result, AfterStatement);
+
+            /* jump back to the condition block */
+            Result.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::pc_jump,
+                                                  (BytecodeStructure::InstructionParam) {
+                                                          (XInteger) -(AfterStatement.size() + CodeBlock.size() +
+                                                                       Condition.size())}});
+
+            Result.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::stack_pop_frame,
+                                                  (BytecodeStructure::InstructionParam) {(XHeapIndexType) 0}});
+
+            /**
+             * Restore local symbol index
+             */
+            for (XIndexType I = 0; I < Environment.Locals.size() - NowLocals; I++) {
+                Environment.Locals.pop_back();
+            }
 
             return Result;
         }

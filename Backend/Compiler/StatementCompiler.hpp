@@ -26,6 +26,8 @@ namespace XScript {
 
             XArray<BytecodeStructure> GenerateForWhileStatement(AST &Target);
 
+            XArray<BytecodeStructure> GenerateForForStatement(AST &Target);
+
             XArray<BytecodeStructure> GenerateForCodeBlock(AST &Target);
         };
 

@@ -12,7 +12,7 @@
 
 int main() {
     /* AST Test */
-    XScript::XString Str = L"{ var I = 0; while (I <= 1000000) { I = I + 1; }; }";
+    XScript::XString Str = L"for (var I = 0;I < 1000000; I += 1) { False; }";
     XScript::Lexer Lex{Str};
     Lex.Scan();
     XScript::AST Tree{};
