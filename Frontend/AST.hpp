@@ -18,6 +18,7 @@ namespace XScript {
             NotMatch,
             Primary,
             Identifier,
+            ListLiteral,
             Arguments,
             Operator,
             TypeCastingExpression,
@@ -61,7 +62,7 @@ namespace XScript {
             ForStatement,
             SwitchStatement,
 /* Function definition */
-            FunctionDefinition
+            FunctionDefinition,
         } Type;
         Lexer::Token Node;
         XArray<AST> Subtrees;

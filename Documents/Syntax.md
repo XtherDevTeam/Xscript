@@ -17,6 +17,12 @@ Status: `Implmented`
 
 Syntax: `Identifier ::= TokenIdentifier`
 
+### ListLiteral
+
+Status: `Implmented`
+
+Syntax: `ListLiteral ::= "[" [ { Expression "," } Expression ] "]"`
+
 ### Arguments
 
 Status: `Implmented`
@@ -209,7 +215,7 @@ VariableDefinitionStatement ::= "var" Identifier TokenEqual Expression
 
 ### WhileStatement
 
-Status: `Unimplmented`
+Status: `Implmented`
 
 Syntax:
 
@@ -219,7 +225,7 @@ WhileStatement ::= "while" "(" Expression ")" CodeBlock
 
 ### ForStatement
 
-Status: `Unimplmented`
+Status: `Implmented`
 
 Syntax:
 

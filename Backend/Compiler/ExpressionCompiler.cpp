@@ -51,6 +51,16 @@ namespace XScript::Compiler {
                 }
                 break;
             }
+            case AST::TreeType::ListLiteral: {
+                for (auto &Item: Target.Subtrees) {
+                    MergeArray(Result, Generate(Item));
+                }
+                Result.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::list_new,
+                                                      (BytecodeStructure::InstructionParam) {
+                                                              (XIndexType) Target.Subtrees.size()}});
+
+                break;
+            }
 
             case AST::TreeType::NegativeExpression: {
                 MergeArray(Result, Generate(Target.Subtrees.back()));
@@ -244,7 +254,7 @@ namespace XScript::Compiler {
 
             default:
                 throw XScript::CompilerError(Target.GetFirstNotNullToken().Line,
-                                             Target.GetFirstNotNullToken().Column, L"Unexpected AST Type");
+                                             Target.GetFirstNotNullToken().Column, L"ExpressionCompiler: Unexpected AST Type");
         }
         return Result;
     }

@@ -156,7 +156,7 @@ namespace XScript {
                 break;
             case InstructionEnum::list_new:
                 Result += L"list_new";
-                ParamType = N;
+                ParamType = H;
                 break;
             case InstructionEnum::list_get_member:
                 Result += L"list_get_member";
