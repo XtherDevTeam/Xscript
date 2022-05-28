@@ -812,6 +812,22 @@ namespace XScript {
 
                     break;
                 }
+                case BytecodeStructure::InstructionEnum::binary_lm: {
+                    auto Right = InterpreterEnvironment.Stack.PopValueFromStack();
+                    auto Left = InterpreterEnvironment.Stack.PopValueFromStack();
+
+                    Left.Value.IntVal = Left.Value.IntVal << Right.Value.HeapPointerVal;
+                    InterpreterEnvironment.Stack.PushValueToStack(Left);
+                    break;
+                }
+                case BytecodeStructure::InstructionEnum::binary_rm: {
+                    auto Right = InterpreterEnvironment.Stack.PopValueFromStack();
+                    auto Left = InterpreterEnvironment.Stack.PopValueFromStack();
+
+                    Left.Value.IntVal = Left.Value.IntVal >> Right.Value.HeapPointerVal;
+                    InterpreterEnvironment.Stack.PushValueToStack(Left);
+                    break;
+                }
                 case BytecodeStructure::InstructionEnum::stack_push_integer: {
                     InterpreterEnvironment.Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Integer,
                                                                    (EnvironmentStackItem::ItemValue) {
