@@ -29,9 +29,16 @@ namespace XScript {
                 case AST::TreeType::ComparingExpression:
                 case AST::TreeType::FunctionCallingExpression:
                 case AST::TreeType::NegativeExpression:
-                case AST::TreeType::TypeCastingExpression:
-                case AST::TreeType::AssignmentExpression:
-                    return ExpressionCompiler(Environment).Generate(Target);
+                case AST::TreeType::TypeCastingExpression: {
+                    auto Result = ExpressionCompiler(Environment).Generate(Target);
+                    Result.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::stack_pop,
+                                                          (BytecodeStructure::InstructionParam) {(XHeapIndexType) 0}});
+                    return Result;
+                }
+                case AST::TreeType::AssignmentExpression: {
+                    auto Result = ExpressionCompiler(Environment).Generate(Target);
+                    return Result;
+                }
 
                 case AST::TreeType::VariableDeclaration: {
                     return GenerateForVariableDeclaration(Target);
@@ -125,20 +132,17 @@ namespace XScript {
             XIndexType NowLocals = Environment.Locals.size();
 
             XArray<BytecodeStructure> Result;
-            Result.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::stack_push_frame,
-                                                  (BytecodeStructure::InstructionParam) {(XHeapIndexType) 0}});
 
             for (auto &Subtree: Target.Subtrees) {
                 MergeArray(Result, Generate(Subtree));
             }
 
-            Result.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::stack_pop_frame,
-                                                  (BytecodeStructure::InstructionParam) {(XHeapIndexType) 0}});
-
             /**
              * Restore local symbol index
              */
             for (XIndexType I = 0; I < Environment.Locals.size() - NowLocals; I++) {
+                Result.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::stack_pop,
+                                                      (BytecodeStructure::InstructionParam) {(XHeapIndexType) 0}});
                 Environment.Locals.pop_back();
             }
 
@@ -173,9 +177,6 @@ namespace XScript {
 
             XArray<BytecodeStructure> Result, InitialStatement, Condition, AfterStatement, CodeBlock;
 
-            Result.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::stack_push_frame,
-                                                  (BytecodeStructure::InstructionParam) {(XHeapIndexType) 0}});
-
             InitialStatement = Generate(Target.Subtrees[0]);
             Condition = ExpressionCompiler(Environment).Generate(Target.Subtrees[1]);
             AfterStatement = Generate(Target.Subtrees[2]);
@@ -201,13 +202,12 @@ namespace XScript {
                                                           (XInteger) -(AfterStatement.size() + CodeBlock.size() +
                                                                        Condition.size())}});
 
-            Result.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::stack_pop_frame,
-                                                  (BytecodeStructure::InstructionParam) {(XHeapIndexType) 0}});
-
             /**
              * Restore local symbol index
              */
             for (XIndexType I = 0; I < Environment.Locals.size() - NowLocals; I++) {
+                Result.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::stack_pop,
+                                                      (BytecodeStructure::InstructionParam) {(XHeapIndexType) 0}});
                 Environment.Locals.pop_back();
             }
 

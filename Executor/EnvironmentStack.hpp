@@ -34,17 +34,6 @@ namespace XScript {
 
         void StoreValueToIndex(XIndexType IndexInFrame, EnvironmentStackItem Item);
 
-        /**
-         * Create a new stack frame
-         * @param Information Return address
-         */
-        void PushFrame(ProgramCounterInformation Information);
-
-        /**
-         * Pop the current stack frame and remove elements of this stack frame
-         * @return The preset return address
-         */
-        ProgramCounterInformation PopFrame();
     };
 
 } // XScript

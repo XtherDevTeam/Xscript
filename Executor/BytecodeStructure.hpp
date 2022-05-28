@@ -56,8 +56,6 @@ namespace XScript {
             stack_pop,
             stack_duplicate,
             stack_store,
-            stack_push_frame,
-            stack_pop_frame,
             constants_load,
             class_new,
             class_get_member,

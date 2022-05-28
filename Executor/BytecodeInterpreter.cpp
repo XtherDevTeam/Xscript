@@ -839,14 +839,6 @@ namespace XScript {
                     InterpreterEnvironment.Stack.PopValueFromStack();
                     break;
                 }
-                case BytecodeStructure::InstructionEnum::stack_push_frame: {
-                    InterpreterEnvironment.Stack.PushFrame(InterpreterEnvironment.ProgramCounter);
-                    break;
-                }
-                case BytecodeStructure::InstructionEnum::stack_pop_frame: {
-                    InterpreterEnvironment.Stack.PopFrame();
-                    break;
-                }
                 case BytecodeStructure::InstructionEnum::stack_duplicate: {
                     /* TODO: Complete the stack frames implementation */
                     EnvironmentStackItem Element = InterpreterEnvironment.Stack.GetValueFromStack(

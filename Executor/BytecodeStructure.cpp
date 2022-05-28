@@ -186,14 +186,6 @@ namespace XScript {
                 Result += L"pc_jump";
                 ParamType = I;
                 break;
-            case InstructionEnum::stack_push_frame:
-                Result += L"stack_push_frame";
-                ParamType = N;
-                break;
-            case InstructionEnum::stack_pop_frame:
-                Result += L"stack_pop_frame";
-                ParamType = N;
-                break;
             case InstructionEnum::debugger:
                 Result += L"debugger";
                 ParamType = H;

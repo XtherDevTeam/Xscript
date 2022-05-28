@@ -10,7 +10,7 @@ namespace XScript {
     }
 
     EnvironmentStackItem EnvironmentStack::PopValueFromStack() {
-        auto R = Elements.back();
+        auto R = Elements[Elements.size() - 1];
         Elements.pop_back();
         FramesInformation.back().Length--;
         return R;
@@ -22,13 +22,7 @@ namespace XScript {
     }
 
     EnvironmentStackItem EnvironmentStack::GetValueFromStack(XIndexType IndexInFrame) {
-        XIndexType FromStackFrame = FramesInformation.size() - 1;
-        while (FromStackFrame > 0 and (FramesInformation[FromStackFrame].Kind == EnvironmentStackFramesInformation::FrameKind::CodeBlockStackFrame)) {
-            FromStackFrame--;
-        }
-
-
-        XIndexType RealPos = FramesInformation[FromStackFrame].From + IndexInFrame;
+        XIndexType RealPos = FramesInformation[FramesInformation.size() - 1].From + IndexInFrame;
         try {
             return Elements.at(RealPos);
         } catch (std::exception &E) {
@@ -37,28 +31,8 @@ namespace XScript {
     }
 
     void EnvironmentStack::StoreValueToIndex(XIndexType IndexInFrame, EnvironmentStackItem Item) {
-        XIndexType FromStackFrame = FramesInformation.size() - 1;
-        while (FromStackFrame > 0 and (FramesInformation[FromStackFrame].Kind == EnvironmentStackFramesInformation::FrameKind::CodeBlockStackFrame)) {
-            FromStackFrame--;
-        }
-
-        XIndexType RealPos = FramesInformation[FromStackFrame].From + IndexInFrame;
+        XIndexType RealPos = FramesInformation[FramesInformation.size() - 1].From + IndexInFrame;
         Elements[RealPos] = Item;
-    }
-
-    void EnvironmentStack::PushFrame(ProgramCounterInformation Information) {
-        FramesInformation.push_back(
-                (EnvironmentStackFramesInformation) {EnvironmentStackFramesInformation::FrameKind::CodeBlockStackFrame,
-                                                     Elements.size(), 0, Information});
-    }
-
-    ProgramCounterInformation EnvironmentStack::PopFrame() {
-        ProgramCounterInformation Result{FramesInformation.back().ReturnAddress};
-        for (XIndexType I = 0; I < FramesInformation.back().Length; I++) {
-            Elements.pop_back();
-        }
-        FramesInformation.pop_back();
-        return Result;
     }
 
     EnvironmentStack::EnvironmentStack() = default;
