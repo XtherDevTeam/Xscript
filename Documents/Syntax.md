@@ -273,7 +273,7 @@ Syntax:
 ContinueStatement ::= "continue"
 ```
 
-### FunctionDefinitionNodeGenerator
+### FunctionDefinition
 
 Status: `Implmented`
 
@@ -281,6 +281,26 @@ Syntax:
 
 ```
 FunctionDefinitionNodeGenerator ::= "function" Identifier Arguments CodeBlock
+```
+
+### MethodDescriptor
+
+Status: `Implmented`
+
+Syntax:
+
+```
+MethodDescriptor ::= "virtual" | "final" | "public" | "private"
+```
+
+### MethodDefinition
+
+Status: `Implmented`
+
+Syntax:
+
+```
+MethodDefinition ::= MethodDescriptor FunctionDefinition
 ```
 
 ### CodeBlock

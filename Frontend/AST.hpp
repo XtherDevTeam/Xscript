@@ -63,6 +63,7 @@ namespace XScript {
             SwitchStatement,
 /* Function definition */
             FunctionDefinition,
+            MethodDefinition,
         } Type;
         Lexer::Token Node;
         XArray<AST> Subtrees;
