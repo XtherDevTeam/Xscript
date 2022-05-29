@@ -332,3 +332,25 @@ Syntax:
 ```
 CodeBlock ::= "{" { Statement ";" } "}"
 ```
+
+### FileStatement
+
+Status: `Implmented`
+
+Syntax:
+
+```
+FileStatement ::= FunctionDefinition
+                | VariableDefinition
+                | VariableDeclaration
+```
+
+### File
+
+Status: `Implmented`
+
+Syntax: 
+
+```
+File ::= { FileStatement }
+```

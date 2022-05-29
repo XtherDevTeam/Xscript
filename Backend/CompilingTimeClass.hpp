@@ -12,15 +12,20 @@
 
 namespace XScript::Compiler {
 
-        class CompilingTimeClass {
-        public:
-            XArray<XIndexType> ParentClasses;
+    class CompilingTimeClass {
+    public:
+        explicit CompilingTimeClass(const XArray <XIndexType> &parentClasses,
+                                    XArray <std::pair<XString, CompilingTimeFunction>> methods,
+                                    XArray <std::pair<XString, SymbolItem>> members);
 
-            XArray<std::pair<XString, CompilingTimeFunction>> Methods;
+    public:
+        XArray<XIndexType> ParentClasses;
 
-            XArray<std::pair<XString, SymbolItem>> Members;
-        };
+        XArray<std::pair<XString, CompilingTimeFunction>> Methods;
 
-    } // Compiler
+        XArray<std::pair<XString, SymbolItem>> Members;
+    };
+
+} // Compiler
 
 #endif //XSCRIPT2_COMPILINGTIMECLASS_HPP

@@ -66,6 +66,7 @@ namespace XScript {
             MethodDefinition,
             MemberDescriptor,
             MemberDeclaration,
+            File,
         } Type;
         Lexer::Token Node;
         XArray<AST> Subtrees;
