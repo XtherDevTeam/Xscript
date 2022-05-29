@@ -190,8 +190,12 @@ namespace XScript {
                 Result += L"debugger";
                 ParamType = H;
                 break;
+            case InstructionEnum::static_get:
+                Result += L"static_get";
+                ParamType = H;
+                break;
             case InstructionEnum::static_store:
-                Result += L"stack_store_static";
+                Result += L"static_store";
                 ParamType = H;
                 break;
             case InstructionEnum::object_lvalue2rvalue:

@@ -19,6 +19,8 @@ namespace XScript::Compiler {
 
         XArray<std::pair<XString, SymbolItem>> Statics;
 
+        XArray<BytecodeStructure> PackageInitializeCodes;
+
         XIndexType PushFunction(const XString &FunctionName, const CompilingTimeFunction &Function);
 
         XIndexType PushClass(const XString &Name, const CompilingTimeClass &Item);

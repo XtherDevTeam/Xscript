@@ -70,6 +70,7 @@ namespace XScript {
             pc_jump,
             debugger,
             static_store,
+            static_get,
             object_lvalue2rvalue,
             object_store,
             fake_command_continue,

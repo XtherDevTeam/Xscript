@@ -282,7 +282,7 @@ namespace XScript::Compiler {
                             /* If variable doesn't exist, then GetStatic will throw an error */
                             auto Item = Environment.MainPackage.GetStatic(Target.Node.Value);
                             Result.push_back(
-                                    (BytecodeStructure) {BytecodeStructure::InstructionEnum::stack_duplicate,
+                                    (BytecodeStructure) {BytecodeStructure::InstructionEnum::static_get,
                                                          (BytecodeStructure::InstructionParam) {Item.first}});
                         } catch (InternalException &E) {
                             throw CompilerError(Target.Node.Line, Target.Node.Column, string2wstring(E.what()));

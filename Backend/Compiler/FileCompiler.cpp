@@ -4,6 +4,8 @@
 
 #include "FileCompiler.hpp"
 #include "StatementCompiler.hpp"
+#include "ExpressionCompiler.hpp"
+#include "../../Share/Exceptions/InternalException.hpp"
 
 namespace XScript {
     namespace Compiler {
@@ -19,6 +21,8 @@ namespace XScript {
                     return GenerateForVariableDeclaration(Target);
                 case AST::TreeType::VariableDefinition:
                     return GenerateForVariableDefinition(Target);
+                default:
+                    throw InternalException(L"FileCompiler::Generate : Invalid invoke");
             }
         }
 
@@ -45,12 +49,22 @@ namespace XScript {
         }
 
         XArray<BytecodeStructure> FileCompiler::GenerateForVariableDeclaration(AST &Target) {
-            /* TODO: Add command static_store */
+            Environment.MainPackage.PushStatic(Target.Subtrees[0].Node.Value,
+                                               (SymbolItem) {(Typename) {Typename::TypenameKind::Unknown}, false});
             return {};
         }
 
         XArray<BytecodeStructure> FileCompiler::GenerateForVariableDefinition(AST &Target) {
-            /* TODO: Add package statics initializer */
+            auto Index = Environment.MainPackage.PushStatic(Target.Subtrees[0].Node.Value,
+                                                            (SymbolItem) {(Typename) {Typename::TypenameKind::Unknown},
+                                                                          false});
+
+            MergeArray(Environment.MainPackage.PackageInitializeCodes,
+                       ExpressionCompiler(Environment).Generate(Target.Subtrees[1]));
+            Environment.MainPackage.PackageInitializeCodes.push_back(
+                    (BytecodeStructure) {BytecodeStructure::InstructionEnum::static_store,
+                                         (BytecodeStructure::InstructionParam) {Index}}
+            );
             return {};
         }
     } // XScript
