@@ -273,6 +273,16 @@ Syntax:
 ContinueStatement ::= "continue"
 ```
 
+### FunctionDefinitionNodeGenerator
+
+Status: `Implmented`
+
+Syntax:
+
+```
+FunctionDefinitionNodeGenerator ::= "function" Identifier Arguments CodeBlock
+```
+
 ### CodeBlock
 
 Status: `Implmented`
