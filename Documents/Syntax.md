@@ -303,6 +303,26 @@ Syntax:
 MethodDefinition ::= MethodDescriptor FunctionDefinition
 ```
 
+### MemberDescriptor
+
+Status: `Implmented`
+
+Syntax:
+
+```
+MemberDescriptor ::= "public" | "private" 
+```
+
+### MemberDeclaration
+
+Status: `Implmented`
+
+Syntax:
+
+```
+MemberDeclaration ::= MemberDescriptor VariableDeclaration
+```
+
 ### CodeBlock
 
 Status: `Implmented`

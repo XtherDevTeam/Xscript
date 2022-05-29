@@ -64,6 +64,8 @@ namespace XScript {
 /* Function definition */
             FunctionDefinition,
             MethodDefinition,
+            MemberDescriptor,
+            MemberDeclaration,
         } Type;
         Lexer::Token Node;
         XArray<AST> Subtrees;
