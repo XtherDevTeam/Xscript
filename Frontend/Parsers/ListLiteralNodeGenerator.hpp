@@ -10,7 +10,7 @@
 namespace XScript {
     namespace Generator {
 
-        class ListLiteralNodeGenerator : BaseGenerator{
+        class ListLiteralNodeGenerator : BaseGenerator {
         public:
             explicit ListLiteralNodeGenerator(Lexer &L);
 

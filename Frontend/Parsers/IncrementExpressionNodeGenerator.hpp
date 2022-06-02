@@ -11,13 +11,13 @@
 
 namespace XScript::Generator {
 
-        class IncrementExpressionNodeGenerator : BaseGenerator {
-        public:
-            explicit IncrementExpressionNodeGenerator(Lexer &L);
+    class IncrementExpressionNodeGenerator : BaseGenerator {
+    public:
+        explicit IncrementExpressionNodeGenerator(Lexer &L);
 
-            AST Parse() override;
-        };
+        AST Parse() override;
+    };
 
-    } // Generator
+} // Generator
 
 #endif //XSCRIPT2_INCREMENTEXPRESSIONNODEGENERATOR_HPP

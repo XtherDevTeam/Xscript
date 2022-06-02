@@ -11,14 +11,14 @@
 
 namespace XScript::Generator {
 
-        class ArgumentsNodeGenerator : BaseGenerator {
-        public:
+    class ArgumentsNodeGenerator : BaseGenerator {
+    public:
 
-            explicit ArgumentsNodeGenerator(Lexer &L);
+        explicit ArgumentsNodeGenerator(Lexer &L);
 
-            AST Parse() override;
-        };
+        AST Parse() override;
+    };
 
-    } // Generator
+} // Generator
 
 #endif //XSCRIPT2_ARGUMENTSNODEGENERATOR_HPP

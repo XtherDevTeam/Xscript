@@ -22,6 +22,7 @@ namespace XScript {
     }
 
     XCharacter Lexer::NextCharacter() {
+        begin:
         if (Position >= String.length()) {
             return L'\0';
         }
@@ -43,8 +44,9 @@ namespace XScript {
 
     Lexer::Token Lexer::Scan() {
         /* White spaces */
-        while (String[Position] == L' ') NextCharacter();
-        while (String[Position] == L'\t') NextCharacter();
+        while (String[Position] == L' ' or String[Position] == L'\t' or
+               String[Position] == L'\n' or String[Position] == L'\r')
+            NextCharacter();
         /* Literals */
         /* Identifiers or reserved words */
         if (IsAlpha(String[Position])) {

@@ -28,11 +28,11 @@ namespace XScript::Compiler {
          */
         XArray<BytecodeStructure> BytecodeArray;
 
-        explicit CompilingTimeFunction(XArray <Descriptor> descriptors,
-                                       const XArray <XString> &argumentsList);
+        explicit CompilingTimeFunction(XArray<Descriptor> descriptors,
+                                       const XArray<XString> &argumentsList);
 
-        explicit CompilingTimeFunction(XArray <Descriptor> descriptors, const XArray <XString> &argumentsList,
-                                       const XArray <BytecodeStructure> &bytecodeArray);
+        explicit CompilingTimeFunction(XArray<Descriptor> descriptors, const XArray<XString> &argumentsList,
+                                       const XArray<BytecodeStructure> &bytecodeArray);
     };
 
 } // Compiler

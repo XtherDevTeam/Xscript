@@ -31,7 +31,7 @@ namespace XScript {
      */
     template<typename T>
     void MergeArray(XArray<T> &L, const XArray<T> &R) {
-        for (auto &Element : R) {
+        for (auto &Element: R) {
             L.push_back(Element);
         }
     }

@@ -1,5 +1,5 @@
- # The design of class in XScript 2
- 
+# The design of class in XScript 2
+
 There are 2 kinds of class structure in XScript 2 source codes.
 
 One is for compiling time, the another is for bytecode interpreter.

@@ -12,14 +12,14 @@
 
 namespace XScript::Generator {
 
-        class FunctionCallingExpressionNodeGenerator : BaseGenerator {
-        public:
-            explicit FunctionCallingExpressionNodeGenerator(Lexer &L);
+    class FunctionCallingExpressionNodeGenerator : BaseGenerator {
+    public:
+        explicit FunctionCallingExpressionNodeGenerator(Lexer &L);
 
-            AST Parse() override;
-        };
+        AST Parse() override;
+    };
 
 
-    } // Generator
+} // Generator
 
 #endif //XSCRIPT2_FUNCTIONCALLINGEXPRESSIONNODEGENERATOR_HPP

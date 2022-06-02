@@ -5,6 +5,7 @@
 #include "FileStatementNodeGenerator.hpp"
 #include "FunctionDefinitionNodeGenerator.hpp"
 #include "VariableStatementNodeGenerator.hpp"
+#include "ClassDefinitionNodeGenerator.hpp"
 
 namespace XScript {
     namespace Generator {
@@ -14,6 +15,10 @@ namespace XScript {
 
         AST FileStatementNodeGenerator::Parse() {
             AST Result{};
+
+            Result = ClassDefinitionNodeGenerator(L).Parse();
+            if (!Result.IsNotMatchNode())
+                return Result;
 
             Result = FunctionDefinitionNodeGenerator(L).Parse();
             if (!Result.IsNotMatchNode())

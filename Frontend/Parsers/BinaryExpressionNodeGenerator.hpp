@@ -10,14 +10,14 @@
 
 namespace XScript::Generator {
 
-        class BinaryExpressionNodeGenerator : BaseGenerator {
-        public:
-            explicit BinaryExpressionNodeGenerator(Lexer &L);
+    class BinaryExpressionNodeGenerator : BaseGenerator {
+    public:
+        explicit BinaryExpressionNodeGenerator(Lexer &L);
 
-            AST Parse() override;
-        };
+        AST Parse() override;
+    };
 
 
-    } // Generator
+} // Generator
 
 #endif //XSCRIPT2_BINARYEXPRESSIONNODEGENERATOR_HPP

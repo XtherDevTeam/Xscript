@@ -9,14 +9,14 @@
 
 namespace XScript::Generator {
 
-        class IdentifierNodeGenerator : BaseGenerator {
-        public:
-            explicit IdentifierNodeGenerator(Lexer &L);
+    class IdentifierNodeGenerator : BaseGenerator {
+    public:
+        explicit IdentifierNodeGenerator(Lexer &L);
 
-            AST Parse( ) override;
-        };
+        AST Parse() override;
+    };
 
 
-    } // Generator
+} // Generator
 
 #endif //XSCRIPT2_IDENTIFIERNODEGENERATOR_HPP

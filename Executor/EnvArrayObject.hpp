@@ -18,7 +18,7 @@ namespace XScript {
         explicit EnvArrayObject(XIndexType Length);
     };
 
-    EnvArrayObject* NewEnvArrayObject(XIndexType Size);
+    EnvArrayObject *NewEnvArrayObject(XIndexType Size);
 
     void FreeEnvArrayObject(EnvArrayObject *Object);
 

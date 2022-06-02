@@ -14,16 +14,22 @@ namespace XScript::Compiler {
 
     class CompilingTimeClass {
     public:
-        explicit CompilingTimeClass(const XArray <XIndexType> &parentClasses,
-                                    XArray <std::pair<XString, CompilingTimeFunction>> methods,
-                                    XArray <std::pair<XString, SymbolItem>> members);
+        explicit CompilingTimeClass(const XArray<XIndexType> &parentClasses,
+                                    XArray<XString> methods);
 
     public:
+
         XArray<XIndexType> ParentClasses;
 
-        XArray<std::pair<XString, CompilingTimeFunction>> Methods;
+        /**
+         * Only record method names.
+         * Records full method name, like ClassName$MethodName
+         */
+        XArray<XString> Methods;
 
-        XArray<std::pair<XString, SymbolItem>> Members;
+        void PushMethod(const XString &Name);
+
+        bool IsMethodExist(const XString &Name);
     };
 
 } // Compiler

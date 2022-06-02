@@ -11,9 +11,9 @@ namespace XScript {
 
     class InternalException : XScriptException {
     public:
-        explicit InternalException(const XString& Str);
+        explicit InternalException(const XString &Str);
 
-        [[nodiscard]] const char * what() const noexcept override;
+        [[nodiscard]] const char *what() const noexcept override;
     };
 
 } // XScript

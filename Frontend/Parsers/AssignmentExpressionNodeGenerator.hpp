@@ -12,14 +12,14 @@
 
 namespace XScript::Generator {
 
-        class AssignmentExpressionNodeGenerator : BaseGenerator {
-        public:
-            explicit AssignmentExpressionNodeGenerator(Lexer &L);
+    class AssignmentExpressionNodeGenerator : BaseGenerator {
+    public:
+        explicit AssignmentExpressionNodeGenerator(Lexer &L);
 
-            AST Parse() override;
-        };
+        AST Parse() override;
+    };
 
 
-    } // Generator
+} // Generator
 
 #endif //XSCRIPT2_ASSIGNMENTEXPRESSIONNODEGENERATOR_HPP

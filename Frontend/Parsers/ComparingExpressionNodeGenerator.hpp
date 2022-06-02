@@ -10,14 +10,14 @@
 
 namespace XScript::Generator {
 
-        class ComparingExpressionNodeGenerator : BaseGenerator {
+    class ComparingExpressionNodeGenerator : BaseGenerator {
 
-        public:
-            AST Parse() override;
+    public:
+        AST Parse() override;
 
-            explicit ComparingExpressionNodeGenerator(Lexer &L);
-        };
+        explicit ComparingExpressionNodeGenerator(Lexer &L);
+    };
 
-    } // Generator
+} // Generator
 
 #endif //XSCRIPT2_COMPARINGEXPRESSIONNODEGENERATOR_HPP

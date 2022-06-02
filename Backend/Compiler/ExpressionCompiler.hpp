@@ -11,13 +11,13 @@ namespace XScript::Compiler {
 
     class ExpressionCompiler : BaseCompiler {
     public:
-        explicit ExpressionCompiler(CompilerEnvironment& Environment);
+        explicit ExpressionCompiler(CompilerEnvironment &Environment);
 
-        XArray <BytecodeStructure> ParseMemberExpression(AST &Target, bool IsMemberExpression);
+        XArray<BytecodeStructure> ParseMemberExpression(AST &Target, bool IsMemberExpression);
 
-        XArray <BytecodeStructure> ParseMemberExpressionEndWithAssignment(AST &Target, bool IsMemberExpression);
+        XArray<BytecodeStructure> ParseMemberExpressionEndWithAssignment(AST &Target, bool IsMemberExpression);
 
-        XArray<BytecodeStructure> Generate(AST& Target) override;
+        XArray<BytecodeStructure> Generate(AST &Target) override;
     };
 
 } // Compiler

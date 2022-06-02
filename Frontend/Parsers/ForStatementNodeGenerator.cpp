@@ -26,7 +26,8 @@ namespace XScript {
                     MakeException(L"ForStatementNodeGenerator: InvalidSyntax -> Expected a initial statement");
 
                 if (L.LastToken.Kind != Lexer::TokenKind::Semicolon)
-                    MakeException(L"ForStatementNodeGenerator: InvalidSyntax -> Expected a semicolon after initial statement");
+                    MakeException(
+                            L"ForStatementNodeGenerator: InvalidSyntax -> Expected a semicolon after initial statement");
                 L.Scan();
 
                 AST Condition = ExpressionNodeGenerator(L).Parse();

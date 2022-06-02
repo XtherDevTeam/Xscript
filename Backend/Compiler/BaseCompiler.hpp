@@ -19,7 +19,7 @@ namespace XScript::Compiler {
 
         explicit BaseCompiler(CompilerEnvironment &environment);
 
-        virtual XArray<BytecodeStructure> Generate(AST& Target) = 0;
+        virtual XArray<BytecodeStructure> Generate(AST &Target) = 0;
     };
 
 } // Compiler

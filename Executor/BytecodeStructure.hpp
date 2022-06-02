@@ -87,7 +87,7 @@ namespace XScript {
 
         bool operator!=(const BytecodeStructure &rhs) const;
 
-        BytecodeStructure & operator=(const BytecodeStructure &rhs);
+        BytecodeStructure &operator=(const BytecodeStructure &rhs);
     };
 } // XScript
 

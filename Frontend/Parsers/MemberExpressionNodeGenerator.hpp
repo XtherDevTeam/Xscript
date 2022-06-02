@@ -11,13 +11,13 @@
 
 namespace XScript::Generator {
 
-        class MemberExpressionNodeGenerator : BaseGenerator {
-        public:
-            explicit MemberExpressionNodeGenerator(Lexer &L);
+    class MemberExpressionNodeGenerator : BaseGenerator {
+    public:
+        explicit MemberExpressionNodeGenerator(Lexer &L);
 
-            AST Parse() override;
-        };
+        AST Parse() override;
+    };
 
-    } // Generator
+} // Generator
 
 #endif //XSCRIPT2_MEMBEREXPRESSIONNODEGENERATOR_HPP

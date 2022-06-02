@@ -931,7 +931,8 @@ namespace XScript {
                                 break;
                         }
 
-                        InterpreterEnvironment.Heap.HeapData[ListItem.Value.HeapPointerVal].Value.ArrayObjectPointer->Elements[CurrentInstruction.Param.HeapPointerValue - I] =
+                        InterpreterEnvironment.Heap.HeapData[ListItem.Value.HeapPointerVal].Value.ArrayObjectPointer->Elements[
+                                CurrentInstruction.Param.HeapPointerValue - I] =
                                 InterpreterEnvironment.Heap.PushElement(Object);
                     }
                     InterpreterEnvironment.Stack.PushValueToStack(ListItem);

@@ -19,7 +19,7 @@ namespace XScript::Compiler {
 
         XArray<std::pair<XString, SymbolItem>> Locals;
 
-        XIndexType PushLocal(const XString &Name, const SymbolItem& Item);
+        XIndexType PushLocal(const XString &Name, const SymbolItem &Item);
 
         std::pair<XIndexType, SymbolItem> GetLocal(const XString &Name);
     };

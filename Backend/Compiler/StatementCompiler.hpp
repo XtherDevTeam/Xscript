@@ -14,7 +14,7 @@ namespace XScript {
         public:
             explicit StatementCompiler(CompilerEnvironment &environment);
 
-            XArray<BytecodeStructure> Generate(AST& Target);
+            XArray<BytecodeStructure> Generate(AST &Target);
 
             XArray<BytecodeStructure> GenerateForVariableDeclaration(AST &Target);
 

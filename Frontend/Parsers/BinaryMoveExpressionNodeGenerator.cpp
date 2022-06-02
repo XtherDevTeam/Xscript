@@ -5,26 +5,26 @@
 #include "BinaryMoveExpressionNodeGenerator.hpp"
 
 namespace XScript::Generator {
-        BinaryMoveExpressionNodeGenerator::BinaryMoveExpressionNodeGenerator(Lexer &L) : BaseGenerator(L) {
+    BinaryMoveExpressionNodeGenerator::BinaryMoveExpressionNodeGenerator(Lexer &L) : BaseGenerator(L) {
 
-        }
+    }
 
-        AST BinaryMoveExpressionNodeGenerator::Parse() {
-            AST Left = AdditionExpressionNodeGenerator(L).Parse();
-            if (Left.IsNotMatchNode()) {
-                Rollback();
-                return {};
-            }
-            if (L.LastToken.Kind != Lexer::TokenKind::BinaryLeftMove and
-                L.LastToken.Kind != Lexer::TokenKind::BinaryRightMove) {
-                return Left;
-            }
-            AST Operator = {AST::TreeType::Operator, L.LastToken};
-            L.Scan();
-            AST Right = BinaryMoveExpressionNodeGenerator(L).Parse();
-            if (Right.IsNotMatchNode()) {
-                MakeException(L"Expected a rvalue expression.");
-            }
-            return {AST::TreeType::BinaryMoveExpression, {Left, Operator, Right}};
+    AST BinaryMoveExpressionNodeGenerator::Parse() {
+        AST Left = AdditionExpressionNodeGenerator(L).Parse();
+        if (Left.IsNotMatchNode()) {
+            Rollback();
+            return {};
         }
-    } // Generator
+        if (L.LastToken.Kind != Lexer::TokenKind::BinaryLeftMove and
+            L.LastToken.Kind != Lexer::TokenKind::BinaryRightMove) {
+            return Left;
+        }
+        AST Operator = {AST::TreeType::Operator, L.LastToken};
+        L.Scan();
+        AST Right = BinaryMoveExpressionNodeGenerator(L).Parse();
+        if (Right.IsNotMatchNode()) {
+            MakeException(L"Expected a rvalue expression.");
+        }
+        return {AST::TreeType::BinaryMoveExpression, {Left, Operator, Right}};
+    }
+} // Generator

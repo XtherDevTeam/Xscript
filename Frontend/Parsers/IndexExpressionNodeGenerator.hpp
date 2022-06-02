@@ -10,14 +10,14 @@
 
 namespace XScript::Generator {
 
-        class IndexExpressionNodeGenerator : BaseGenerator {
-        public:
-            explicit IndexExpressionNodeGenerator(Lexer &L);
+    class IndexExpressionNodeGenerator : BaseGenerator {
+    public:
+        explicit IndexExpressionNodeGenerator(Lexer &L);
 
-            AST Parse() override;
-        };
+        AST Parse() override;
+    };
 
 
-    } // Generator
+} // Generator
 
 #endif //XSCRIPT2_INDEXEXPRESSIONNODEGENERATOR_HPP

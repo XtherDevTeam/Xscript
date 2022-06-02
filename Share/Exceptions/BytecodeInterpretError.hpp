@@ -13,7 +13,7 @@ namespace XScript {
     public:
         explicit BytecodeInterpretError(const XString &String);
 
-        [[nodiscard]] const char * what() const noexcept override;
+        [[nodiscard]] const char *what() const noexcept override;
     };
 
 } // XScript

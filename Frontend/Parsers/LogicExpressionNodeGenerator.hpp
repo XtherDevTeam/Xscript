@@ -10,12 +10,12 @@
 
 namespace XScript::Generator {
 
-        class LogicExpressionNodeGenerator : BaseGenerator {
-        public:
-            explicit LogicExpressionNodeGenerator(Lexer &L);
+    class LogicExpressionNodeGenerator : BaseGenerator {
+    public:
+        explicit LogicExpressionNodeGenerator(Lexer &L);
 
-            AST Parse() override;
-        };
-    } // Generator
+        AST Parse() override;
+    };
+} // Generator
 
 #endif //XSCRIPT2_LOGICEXPRESSIONNODEGENERATOR_HPP

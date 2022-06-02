@@ -249,5 +249,6 @@ namespace XScript {
     BytecodeStructure &BytecodeStructure::operator=(const BytecodeStructure &rhs) {
         Instruction = rhs.Instruction;
         Param.HeapPointerValue = rhs.Param.HeapPointerValue;
+        return *this;
     }
 } // XScript

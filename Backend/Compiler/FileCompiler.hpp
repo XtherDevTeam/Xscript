@@ -16,11 +16,13 @@ namespace XScript {
 
             XArray<BytecodeStructure> Generate(XScript::AST &Target) override;
 
-            XArray <BytecodeStructure> GenerateForFunctionDefinition(AST &Target);
+            XArray<BytecodeStructure> GenerateForFunctionDefinition(AST &Target);
 
-            XArray <BytecodeStructure> GenerateForVariableDeclaration(AST &Target);
+            XArray<BytecodeStructure> GenerateForVariableDeclaration(AST &Target);
 
-            XArray <BytecodeStructure> GenerateForVariableDefinition(AST &Target);
+            XArray<BytecodeStructure> GenerateForVariableDefinition(AST &Target);
+
+            XArray<BytecodeStructure> GenerateForFile(AST &Target);
         };
 
     } // XScript

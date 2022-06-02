@@ -4,12 +4,25 @@
 
 #include "CompilingTimeClass.hpp"
 
+#include <utility>
+#include <algorithm>
+
 namespace XScript {
     namespace Compiler {
-        CompilingTimeClass::CompilingTimeClass(const XArray <XIndexType> &parentClasses,
-                                               XArray <std::pair<XString, CompilingTimeFunction>> methods,
-                                               XArray <std::pair<XString, SymbolItem>> members)
+        CompilingTimeClass::CompilingTimeClass(const XArray<XIndexType> &parentClasses,
+                                               XArray<XString> methods)
                 : ParentClasses(
-                parentClasses), Methods(methods), Members(members) {}
+                parentClasses), Methods(std::move(methods)) {}
+
+        void CompilingTimeClass::PushMethod(const XString &Name) {
+            Methods.push_back(Name);
+        }
+
+        bool CompilingTimeClass::IsMethodExist(const XString &Name) {
+            for (auto &I: Methods) {
+                if (I == Name) return true;
+            }
+            return false;
+        }
     } // XScript
 } // Compiler

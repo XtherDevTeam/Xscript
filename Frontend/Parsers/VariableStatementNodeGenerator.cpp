@@ -21,7 +21,7 @@ namespace XScript {
                 AST Name = {AST::TreeType::Identifier, L.LastToken};
                 L.Scan();
                 if (L.LastToken.Kind != Lexer::TokenKind::AssignSign) {
-                    return {AST::TreeType::VariableDeclaration, (XArray<AST>){Name}};
+                    return {AST::TreeType::VariableDeclaration, (XArray<AST>) {Name}};
                 }
                 L.Scan();
                 AST Expression = ExpressionNodeGenerator(L).Parse();

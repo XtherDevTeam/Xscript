@@ -32,6 +32,9 @@ namespace XScript::Compiler {
         std::pair<XIndexType, CompilingTimeClass &> GetClass(const XString &Name);
 
         std::pair<XIndexType, SymbolItem &> GetStatic(const XString &Name);
+
+        void AddMethodToClass(XIndexType ClassIndex, const XString &MethodName, const CompilingTimeFunction &Func);
+
     };
 
 } // Compiler

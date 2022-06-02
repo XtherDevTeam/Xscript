@@ -54,5 +54,12 @@ namespace XScript {
             }
             throw XScript::InternalException(L"Cannot find a static member named " + Name + L" in package");
         }
+
+        void CompilingTimePackageStructure::AddMethodToClass(XIndexType ClassIndex, const XString &MethodName,
+                                                             const CompilingTimeFunction &Func) {
+            Classes[ClassIndex].second.PushMethod(Classes[ClassIndex].first + L"$" + MethodName);
+            PushFunction(Classes[ClassIndex].first + L"$" + MethodName, Func);
+        }
+
     } // XScript
 } // Compiler

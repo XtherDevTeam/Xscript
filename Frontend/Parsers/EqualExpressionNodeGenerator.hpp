@@ -10,13 +10,13 @@
 
 namespace XScript::Generator {
 
-        class EqualExpressionNodeGenerator : BaseGenerator {
-        public:
-            explicit EqualExpressionNodeGenerator(Lexer &L);
+    class EqualExpressionNodeGenerator : BaseGenerator {
+    public:
+        explicit EqualExpressionNodeGenerator(Lexer &L);
 
-            AST Parse() override;
-        };
+        AST Parse() override;
+    };
 
-    } // Generator
+} // Generator
 
 #endif //XSCRIPT2_EQUALEXPRESSIONNODEGENERATOR_HPP

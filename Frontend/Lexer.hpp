@@ -18,7 +18,7 @@ namespace XScript {
       */
     static XArray<XString> LexerReservedWords{
             L"if", L"else", L"switch", L"for", L"while", L"public", L"private", L"const", L"final", L"virtual",
-            L"override", L"var", L"break", L"continue"
+            L"override", L"var", L"break", L"continue", L"extends", L"def"
     };
 
     /**

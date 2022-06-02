@@ -5,20 +5,20 @@
 #include "DecrementExpressionNodeGenerator.hpp"
 
 namespace XScript::Generator {
-        DecrementExpressionNodeGenerator::DecrementExpressionNodeGenerator(Lexer &L) : BaseGenerator(L) {
+    DecrementExpressionNodeGenerator::DecrementExpressionNodeGenerator(Lexer &L) : BaseGenerator(L) {
 
-        }
+    }
 
-        AST DecrementExpressionNodeGenerator::Parse() {
-            AST Right = NegativeExpressionNodeGenerator(L).Parse();
-            if (Right.IsNotMatchNode()) {
-                Rollback();
-                return {};
-            }
-            if (L.LastToken.Kind == Lexer::TokenKind::DecrementSign) {
-                L.Scan();
-                return {AST::TreeType::DecrementExpression, {Right}};
-            }
-            return Right;
+    AST DecrementExpressionNodeGenerator::Parse() {
+        AST Right = NegativeExpressionNodeGenerator(L).Parse();
+        if (Right.IsNotMatchNode()) {
+            Rollback();
+            return {};
         }
-    } // Generator
+        if (L.LastToken.Kind == Lexer::TokenKind::DecrementSign) {
+            L.Scan();
+            return {AST::TreeType::DecrementExpression, {Right}};
+        }
+        return Right;
+    }
+} // Generator

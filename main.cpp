@@ -10,38 +10,34 @@
 #include "Backend/Compiler/StatementCompiler.hpp"
 #include "Share/Exceptions/InternalException.hpp"
 #include "Share/Exceptions/CompilerError.hpp"
+#include "Core/CompilerCore.hpp"
 
 int main() {
-    /* AST Test */
-    XScript::XString Str = L"{ var I = 0; while (I < 1000000) { I += 1; } }";
-    XScript::Lexer Lex{Str};
-    Lex.Scan();
-    XScript::AST Tree{};
-    try {
-        Tree = {XScript::Generator::StatementNodeGenerator{Lex}.Parse()};
-    } catch (XScript::ParserException &E) {
-        std::cout << E.what() << "\n";
+    std::wcout << L"[XScript 2 Early Test] Demo developed by Jerry Chou (Winghong Zau)\n";
+    std::wcout << L"Input filenames to compile and press ^D or ^Z + Enter to stop input.\n";
+    XScript::XArray<XScript::XString> FilesToCompile;
+    while (!std::wcin.eof()) {
+        XScript::XString Temp;
+        std::wcout << L"(filename) ";
+        std::wcin >> Temp;
+        if (!Temp.empty())
+            FilesToCompile.push_back(Temp);
     }
-
-
     try {
-        /* Compiler Test */
-        XScript::Compiler::CompilerEnvironment Environment{};
-        XScript::Compiler::StatementCompiler Compiler{Environment};
-        auto Result = Compiler.Generate(Tree);
-        for (auto &I: Result) {
-            std::cout << XScript::wstring2string(I.ToString()) << std::endl;
+        XScript::Compiler::CompilerEnvironment Environ{};
+        for (auto &Filename: FilesToCompile) {
+            XScript::CompileForFile(Environ, Filename);
         }
-        auto Test = XScript::Instance::Tests::CreateCustomTest(Result);
-        auto Start = std::chrono::system_clock::now();
-        Test.Run();
-        auto End = std::chrono::system_clock::now() - Start;
-        std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(End).count() << std::endl;
-    } catch (XScript::InternalException &E) {
-        std::cout << E.what() << std::endl;
-    } catch (XScript::BytecodeInterpretError &E) {
+        for (auto &Instruction: Environ.MainPackage.PackageInitializeCodes) {
+            std::wcout << Instruction.ToString() << std::endl;
+        }
+    } catch (XScript::ParserException &E) {
         std::cout << E.what() << std::endl;
     } catch (XScript::CompilerError &E) {
+        std::cout << E.what() << std::endl;
+    } catch (XScript::LexerException &E) {
+        std::cout << E.what() << std::endl;
+    } catch (XScript::InternalException &E) {
         std::cout << E.what() << std::endl;
     }
     return 0;

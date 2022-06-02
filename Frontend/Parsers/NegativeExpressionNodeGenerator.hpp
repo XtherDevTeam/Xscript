@@ -12,13 +12,13 @@
 
 namespace XScript::Generator {
 
-        class NegativeExpressionNodeGenerator : BaseGenerator {
-        public:
-            explicit NegativeExpressionNodeGenerator(Lexer &L);
+    class NegativeExpressionNodeGenerator : BaseGenerator {
+    public:
+        explicit NegativeExpressionNodeGenerator(Lexer &L);
 
-            AST Parse() override;
-        };
+        AST Parse() override;
+    };
 
-    } // Generator
+} // Generator
 
 #endif //XSCRIPT2_NEGATIVEEXPRESSIONNODEGENERATOR_HPP

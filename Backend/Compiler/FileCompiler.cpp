@@ -67,5 +67,13 @@ namespace XScript {
             );
             return {};
         }
+
+        XArray<BytecodeStructure> FileCompiler::GenerateForFile(AST &Target) {
+            XArray<BytecodeStructure> Result;
+            for (auto &Subtree: Target.Subtrees) {
+                MergeArray(Result, Generate(Subtree));
+            }
+            return Result;
+        }
     } // XScript
 } // Compiler

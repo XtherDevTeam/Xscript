@@ -10,14 +10,14 @@
 
 namespace XScript::Generator {
 
-        class DecrementExpressionNodeGenerator : BaseGenerator {
-        public:
-            explicit DecrementExpressionNodeGenerator(Lexer &L);
+    class DecrementExpressionNodeGenerator : BaseGenerator {
+    public:
+        explicit DecrementExpressionNodeGenerator(Lexer &L);
 
-            AST Parse() override;
-        };
+        AST Parse() override;
+    };
 
 
-    } // Generator
+} // Generator
 
 #endif //XSCRIPT2_DECREMENTEXPRESSIONNODEGENERATOR_HPP

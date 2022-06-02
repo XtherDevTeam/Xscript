@@ -5,25 +5,25 @@
 #include "NegativeExpressionNodeGenerator.hpp"
 
 namespace XScript::Generator {
-        NegativeExpressionNodeGenerator::NegativeExpressionNodeGenerator(Lexer &L) : BaseGenerator(L) {
-        }
+    NegativeExpressionNodeGenerator::NegativeExpressionNodeGenerator(Lexer &L) : BaseGenerator(L) {
+    }
 
-        AST NegativeExpressionNodeGenerator::Parse() {
-            if (L.LastToken.Kind == Lexer::TokenKind::Minus) {
-                L.Scan();
-                AST Right = MemberExpressionNodeGenerator(L).Parse();
-                if (Right.IsNotMatchNode()) {
-                    Right = PrimaryNodeGenerator(L).Parse();
-                    if (Right.IsNotMatchNode()) {
-                        MakeException(L"Expected a rvalue expression.");
-                    }
-                }
-                return {AST::TreeType::NegativeExpression, {Right}};
-            }
+    AST NegativeExpressionNodeGenerator::Parse() {
+        if (L.LastToken.Kind == Lexer::TokenKind::Minus) {
+            L.Scan();
             AST Right = MemberExpressionNodeGenerator(L).Parse();
             if (Right.IsNotMatchNode()) {
-                return PrimaryNodeGenerator(L).Parse();
+                Right = PrimaryNodeGenerator(L).Parse();
+                if (Right.IsNotMatchNode()) {
+                    MakeException(L"Expected a rvalue expression.");
+                }
             }
-            return Right;
+            return {AST::TreeType::NegativeExpression, {Right}};
         }
-    } // Generator
+        AST Right = MemberExpressionNodeGenerator(L).Parse();
+        if (Right.IsNotMatchNode()) {
+            return PrimaryNodeGenerator(L).Parse();
+        }
+        return Right;
+    }
+} // Generator

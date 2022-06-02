@@ -9,17 +9,17 @@
 
 namespace XScript::Instance {
 
-        class BasicTestFramework {
-        public:
-            BytecodeInterpreter Interpreter;
-            Environment InterpreterEnvironment;
-            XArray<BytecodeStructure> Commands;
+    class BasicTestFramework {
+    public:
+        BytecodeInterpreter Interpreter;
+        Environment InterpreterEnvironment;
+        XArray<BytecodeStructure> Commands;
 
-            BasicTestFramework();
+        BasicTestFramework();
 
-            void Run();
-        };
+        void Run();
+    };
 
-    } // Instance
+} // Instance
 
 #endif //XSCRIPT2_BASICTESTFRAMEWORK_HPP

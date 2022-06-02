@@ -333,6 +333,16 @@ Syntax:
 CodeBlock ::= "{" { Statement ";" } "}"
 ```
 
+### ClassDefinition
+
+Status: `Implmented`
+
+Syntax:
+
+```
+ClassDefinition ::= "class" Identifier "extends" LeftParentheses { Identifier } RightParentheses LeftBrace { MethodDefinition } RightBrace
+```
+
 ### FileStatement
 
 Status: `Implmented`
@@ -349,7 +359,7 @@ FileStatement ::= FunctionDefinition
 
 Status: `Implmented`
 
-Syntax: 
+Syntax:
 
 ```
 File ::= { FileStatement }
