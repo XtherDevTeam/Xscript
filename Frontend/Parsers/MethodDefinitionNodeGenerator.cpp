@@ -16,7 +16,7 @@ namespace XScript {
         AST MethodDefinitionNodeGenerator::Parse() {
             AST Descriptors = {AST::TreeType::Descriptors, (XArray<AST>) {}};
             for (AST Descriptor = MethodDescriptorNodeGenerator(L).Parse();
-                 !Descriptors.IsNotMatchNode(); Descriptor = MethodDescriptorNodeGenerator(L).Parse()) {
+                 !Descriptor.IsNotMatchNode(); Descriptor = MethodDescriptorNodeGenerator(L).Parse()) {
                 Descriptors.Subtrees.push_back(Descriptor);
             }
             AST FunctionDefinition = FunctionDefinitionNodeGenerator(L).Parse();

@@ -52,6 +52,7 @@ namespace XScript {
             stack_push_integer,
             stack_push_decimal,
             stack_push_boolean,
+            stack_push_function,
             stack_push_empty,
             stack_pop,
             stack_duplicate,
@@ -77,7 +78,7 @@ namespace XScript {
             fake_command_break,
             func_invoke,
             func_return,
-            package_switch
+            package_switch,
         } Instruction;
 
         InstructionParam Param;

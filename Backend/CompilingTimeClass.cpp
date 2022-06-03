@@ -18,11 +18,13 @@ namespace XScript {
             Methods.push_back(Name);
         }
 
-        bool CompilingTimeClass::IsMethodExist(const XString &Name) {
-            for (auto &I: Methods) {
-                if (I == Name) return true;
+        XIndexType CompilingTimeClass::IsMethodExist(const XString &Name) {
+            for (XIndexType Idx = 0; Idx < Methods.size(); Idx++) {
+                if (Methods[Idx] == Name) {
+                    return Idx;
+                }
             }
-            return false;
+            return -1;
         }
     } // XScript
 } // Compiler

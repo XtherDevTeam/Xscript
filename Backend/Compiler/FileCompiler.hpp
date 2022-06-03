@@ -22,7 +22,11 @@ namespace XScript {
 
             XArray<BytecodeStructure> GenerateForVariableDefinition(AST &Target);
 
+            XArray<BytecodeStructure> GenerateForClassDefinition(AST &Target);
+
             XArray<BytecodeStructure> GenerateForFile(AST &Target);
+
+            std::pair<XString, CompilingTimeFunction> ParseMethodDefinition(AST &Target);
         };
 
     } // XScript

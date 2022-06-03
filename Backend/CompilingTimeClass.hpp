@@ -29,7 +29,7 @@ namespace XScript::Compiler {
 
         void PushMethod(const XString &Name);
 
-        bool IsMethodExist(const XString &Name);
+        XIndexType IsMethodExist(const XString &Name);
     };
 
 } // Compiler

@@ -367,8 +367,14 @@ namespace XScript::Compiler {
                 break;
             }
             case AST::TreeType::MemberExpression: {
-                MergeArray(Result, ParseMemberExpressionEndWithAssignment(Target.Subtrees[0], IsMemberExpression));
-                MergeArray(Result, ParseMemberExpressionEndWithAssignment(Target.Subtrees[2], true));
+                try {
+                    Environment.MainPackage.GetClass(Target.Subtrees[0].Node.Value);
+                    CompilingTimeClass *Dummy = nullptr;
+                    MergeArray(Result, ParseClassMethodInvoke(Target, Dummy));
+                } catch (InternalException &E) {
+                    MergeArray(Result, ParseMemberExpressionEndWithAssignment(Target.Subtrees[0], IsMemberExpression));
+                    MergeArray(Result, ParseMemberExpressionEndWithAssignment(Target.Subtrees[2], true));
+                }
                 break;
             }
 
@@ -376,6 +382,63 @@ namespace XScript::Compiler {
                 throw CompilerError(Target.GetFirstNotNullToken().Line,
                                     Target.GetFirstNotNullToken().Column,
                                     L"ParserMemberExpression: Unexpected AST Type");
+        }
+        return Result;
+    }
+
+    XArray<BytecodeStructure>
+    ExpressionCompiler::ParseClassMethodInvoke(AST &Target, CompilingTimeClass *&IsInParsing) {
+        XArray<BytecodeStructure> Result;
+        switch (Target.Type) {
+            case AST::TreeType::FunctionCallingExpression: {
+
+                break;
+            }
+            case AST::TreeType::Identifier: {
+                if (IsInParsing) {
+                    XIndexType Index = IsInParsing->IsMethodExist(Target.Node.Value);
+                    if (Index != -1) {
+                        Result.push_back((BytecodeStructure) {
+                                BytecodeStructure::InstructionEnum::stack_push_function,
+                                (BytecodeStructure::InstructionParam) Hash(IsInParsing->Methods[Index])
+                        });
+                        break;
+                    } else {
+                        throw CompilerError(Target.GetFirstNotNullToken().Line,
+                                            Target.GetFirstNotNullToken().Column,
+                                            L"ParseClassMethodInvoke: 操你妈个傻逼玩意，你他妈脑瘫啊？这个类他麻痹没有 " +
+                                            Target.Node.Value + L" 这个方法啊，傻逼？");
+                    }
+                } else {
+                    try {
+                        CompilingTimeClass &Class = Environment.MainPackage.GetClass(Target.Node.Value).second;
+                        IsInParsing = &Class;
+                    } catch (InternalException &E) {
+                        throw CompilerError(Target.GetFirstNotNullToken().Line,
+                                            Target.GetFirstNotNullToken().Column,
+                                            L"ParseClassMethodInvoke: 脑瘫？根本没有 " +
+                                            Target.Node.Value +
+                                            L" 这个类！多多少少沾点脑血栓. 有病就他妈去治，别他妈搁这写代码！");
+                    }
+                }
+                break;
+            }
+            case AST::TreeType::MemberExpression: {
+                if (Target.Subtrees[0].Node.Kind != Lexer::TokenKind::Identifier or
+                    Target.Subtrees[1].Node.Kind != Lexer::TokenKind::Identifier) {
+                    throw CompilerError(Target.GetFirstNotNullToken().Line,
+                                        Target.GetFirstNotNullToken().Column,
+                                        L"ParseClassMethodInvoke: 不是类方法调用你他妈调用这函数调你妈呢？");
+                }
+                MergeArray(Result, ParseClassMethodInvoke(Target.Subtrees[0], IsInParsing));
+                MergeArray(Result, ParseClassMethodInvoke(Target.Subtrees[1], IsInParsing));
+                break;
+            }
+            default: {
+                throw CompilerError(Target.GetFirstNotNullToken().Line,
+                                    Target.GetFirstNotNullToken().Column,
+                                    L"ParserMemberExpression: Unexpected AST Type");
+            }
         }
         return Result;
     }

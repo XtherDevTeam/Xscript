@@ -6,6 +6,7 @@
 #include "StatementCompiler.hpp"
 #include "ExpressionCompiler.hpp"
 #include "../../Share/Exceptions/InternalException.hpp"
+#include "../../Share/Exceptions/CompilerError.hpp"
 
 namespace XScript {
     namespace Compiler {
@@ -21,6 +22,8 @@ namespace XScript {
                     return GenerateForVariableDeclaration(Target);
                 case AST::TreeType::VariableDefinition:
                     return GenerateForVariableDefinition(Target);
+                case AST::TreeType::ClassDefinition:
+                    return GenerateForClassDefinition(Target);
                 default:
                     throw InternalException(L"FileCompiler::Generate : Invalid invoke");
             }
@@ -74,6 +77,64 @@ namespace XScript {
                 MergeArray(Result, Generate(Subtree));
             }
             return Result;
+        }
+
+        XArray<BytecodeStructure> FileCompiler::GenerateForClassDefinition(AST &Target) {
+            XString ClassName = Target.Subtrees[0].Node.Value;
+            XArray<XIndexType> Extends;
+            XArray<XString> Methods;
+
+            for (auto &I: Target.Subtrees[1].Subtrees) {
+                try {
+                    Extends.push_back(Environment.MainPackage.GetClass(I.Node.Value).first);
+                } catch (InternalException &E) {
+                    throw CompilerError(I.Node.Line, I.Node.Column,
+                                        L"GenerateForClassDefinition: Class " + I.Node.Value + L" doesn't exist");
+                }
+            }
+            for (auto &Subtree: Target.Subtrees[2].Subtrees) {
+                auto Func = ParseMethodDefinition(Subtree);
+                Environment.MainPackage.PushFunction(ClassName + L"$" + Func.first, Func.second);
+                Methods.push_back(ClassName + L"$" + Func.first);
+            }
+            Environment.MainPackage.PushClass(ClassName, (CompilingTimeClass) {Extends, Methods});
+
+            return {};
+        }
+
+        std::pair<XString, CompilingTimeFunction> FileCompiler::ParseMethodDefinition(AST &Target) {
+            XArray<CompilingTimeFunction::Descriptor> Descriptors;
+            XArray<XString> Arguments;
+            XArray<BytecodeStructure> FunctionBytecodeArray;
+            for (auto &I: Target.Subtrees[0].Subtrees) {
+                if (I.Node.Value == L"public") {
+                    Descriptors.push_back(CompilingTimeFunction::Descriptor::Public);
+                } else if (I.Node.Value == L"private") {
+                    Descriptors.push_back(CompilingTimeFunction::Descriptor::Private);
+                } else {
+                    throw CompilerError(I.Node.Line, I.Node.Column,
+                                        L"GenerateForClassDefinition: Invalid method descriptor");
+                }
+            }
+
+            XString MethodName = Target.Subtrees[1].Subtrees[0].Node.Value;
+
+            for (auto &I: Target.Subtrees[1].Subtrees[1].Subtrees) {
+                Arguments.push_back(I.Node.Value);
+            }
+
+            auto Backup = Environment.Locals;
+            Arguments.push_back(L"this");
+            Environment.Locals = {};
+            for (auto &I: Arguments) {
+                Environment.PushLocal(I, {(Typename) {Typename::TypenameKind::Unknown}, false});
+            }
+
+            FunctionBytecodeArray = StatementCompiler(Environment).GenerateForCodeBlock(Target.Subtrees[1].Subtrees[2]);
+
+            Environment.Locals = Backup;
+
+            return {MethodName, (CompilingTimeFunction) {Descriptors, Arguments, FunctionBytecodeArray}};
         }
     } // XScript
 } // Compiler
