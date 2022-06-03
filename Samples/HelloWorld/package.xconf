@@ -1,5 +1,0 @@
-PackageConfigurations {
-    PackageName "HelloWorld",
-    DependLibraries ["XScript.IO", "XScript.Lang.Utils"],
-    MainFile ["main.xs"]
-}

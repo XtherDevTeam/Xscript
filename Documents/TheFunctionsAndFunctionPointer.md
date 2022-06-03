@@ -36,15 +36,20 @@ static_store 0 ; function pointer
 
 ## 类方法函数
 
-类方法函数会在编译器的 `ExpressionCompiler::ParseMemberExpression` 里面自动筛选起始为 `ClassName` 的 `MemberExpression` 然后交给 `ExpressionCompiler::ParseClassMethodInvoke()` 进行编译
+类方法函数会在编译器的 `ExpressionCompiler::ParseMemberExpression` 里面自动筛选起始为 `ClassName` 的 `MemberExpression`
+然后交给 `ExpressionCompiler::ParseClassMethodInvoke()` 进行编译
 
 例
 
 ```javascript
 class A {
-	function constructor () {
-		member test_member = 0;
-		member test_number = 114514;
+    function
+
+    constructor() {
+        member
+        test_member = 0;
+        member
+        test_number = 114514;
     }
 };
 

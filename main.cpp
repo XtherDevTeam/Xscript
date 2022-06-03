@@ -9,7 +9,7 @@
 #include "Core/CompilerCore.hpp"
 
 
-int main(int argc, const char** argv) {
+int main(int argc, const char **argv) {
     if (argc == 2 && XScript::XBytes{argv[1]} == "ci") {
         std::cout << "CI detected, skipped.\n";
         return 0;

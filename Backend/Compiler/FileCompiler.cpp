@@ -122,16 +122,19 @@ namespace XScript {
                 }
             }
             for (auto &Subtree: Target.Subtrees[2].Subtrees) {
+                XString MethodName = ClassName + L"$" + Subtree.Subtrees[1].Subtrees[0].Node.Value;
+                Environment.MainPackage.PushFunction(MethodName, {{}, {}});
+
                 auto Func = ParseMethodDefinition(Subtree);
-                Environment.MainPackage.PushFunction(ClassName + L"$" + Func.first, Func.second);
-                Methods.push_back(ClassName + L"$" + Func.first);
+                Environment.MainPackage.PushFunction(MethodName, Func);
+                Methods.push_back(MethodName);
             }
             Environment.MainPackage.PushClass(ClassName, (CompilingTimeClass) {Extends, Methods});
 
             return {};
         }
 
-        std::pair<XString, CompilingTimeFunction> FileCompiler::ParseMethodDefinition(AST &Target) {
+        CompilingTimeFunction FileCompiler::ParseMethodDefinition(AST &Target) {
             XArray<CompilingTimeFunction::Descriptor> Descriptors;
             XArray<XString> Arguments;
             XArray<BytecodeStructure> FunctionBytecodeArray;
@@ -145,8 +148,6 @@ namespace XScript {
                                         L"GenerateForClassDefinition: Invalid method descriptor");
                 }
             }
-
-            XString MethodName = Target.Subtrees[1].Subtrees[0].Node.Value;
 
             for (auto &I: Target.Subtrees[1].Subtrees[1].Subtrees) {
                 Arguments.push_back(I.Node.Value);
@@ -163,7 +164,7 @@ namespace XScript {
 
             Environment.Locals = Backup;
 
-            return {MethodName, (CompilingTimeFunction) {Descriptors, Arguments, FunctionBytecodeArray}};
+            return (CompilingTimeFunction) {Descriptors, Arguments, FunctionBytecodeArray};
         }
     } // XScript
 } // Compiler

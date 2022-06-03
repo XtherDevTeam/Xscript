@@ -302,20 +302,31 @@ namespace XScript::Compiler {
                 break;
             }
             case AST::TreeType::FunctionCallingExpression: {
-                MergeArray(Result, Generate(Target.Subtrees[0]));
+                if (!IsMemberExpression) {
+                    MergeArray(Result, Generate(Target.Subtrees[0]));
 
-                for (auto &I: Target.Subtrees[1].Subtrees) {
-                    MergeArray(Result, Generate(I));
+                    for (auto &I: Target.Subtrees[1].Subtrees) {
+                        MergeArray(Result, Generate(I));
+                    }
+                    Result.push_back((BytecodeStructure) {
+                            BytecodeStructure::InstructionEnum::func_invoke,
+                            (BytecodeStructure::InstructionParam) {(XHeapIndexType) Target.Subtrees[1].Subtrees.size()}
+                    });
+                } else {
+                    MergeArray(Result, ParseMemberExpression(Target.Subtrees[0], IsMemberExpression));
+                    for (auto &I: Target.Subtrees[1].Subtrees) {
+                        MergeArray(Result, Generate(I));
+                    }
+                    Result.push_back((BytecodeStructure) {
+                            BytecodeStructure::InstructionEnum::func_invoke,
+                            (BytecodeStructure::InstructionParam) {(XHeapIndexType) Target.Subtrees[1].Subtrees.size()}
+                    });
                 }
-                Result.push_back((BytecodeStructure) {
-                        BytecodeStructure::InstructionEnum::func_invoke,
-                        (BytecodeStructure::InstructionParam) {(XHeapIndexType) Target.Subtrees[1].Subtrees.size()}
-                });
                 break;
             }
             case AST::TreeType::MemberExpression: {
                 MergeArray(Result, ParseMemberExpression(Target.Subtrees[0], IsMemberExpression));
-                MergeArray(Result, ParseMemberExpression(Target.Subtrees[2], true));
+                MergeArray(Result, ParseMemberExpression(Target.Subtrees[1], true));
                 break;
             }
 
@@ -371,18 +382,32 @@ namespace XScript::Compiler {
                 break;
             }
             case AST::TreeType::FunctionCallingExpression: {
-                MergeArray(Result, Generate(Target.Subtrees[0]));
+                if (!IsMemberExpression) {
+                    MergeArray(Result, Generate(Target.Subtrees[0]));
 
-                for (auto &I: Target.Subtrees[1].Subtrees) {
-                    MergeArray(Result, Generate(I));
+                    for (auto &I: Target.Subtrees[1].Subtrees) {
+                        MergeArray(Result, Generate(I));
+                    }
+                    Result.push_back((BytecodeStructure) {
+                            BytecodeStructure::InstructionEnum::func_invoke,
+                            (BytecodeStructure::InstructionParam) {(XHeapIndexType) Target.Subtrees[1].Subtrees.size()}
+                    });
+                    Result.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::object_store,
+                                                          (BytecodeStructure::InstructionParam) {
+                                                                  (XHeapIndexType) 0}});
+                } else {
+                    MergeArray(Result, ParseMemberExpression(Target.Subtrees[0], IsMemberExpression));
+                    for (auto &I: Target.Subtrees[1].Subtrees) {
+                        MergeArray(Result, Generate(I));
+                    }
+                    Result.push_back((BytecodeStructure) {
+                            BytecodeStructure::InstructionEnum::func_invoke,
+                            (BytecodeStructure::InstructionParam) {(XHeapIndexType) Target.Subtrees[1].Subtrees.size()}
+                    });
+                    Result.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::object_store,
+                                                          (BytecodeStructure::InstructionParam) {
+                                                                  (XHeapIndexType) 0}});
                 }
-                Result.push_back((BytecodeStructure) {
-                        BytecodeStructure::InstructionEnum::func_invoke,
-                        (BytecodeStructure::InstructionParam) {(XHeapIndexType) Target.Subtrees[1].Subtrees.size()}
-                });
-                Result.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::object_store,
-                                                      (BytecodeStructure::InstructionParam) {
-                                                              (XHeapIndexType) 0}});
                 break;
             }
             case AST::TreeType::MemberExpression: {

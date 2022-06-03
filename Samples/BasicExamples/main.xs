@@ -1,8 +1,8 @@
 var i = 0;
 
 class ClassA {
-    public def constructor () {
-        return this;
+    public def test () {
+        return this.test();
     }
 };
 
