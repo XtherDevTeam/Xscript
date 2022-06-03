@@ -75,6 +75,9 @@ namespace XScript {
             object_store,
             fake_command_continue,
             fake_command_break,
+            func_invoke,
+            func_return,
+            package_switch
         } Instruction;
 
         InstructionParam Param;

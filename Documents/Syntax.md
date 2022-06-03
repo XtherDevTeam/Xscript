@@ -273,6 +273,16 @@ Syntax:
 ContinueStatement ::= "continue"
 ```
 
+### ReturnStatement
+
+Status: `Implmented`
+
+Syntax:
+
+```
+ReturnStatement ::= "return" Expression
+```
+
 ### FunctionDefinition
 
 Status: `Implmented`

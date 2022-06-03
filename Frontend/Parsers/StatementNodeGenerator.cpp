@@ -11,6 +11,7 @@
 #include "ForStatementNodeGenerator.hpp"
 #include "BreakStatementNodeGenerator.hpp"
 #include "ContinueStatementNodeGenerator.hpp"
+#include "ReturnStatementNodeGenerator.hpp"
 
 namespace XScript {
     namespace Generator {
@@ -41,6 +42,10 @@ namespace XScript {
                 return Result;
 
             Result = ContinueStatementNodeGenerator(L).Parse();
+            if (!Result.IsNotMatchNode())
+                return Result;
+
+            Result = ReturnStatementNodeGenerator(L).Parse();
             if (!Result.IsNotMatchNode())
                 return Result;
 

@@ -1,16 +1,13 @@
 #include <iostream>
-#include <chrono>
 
 /* XScript 2 Project includes */
 #include "Tests/BasicTests.hpp"
 #include "Frontend/Lexer.hpp"
-#include "Frontend/AST.hpp"
-#include "Backend/Compiler/ExpressionCompiler.hpp"
-#include "Frontend/Parsers/StatementNodeGenerator.hpp"
-#include "Backend/Compiler/StatementCompiler.hpp"
 #include "Share/Exceptions/InternalException.hpp"
 #include "Share/Exceptions/CompilerError.hpp"
+#include "Share/Exceptions/ParserException.hpp"
 #include "Core/CompilerCore.hpp"
+
 
 int main() {
     std::wcout << L"[XScript 2 Early Test] Demo developed by Jerry Chou (Winghong Zau)\n";
@@ -28,7 +25,7 @@ int main() {
         for (auto &Filename: FilesToCompile) {
             XScript::CompileForFile(Environ, Filename);
         }
-        for (auto &Instruction: Environ.MainPackage.PackageInitializeCodes) {
+        for (auto &Instruction: Environ.MainPackage.Functions.back().second.BytecodeArray) {
             std::wcout << Instruction.ToString() << std::endl;
         }
     } catch (XScript::ParserException &E) {

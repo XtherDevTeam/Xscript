@@ -26,7 +26,7 @@ namespace XScript {
 
         EnvironmentStack();
 
-        inline void PushValueToStack(EnvironmentStackItem Item) {
+        inline void PushValueToStack(const EnvironmentStackItem &Item) {
             Elements.push_back(Item);
             FramesInformation.back().Length++;
         }
@@ -47,7 +47,7 @@ namespace XScript {
             }
         }
 
-        inline void StoreValueToIndex(XIndexType IndexInFrame, EnvironmentStackItem Item) {
+        inline void StoreValueToIndex(XIndexType IndexInFrame, const EnvironmentStackItem &Item) {
             XIndexType RealPos = FramesInformation[FramesInformation.size() - 1].From + IndexInFrame;
             Elements[RealPos] = Item;
         }

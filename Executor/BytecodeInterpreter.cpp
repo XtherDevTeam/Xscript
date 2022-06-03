@@ -1116,6 +1116,34 @@ namespace XScript {
                     InterpreterEnvironment.ProgramCounter.NowIndex += CurrentInstruction.Param.IntValue;
                     continue; // 防止NowIndex更新ProgramCounter
                 }
+                case BytecodeStructure::InstructionEnum::func_invoke: {
+                    /* TODO: Complete function invoking */
+                    break;
+                }
+                case BytecodeStructure::InstructionEnum::func_return: {
+                    /**
+                     * 保存结果
+                     */
+                    auto Element = InterpreterEnvironment.Stack.PopValueFromStack();
+
+                    /**
+                     * 调整栈帧
+                     */
+                    for (XIndexType Start = InterpreterEnvironment.Stack.FramesInformation.back().From;
+                         Start != InterpreterEnvironment.Stack.FramesInformation.back().From +
+                                  InterpreterEnvironment.Stack.FramesInformation.back().Length;
+                         Start++) {
+                        InterpreterEnvironment.Stack.PopValueFromStack();
+                    }
+                    InterpreterEnvironment.ProgramCounter = InterpreterEnvironment.Stack.FramesInformation.back().ReturnAddress;
+                    InterpreterEnvironment.Stack.FramesInformation.pop_back();
+
+                    /**
+                     * 压入结果
+                     */
+                    InterpreterEnvironment.Stack.PushValueToStack(Element);
+                    continue;
+                }
             }
             InterpreterEnvironment.ProgramCounter.NowIndex++;
         }

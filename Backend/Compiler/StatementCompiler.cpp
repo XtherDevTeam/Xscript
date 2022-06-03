@@ -67,6 +67,9 @@ namespace XScript {
                 case AST::TreeType::ContinueStatement: {
                     return GenerateForContinueStatement(Target);
                 }
+                case AST::TreeType::ReturnStatement: {
+                    return GenerateForReturnStatement(Target);
+                }
                 default: {
                     throw InternalException(L"StatementCompiler::Generate : Invalid invoke");
                 }
@@ -269,6 +272,14 @@ namespace XScript {
         XArray<BytecodeStructure> StatementCompiler::GenerateForContinueStatement(XScript::AST &Target) {
             XArray<BytecodeStructure> Result;
             Result.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::fake_command_continue,
+                                                  (BytecodeStructure::InstructionParam) {(XHeapIndexType) 0}});
+            return Result;
+        }
+
+        XArray<BytecodeStructure> StatementCompiler::GenerateForReturnStatement(AST &Target) {
+            XArray<BytecodeStructure> Result;
+            MergeArray(Result, ExpressionCompiler(Environment).Generate(Target.Subtrees[0]));
+            Result.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::func_return,
                                                   (BytecodeStructure::InstructionParam) {(XHeapIndexType) 0}});
             return Result;
         }

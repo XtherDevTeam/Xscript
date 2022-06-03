@@ -33,6 +33,8 @@ namespace XScript {
             static XArray<BytecodeStructure> GenerateForBreakStatement(AST &Target);
 
             static XArray<BytecodeStructure> GenerateForContinueStatement(AST &Target);
+
+            XArray<BytecodeStructure> GenerateForReturnStatement(AST &Target);
         };
 
     } // XScript
