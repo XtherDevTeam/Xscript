@@ -6,9 +6,8 @@ class ClassA {
     }
 };
 
-def Hello () {
+def Hello (j) {
     i = 114514;
-    var j = 1919810;
     i += j;
-    return j;
+    return Hello(j+1);
 }

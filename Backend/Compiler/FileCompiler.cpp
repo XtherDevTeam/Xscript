@@ -41,13 +41,42 @@ namespace XScript {
                 Params.push_back(I.Node.Value);
             }
 
-            Structure = StatementCompiler(Environment).GenerateForCodeBlock(Target.Subtrees[2]);
-
             CompilingTimeFunction Func{
                     XArray<CompilingTimeFunction::Descriptor>{CompilingTimeFunction::Descriptor::Public}, Params,
-                    Structure};
+                    {}};
 
-            Environment.MainPackage.PushFunction(Target.Subtrees[0].Node.Value, Func);
+            auto FuncIndex = Environment.MainPackage.PushFunction(Target.Subtrees[0].Node.Value, Func);
+
+            /**
+             * Push function pointer to statics
+             */
+            auto Idx = Environment.MainPackage.PushStatic(Target.Subtrees[0].Node.Value,
+                                                          (SymbolItem) {(Typename) {Typename::TypenameKind::Unknown},
+                                                                        true});
+
+            Environment.MainPackage.PackageInitializeCodes.push_back((BytecodeStructure) {
+                    BytecodeStructure::InstructionEnum::stack_push_function,
+                    (BytecodeStructure::InstructionParam) {Hash(Target.Subtrees[0].Node.Value)}
+            });
+
+            Environment.MainPackage.PackageInitializeCodes.push_back((BytecodeStructure) {
+                    BytecodeStructure::InstructionEnum::static_store,
+                    (BytecodeStructure::InstructionParam) {Idx}
+            });
+
+            /**
+             * generate bytecodes
+             */
+            auto Backup = Environment.Locals;
+            for (auto &I: Target.Subtrees[1].Subtrees) {
+                Environment.PushLocal(I.Node.Value, {(Typename) {Typename::TypenameKind::Unknown}, {}});
+            }
+
+            Structure = StatementCompiler(Environment).GenerateForCodeBlock(Target.Subtrees[2]);
+
+            Environment.Locals = Backup;
+
+            Environment.MainPackage.Functions[FuncIndex].second.BytecodeArray = Structure;
             return {};
         }
 

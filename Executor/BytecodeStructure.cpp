@@ -213,7 +213,7 @@ namespace XScript {
                 break;
             case InstructionEnum::func_invoke:
                 Result += L"func_invoke";
-                ParamType = N;
+                ParamType = H;
                 break;
             case InstructionEnum::func_return:
                 Result += L"func_return";
