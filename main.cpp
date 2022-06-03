@@ -9,7 +9,11 @@
 #include "Core/CompilerCore.hpp"
 
 
-int main() {
+int main(int argc, const char** argv) {
+    if (argc == 2 && XScript::XBytes{argv[1]} == "ci") {
+        std::cout << "CI detected, skipped.\n";
+        return 0;
+    }
     std::wcout << L"[XScript 2 Early Test] Demo developed by Jerry Chou (Winghong Zau)\n";
     std::wcout << L"Input filenames to compile and press ^D or ^Z + Enter to stop input.\n";
     XScript::XArray<XScript::XString> FilesToCompile;
