@@ -18,6 +18,9 @@ namespace XScript {
 
     EnvObject::ObjectValue::ObjectValue(XBoolean booleanValue) : BooleanValue(booleanValue) {}
 
+    EnvObject::ObjectValue::ObjectValue(EnvFunction *functionPointerValue) : FunctionPointerValue(
+            functionPointerValue) {}
+
     EnvObject::EnvObject() : Kind(ObjectKind::Integer), Value(static_cast<XInteger>(0)) {
 
     }

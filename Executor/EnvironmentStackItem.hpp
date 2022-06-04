@@ -6,6 +6,7 @@
 #define XSCRIPT2_ENVIRONMENTSTACKITEM_HPP
 
 #include "../Share/Utils.hpp"
+#include "EnvFunction.hpp"
 
 
 namespace XScript {
@@ -18,6 +19,7 @@ namespace XScript {
             Decimal,
             Boolean,
             HeapPointer,
+            FunctionPointer,
             Null,
         } Kind;
 
@@ -26,6 +28,8 @@ namespace XScript {
             XDecimal DeciVal;
             XBoolean BoolVal;
             XHeapIndexType HeapPointerVal;
+            EnvFunction *FuncPointerVal;
+
 
             explicit ItemValue(XInteger IntVal);
 
@@ -33,7 +37,9 @@ namespace XScript {
 
             explicit ItemValue(XBoolean BoolVal);
 
-            explicit ItemValue(XHeapIndexType IdxVal);
+            explicit ItemValue(XHeapIndexType HeapPointerVal);
+
+            explicit ItemValue(EnvFunction *FuncPointerVal);
         } Value;
 
         EnvironmentStackItem();

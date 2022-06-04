@@ -33,8 +33,6 @@ namespace XScript {
             calculation_div,
             calculation_mod,
             calculation_negate,
-            calculation_increment,
-            calculation_decrement,
             logic_and,
             logic_or,
             logic_equal,
@@ -60,7 +58,6 @@ namespace XScript {
             constants_load,
             class_new,
             class_get_member,
-            class_assign_member,
             list_new,
             list_get_member,
             list_remove_index,
@@ -78,7 +75,10 @@ namespace XScript {
             fake_command_break,
             func_invoke,
             func_return,
+            /*未完成命令*/
             package_switch,
+            calculation_increment,
+            calculation_decrement,
         } Instruction;
 
         InstructionParam Param;

@@ -9,6 +9,7 @@
 #include "EnvClassObject.hpp"
 #include "EnvArrayObject.hpp"
 #include "EnvStringObject.hpp"
+#include "EnvFunction.hpp"
 
 namespace XScript {
 
@@ -21,6 +22,7 @@ namespace XScript {
             Integer,
             Decimal,
             Boolean,
+            FunctionPointer,
         } Kind;
 
         union ObjectValue {
@@ -46,6 +48,10 @@ namespace XScript {
             XBoolean BooleanValue;
 
             explicit ObjectValue(XBoolean booleanValue);
+
+            EnvFunction* FunctionPointerValue;
+
+            explicit ObjectValue(EnvFunction *functionPointerValue);
         } Value;
 
         EnvObject();

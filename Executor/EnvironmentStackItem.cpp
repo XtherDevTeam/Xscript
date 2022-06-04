@@ -18,6 +18,10 @@ namespace XScript {
 
     }
 
+    EnvironmentStackItem::ItemValue::ItemValue(EnvFunction *FuncPointerVal) : FuncPointerVal(FuncPointerVal) {
+
+    }
+
     EnvironmentStackItem::ItemValue::ItemValue(XHeapIndexType IdxVal) : HeapPointerVal(IdxVal) {
 
     }
@@ -40,7 +44,9 @@ namespace XScript {
             case ItemKind::Boolean:
                 return L"<XBoolean value=" + std::to_wstring(Value.BoolVal) + L">";
             case ItemKind::HeapPointer:
-                return L"<XPointer value=" + std::to_wstring(Value.HeapPointerVal) + L">";
+                return L"<XHeapPointer value=" + std::to_wstring(Value.HeapPointerVal) + L">";
+            case ItemKind::FunctionPointer:
+                return L"<XFunctionPointer value=" + std::to_wstring(Value.HeapPointerVal) + L">";
             case ItemKind::Null:
                 return L"<XNull>";
         }

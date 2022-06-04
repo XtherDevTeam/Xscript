@@ -46,14 +46,6 @@ namespace XScript {
                 Result += L"calculation_negate";
                 ParamType = N;
                 break;
-            case InstructionEnum::calculation_increment:
-                Result += L"calculation_increment";
-                ParamType = N;
-                break;
-            case InstructionEnum::calculation_decrement:
-                Result += L"calculation_decrement";
-                ParamType = N;
-                break;
             case InstructionEnum::logic_and:
                 Result += L"logic_and";
                 ParamType = N;
@@ -148,10 +140,6 @@ namespace XScript {
                 break;
             case InstructionEnum::class_get_member:
                 Result += L"class_get_member";
-                ParamType = H;
-                break;
-            case InstructionEnum::class_assign_member:
-                Result += L"class_assign_member";
                 ParamType = H;
                 break;
             case InstructionEnum::list_new:
