@@ -13,10 +13,10 @@ namespace XScript {
     class EnvFunction {
     public:
         XIndexType PackageID;
-        XIndexType ParamsCount;
+
         XArray<BytecodeStructure> BytecodeArray;
 
-        EnvFunction(XIndexType PackageID, XIndexType ParamsCount, XArray <BytecodeStructure> BytecodeArray);
+        EnvFunction(XIndexType PackageID, XArray <BytecodeStructure> BytecodeArray);
     };
 
 } // XScript

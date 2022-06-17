@@ -76,7 +76,6 @@ namespace XScript {
             func_invoke,
             func_return,
             /*未完成命令*/
-            package_switch,
             calculation_increment,
             calculation_decrement,
         } Instruction;

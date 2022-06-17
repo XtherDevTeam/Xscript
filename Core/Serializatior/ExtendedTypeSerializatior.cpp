@@ -2,6 +2,7 @@
 // Created by Jerry Chou on 2022/5/31.
 //
 
+#include <algorithm>
 #include "ExtendedTypeSerializatior.hpp"
 #include "BaseTypeSerializatior.hpp"
 #include "../../Share/Exceptions/InternalException.hpp"
@@ -78,6 +79,39 @@ namespace XScript {
 
             ExtendedTypeSerializatior()(FilePointer, Class.ParentClasses);
             ExtendedTypeSerializatior()(FilePointer, Methods);
+        }
+
+        void ExtendedTypeSerializatior::operator()(FILE *FilePointer, const Compiler::ConstantPool &Pool) {
+            XIndexType Length = Pool.Items.size();
+            BaseTypeSerializatior()(FilePointer, Length);
+
+            for (auto &Item: Pool.Items) {
+                ExtendedTypeSerializatior()(FilePointer, Item);
+            }
+        }
+
+        void
+        ExtendedTypeSerializatior::operator()(FILE *FilePointer, const Compiler::ConstantPool::ItemStructure &Item) {
+            BaseTypeSerializatior()(FilePointer, static_cast<XInteger>(Item.Kind));
+            BaseTypeSerializatior()(FilePointer, Item.StrVal);
+
+        }
+
+        void ExtendedTypeSerializatior::operator()(FILE *FilePointer,
+                                                   const Compiler::CompilingTimePackageStructure &Package) {
+            ExtendedTypeSerializatior()(FilePointer, Package.Constants);
+
+            XIndexType FuncArrLength = Package.Functions.size();
+            BaseTypeSerializatior()(FilePointer, FuncArrLength);
+
+            for (auto &Item: Package.Functions) {
+                BaseTypeSerializatior()(FilePointer, Item.first);
+                ExtendedTypeSerializatior()(FilePointer, Item.second);
+            }
+
+            ExtendedTypeSerializatior()(FilePointer, Package.PackageInitializeCodes);
+
+            BaseTypeSerializatior()(FilePointer, static_cast<XIndexType>(Package.Statics.size()));
         }
     } // XScript
 } // Serializatior

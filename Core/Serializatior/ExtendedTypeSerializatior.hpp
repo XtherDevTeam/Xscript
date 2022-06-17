@@ -9,6 +9,8 @@
 #include "../../Executor/BytecodeStructure.hpp"
 #include "../../Backend/CompilingTimeFunction.hpp"
 #include "../../Backend/CompilingTimeClass.hpp"
+#include "../../Backend/ConstantPool.hpp"
+#include "../../Backend/CompilingTimePackageStructure.hpp"
 
 namespace XScript {
     namespace Serializatior {
@@ -34,6 +36,12 @@ namespace XScript {
             void operator()(FILE *FilePointer, const XArray<Compiler::CompilingTimeFunction::Descriptor> &Descriptors);
 
             void operator()(FILE *FilePointer, const Compiler::CompilingTimeClass &Class);
+
+            void operator()(FILE *FilePointer, const Compiler::ConstantPool::ItemStructure &Item);
+
+            void operator()(FILE *FilePointer, const Compiler::ConstantPool &Pool);
+
+            void operator()(FILE* FilePointer, const Compiler::CompilingTimePackageStructure &Package);
         };
 
     } // XScript

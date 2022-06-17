@@ -207,10 +207,6 @@ namespace XScript {
                 Result += L"func_return";
                 ParamType = N;
                 break;
-            case InstructionEnum::package_switch:
-                Result += L"package_switch";
-                ParamType = H;
-                break;
         }
 
         Result = L"<XCommand Instruction=" + Result;

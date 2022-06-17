@@ -17,8 +17,6 @@ namespace XScript::Compiler {
         explicit CompilingTimeClass(const XArray<XIndexType> &parentClasses,
                                     XArray<XString> methods);
 
-    public:
-
         XArray<XIndexType> ParentClasses;
 
         /**

@@ -8,11 +8,14 @@
 #include "../Share/Utils.hpp"
 #include "CompilingTimeFunction.hpp"
 #include "CompilingTimeClass.hpp"
+#include "ConstantPool.hpp"
 
 namespace XScript::Compiler {
 
     class CompilingTimePackageStructure {
     public:
+        ConstantPool Constants;
+
         XArray<std::pair<XString, CompilingTimeFunction>> Functions;
 
         XArray<std::pair<XString, CompilingTimeClass>> Classes;

@@ -7,8 +7,8 @@
 #include <utility>
 
 namespace XScript {
-    EnvFunction::EnvFunction(XIndexType PackageID, XIndexType ParamsCount, XArray<BytecodeStructure> BytecodeArray) :
-            PackageID(PackageID), ParamsCount(ParamsCount), BytecodeArray(std::move(BytecodeArray)) {
+    EnvFunction::EnvFunction(XIndexType PackageID, XArray<BytecodeStructure> BytecodeArray) :
+            PackageID(PackageID), BytecodeArray(std::move(BytecodeArray)) {
 
     }
 } // XScript

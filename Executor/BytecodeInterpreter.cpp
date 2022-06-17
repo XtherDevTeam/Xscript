@@ -154,9 +154,6 @@ namespace XScript {
                 case BytecodeStructure::InstructionEnum::func_return:
                     InstructionFuncReturn(CurrentInstruction.Param);
                     break;
-                case BytecodeStructure::InstructionEnum::package_switch:
-                    /* TODO: 未确定命令 */
-                    break;
                 case BytecodeStructure::InstructionEnum::fake_command_continue:
                 case BytecodeStructure::InstructionEnum::fake_command_break:
                     break;
