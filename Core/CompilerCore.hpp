@@ -9,7 +9,6 @@
 
 namespace XScript {
     void CompileForFile(XScript::Compiler::CompilerEnvironment &Environment, const XScript::XString &FilePath);
-
 }
 
 #endif //XSCRIPT2_COMPILERCORE_HPP

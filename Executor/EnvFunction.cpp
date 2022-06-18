@@ -11,4 +11,8 @@ namespace XScript {
             PackageID(PackageID), BytecodeArray(std::move(BytecodeArray)) {
 
     }
+
+    EnvFunction::EnvFunction() : PackageID(0), BytecodeArray() {
+
+    }
 } // XScript

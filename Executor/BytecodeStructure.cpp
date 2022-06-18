@@ -247,4 +247,8 @@ namespace XScript {
         Param.HeapPointerValue = rhs.Param.HeapPointerValue;
         return *this;
     }
+
+    BytecodeStructure::BytecodeStructure() : Instruction(), Param(static_cast<XIndexType>(0)) {
+
+    }
 } // XScript

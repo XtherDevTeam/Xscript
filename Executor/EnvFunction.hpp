@@ -16,6 +16,8 @@ namespace XScript {
 
         XArray<BytecodeStructure> BytecodeArray;
 
+        EnvFunction();
+
         EnvFunction(XIndexType PackageID, XArray <BytecodeStructure> BytecodeArray);
     };
 

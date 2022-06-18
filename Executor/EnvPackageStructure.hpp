@@ -14,15 +14,24 @@ namespace XScript {
 
     class EnvPackageStructure {
     public:
+        class EnvConstant {
+        public:
+            enum class ItemKind : XInteger {
+                StringVal
+            } Kind;
+
+            XString Value;
+        };
+
         XArray<BytecodeStructure> PackageInitializeCodes;
 
         XMap<XIndexType, EnvFunction> FunctionPool;
 
         XArray<EnvironmentStackItem> Statics;
 
-        Compiler::ConstantPool Constants;
+        XArray<EnvConstant> Constants;
 
-        void ReadFromFile(FILE* FilePointer);
+        void ReadFromFile(FILE *FilePointer);
     };
 
 } // XScript

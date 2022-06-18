@@ -33,7 +33,6 @@ namespace XScript {
         }
 
         void ExtendedTypeSerializatior::operator()(FILE *FilePointer, const Compiler::CompilingTimeFunction &Function) {
-            ExtendedTypeSerializatior()(FilePointer, Function.Descriptors);
             ExtendedTypeSerializatior()(FilePointer, Function.BytecodeArray);
         }
 
