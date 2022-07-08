@@ -45,7 +45,7 @@ namespace XScript {
         XIndexType MagicNumber = 0x114514ff2b;
         Serializatior::BaseTypeSerializatior()(FilePointer, MagicNumber);
         /* 写入依赖 */
-        Serializatior::BaseTypeSerializatior()(FilePointer, Environment.DependencyPackages.size());
+        Serializatior::BaseTypeSerializatior()(FilePointer, static_cast<XIndexType>(Environment.DependencyPackages.size()));
         for (auto &I:Environment.DependencyPackages) {
             Serializatior::BaseTypeSerializatior()(FilePointer, GetFilenameFromPath(I.first));
         }
