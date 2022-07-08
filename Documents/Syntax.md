@@ -353,6 +353,25 @@ Syntax:
 ClassDefinition ::= "class" Identifier "extends" LeftParentheses { Identifier } RightParentheses LeftBrace { MethodDefinition } RightBrace
 ```
 
+### PackageStatement
+
+Status: `Implmented`
+
+Syntax:
+
+```
+PackageStatement ::= "package" TokenString
+```
+
+### ImportStatement
+
+Status: `Implmented`
+
+Syntax:
+
+```
+ImportStatement ::= "import" TokenString
+
 ### FileStatement
 
 Status: `Implmented`
@@ -363,6 +382,8 @@ Syntax:
 FileStatement ::= FunctionDefinition
                 | VariableDefinition
                 | VariableDeclaration
+                | ImportStatement
+                | PackageStatement
 ```
 
 ### File

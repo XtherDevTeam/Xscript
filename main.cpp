@@ -15,23 +15,28 @@ int main(int argc, const char **argv) {
         return 0;
     }
     std::wcout << L"[XScript 2 Early Test] Demo developed by Jerry Chou (Winghong Zau)\n";
-    std::wcout << L"Input filenames to compile and press ^D or ^Z + Enter to stop input.\n";
+    std::wcout << L"Input filenames to compile and type 'End' and press Enter to stop input.\n";
     XScript::XArray<XScript::XString> FilesToCompile;
-    while (!std::wcin.eof()) {
+    while (true) {
         XScript::XString Temp;
         std::wcout << L"(filename) ";
         std::wcin >> Temp;
+        if (Temp == L"End")
+            break;
         if (!Temp.empty())
             FilesToCompile.push_back(Temp);
     }
     try {
         XScript::Compiler::CompilerEnvironment Environ{};
-        for (auto &Filename: FilesToCompile) {
-            XScript::CompileForFile(Environ, Filename);
+
+        for (auto &I : FilesToCompile) {
+            XScript::CompileForFile(Environ, I);
         }
-        for (auto &Instruction: Environ.MainPackage.Functions.back().second.BytecodeArray) {
-            std::wcout << Instruction.ToString() << std::endl;
-        }
+
+        XScript::XString OutputFilename;
+        std::wcout << L"(output filename) ";
+        std::wcin >> OutputFilename;
+        XScript::OutputBinary(Environ, OutputFilename);
     } catch (XScript::ParserException &E) {
         std::cout << E.what() << std::endl;
     } catch (XScript::CompilerError &E) {

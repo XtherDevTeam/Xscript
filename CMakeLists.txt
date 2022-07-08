@@ -119,4 +119,4 @@ add_executable(Xscript2
         Core/Serializatior/BaseTypeSerializatior.cpp Core/Serializatior/BaseTypeSerializatior.hpp
         Core/Serializatior/ExtendedTypeSerializatior.cpp Core/Serializatior/ExtendedTypeSerializatior.hpp
         Frontend/Parsers/ClassDefinitionNodeGenerator.cpp Frontend/Parsers/ClassDefinitionNodeGenerator.hpp
-        Frontend/Parsers/ReturnStatementNodeGenerator.cpp Frontend/Parsers/ReturnStatementNodeGenerator.hpp Executor/EnvFunction.cpp Executor/EnvFunction.hpp Executor/EnvPackageStructure.cpp Executor/EnvPackageStructure.hpp Backend/ConstantPool.cpp Backend/ConstantPool.hpp)
+        Frontend/Parsers/ReturnStatementNodeGenerator.cpp Frontend/Parsers/ReturnStatementNodeGenerator.hpp Executor/EnvFunction.cpp Executor/EnvFunction.hpp Executor/EnvPackageStructure.cpp Executor/EnvPackageStructure.hpp Backend/ConstantPool.cpp Backend/ConstantPool.hpp Frontend/Parsers/ImportStatementNodeGenerator.cpp Frontend/Parsers/ImportStatementNodeGenerator.hpp Frontend/Parsers/PackageStatementNodeGenerator.cpp Frontend/Parsers/PackageStatementNodeGenerator.hpp)

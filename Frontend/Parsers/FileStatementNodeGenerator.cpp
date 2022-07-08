@@ -6,6 +6,8 @@
 #include "FunctionDefinitionNodeGenerator.hpp"
 #include "VariableStatementNodeGenerator.hpp"
 #include "ClassDefinitionNodeGenerator.hpp"
+#include "ImportStatementNodeGenerator.hpp"
+#include "PackageStatementNodeGenerator.hpp"
 
 namespace XScript {
     namespace Generator {
@@ -15,6 +17,14 @@ namespace XScript {
 
         AST FileStatementNodeGenerator::Parse() {
             AST Result{};
+
+            Result = ImportStatementNodeGenerator(L).Parse();
+            if (!Result.IsNotMatchNode())
+                return Result;
+
+            Result = PackageStatementNodeGenerator(L).Parse();
+            if (!Result.IsNotMatchNode())
+                return Result;
 
             Result = ClassDefinitionNodeGenerator(L).Parse();
             if (!Result.IsNotMatchNode())

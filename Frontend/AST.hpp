@@ -68,6 +68,7 @@ namespace XScript {
             ClassExtends,
             ClassInnerStatements,
             ClassDefinition,
+            ImportStatement,
         } Type;
         Lexer::Token Node;
         XArray<AST> Subtrees;

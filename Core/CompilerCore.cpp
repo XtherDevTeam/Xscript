@@ -9,6 +9,8 @@
 #include "../Backend/Compiler/FileCompiler.hpp"
 #include "../Frontend/Parsers/FileNodeGenerator.hpp"
 #include "../Share/Exceptions/InternalException.hpp"
+#include "Serializatior/BaseTypeSerializatior.hpp"
+#include "Serializatior/ExtendedTypeSerializatior.hpp"
 
 namespace XScript {
     void CompileForFile(XScript::Compiler::CompilerEnvironment &Environment, const XScript::XString &FilePath) {
@@ -36,6 +38,30 @@ namespace XScript {
         XScript::AST FileTree = XScript::Generator::FileNodeGenerator(Lex).Parse();
         MergeArray(Environment.MainPackage.PackageInitializeCodes,
                    XScript::Compiler::FileCompiler(Environment).GenerateForFile(FileTree));
+    }
+
+    void OutputBinary(Compiler::CompilerEnvironment &Environment, const XString &FilePath) {
+        FILE *FilePointer = fopen(XScript::wstring2string(FilePath).c_str(), "w+");
+        XIndexType MagicNumber = 0x114514ff2b;
+        Serializatior::BaseTypeSerializatior()(FilePointer, MagicNumber);
+        /* 写入依赖 */
+        Serializatior::BaseTypeSerializatior()(FilePointer, Environment.DependencyPackages.size());
+        for (auto &I:Environment.DependencyPackages) {
+            Serializatior::BaseTypeSerializatior()(FilePointer, GetFilenameFromPath(I.first));
+        }
+        /* 写入主包 */
+        Serializatior::ExtendedTypeSerializatior()(FilePointer, Environment.MainPackage);
+
+        fclose(FilePointer);
+    }
+
+    XString GetFilenameFromPath(const XString &Filepath) {
+        XIndexType From = Filepath.rfind('/');
+        if (From == XString::npos)
+            From = Filepath.rfind('\\');
+        if (From == XString::npos)
+            return L"";
+        return Filepath.substr(From);
     }
 
 }

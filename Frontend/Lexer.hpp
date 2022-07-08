@@ -17,8 +17,8 @@ namespace XScript {
       * Keywords in XScript 2
       */
     static XArray<XString> LexerReservedWords{
-            L"if", L"else", L"switch", L"for", L"while", L"public", L"private", L"const", L"final", L"virtual",
-            L"override", L"var", L"break", L"continue", L"extends", L"def", L"return", L"class"
+            L"if", L"else", L"switch", L"for", L"while", L"public", L"private", L"const",
+            L"override", L"var", L"break", L"continue", L"extends", L"def", L"return", L"class", L"package", L"import"
     };
 
     /**
