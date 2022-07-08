@@ -8,16 +8,19 @@
 #include "../Share/Utils.hpp"
 #include "EnvironmentStack.hpp"
 #include "EnvironmentHeap.hpp"
+#include "EnvPackageStructure.hpp"
 
 namespace XScript {
 
     /* XScript 2 Executor Environment */
-    /* TODO: Add packages system into XScript 2 */
     class Environment {
     public:
         EnvironmentStack Stack;
         EnvironmentHeap Heap;
         ProgramCounterInformation ProgramCounter;
+
+        XMap<XIndexType, EnvPackageStructure> DependencyPackages;
+        EnvPackageStructure MainPackage;
     };
 
 } // XScript

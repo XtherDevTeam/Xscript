@@ -9,27 +9,20 @@
 #include "EnvFunction.hpp"
 #include "EnvironmentStackItem.hpp"
 #include "../Backend/ConstantPool.hpp"
+#include "EnvConstantPool.hpp"
 
 namespace XScript {
 
     class EnvPackageStructure {
     public:
-        class EnvConstant {
-        public:
-            enum class ItemKind : XInteger {
-                StringVal
-            } Kind;
-
-            XString Value;
-        };
-
+        EnvConstantPool Constants;
+        
         XArray<BytecodeStructure> PackageInitializeCodes;
 
         XMap<XIndexType, EnvFunction> FunctionPool;
 
         XArray<EnvironmentStackItem> Statics;
 
-        XArray<EnvConstant> Constants;
 
         void ReadFromFile(FILE *FilePointer);
     };
