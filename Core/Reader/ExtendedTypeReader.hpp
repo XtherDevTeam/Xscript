@@ -15,6 +15,7 @@ namespace XScript {
     namespace Reader {
 
         class ExtendedTypeReader {
+        public:
             ExtendedTypeReader();
 
             BytecodeStructure::InstructionParam ReadInstructionParam(FILE *FilePointer);

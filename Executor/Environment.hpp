@@ -19,8 +19,11 @@ namespace XScript {
         EnvironmentHeap Heap;
         ProgramCounterInformation ProgramCounter;
 
+        XArray<XString> PathsToSearch;
         XMap<XIndexType, EnvPackageStructure> DependencyPackages;
         EnvPackageStructure MainPackage;
+
+        void LoadFromFile(const XString &FilePath, const XString& PackageName, bool IsMainPackage);
     };
 
 } // XScript
