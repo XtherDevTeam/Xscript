@@ -9,9 +9,9 @@ namespace XScript {
         /* ConstantPool Items */
         XIndexType ConstantPoolItemCount;
         fread(&ConstantPoolItemCount, sizeof(XIndexType), 1, FilePointer);
-        Constants.resize(ConstantPoolItemCount);
+        Constants.Constants.resize(ConstantPoolItemCount);
         for (XIndexType Index = 0; Index < ConstantPoolItemCount; Index++) {
-            fread(&Constants[Index].Kind, sizeof(EnvConstant::ItemKind), 1, FilePointer);
+            fread(&Constants[Index].Kind, sizeof(EnvConstantPool::EnvConstant::ItemKind), 1, FilePointer);
             XIndexType StringLength;
             fread(&StringLength, sizeof(XIndexType), 1, FilePointer);
             Constants[Index].Value.resize(StringLength);

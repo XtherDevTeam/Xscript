@@ -28,13 +28,16 @@ namespace XScript {
 
         if (IsMainPackage) {
             MainPackage = Reader::ExtendedTypeReader().ReadPackage(FilePointer);
+            if (!MainPackage.FunctionPool.count(Hash(L"main")))
+                throw InternalException(L"Environment::LoadFromFile() : Cannot find main() function for entry.");
         } else {
             DependencyPackages[Hash(PackageName)] = Reader::ExtendedTypeReader().ReadPackage(FilePointer);
             /* 设置依赖包中函数的包ID */
             for (auto &Function : DependencyPackages[Hash(PackageName)].FunctionPool) {
                 Function.second.PackageID = Hash(PackageName);
             }
+            /* 设置加载顺序 在启动虚拟机时执行初始化包代码 */
+            LoadedPackageIDs.push_back(Hash(PackageName));
         }
-        /* 在启动虚拟机时执行初始化包代码 */
     }
 } // XScript

@@ -12,7 +12,7 @@ namespace XScript {
     void BytecodeInterpreter::MainLoop() {
         while (InterpreterEnvironment.ProgramCounter.NowIndex !=
                InterpreterEnvironment.ProgramCounter.Pointer->size()) {
-            auto CurrentInstruction = (*InterpreterEnvironment.ProgramCounter.Pointer)[InterpreterEnvironment.ProgramCounter.NowIndex];
+            auto &CurrentInstruction = (*InterpreterEnvironment.ProgramCounter.Pointer)[InterpreterEnvironment.ProgramCounter.NowIndex];
             /* process commands */
 //            std::cout << "VMInstruction: " << wstring2string(CurrentInstruction.ToString()) << std::endl;
 

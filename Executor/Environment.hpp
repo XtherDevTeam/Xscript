@@ -20,6 +20,7 @@ namespace XScript {
         ProgramCounterInformation ProgramCounter;
 
         XArray<XString> PathsToSearch;
+        XArray<XIndexType> LoadedPackageIDs;
         XMap<XIndexType, EnvPackageStructure> DependencyPackages;
         EnvPackageStructure MainPackage;
 
