@@ -21,8 +21,7 @@ namespace XScript {
 
         XArray<XString> PathsToSearch;
         XArray<XIndexType> LoadedPackageIDs;
-        XMap<XIndexType, EnvPackageStructure> DependencyPackages;
-        EnvPackageStructure MainPackage;
+        XMap<XIndexType, EnvPackageStructure> Packages;
 
         void LoadFromFile(const XString &FilePath, const XString& PackageName, bool IsMainPackage);
     };

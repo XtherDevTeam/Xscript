@@ -10,7 +10,7 @@ namespace XScript::Instance {
         InterpreterEnvironment.Stack.FramesInformation.push_back((EnvironmentStackFramesInformation) {
                 EnvironmentStackFramesInformation::FrameKind::FunctionStackFrame, 0, 0, {}});
 
-        InterpreterEnvironment.ProgramCounter = (ProgramCounterInformation) {Commands};
+        InterpreterEnvironment.ProgramCounter = (ProgramCounterInformation) {Commands, static_cast<XIndexType>(0)};
     }
 
     void BasicTestFramework::Run() {

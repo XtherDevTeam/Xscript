@@ -1316,7 +1316,21 @@ namespace XScript {
     }
 
     void BytecodeInterpreter::InstructionFuncInvoke(BytecodeStructure::InstructionParam Param) {
-        /* TODO: Complete function invoking */
+        /* get function address */
+        EnvironmentStackItem Item = InterpreterEnvironment.Stack.PopValueFromStack();
+        /* invoke <params count> */
+        InterpreterEnvironment.Stack.FramesInformation.back().Length -= Param.HeapPointerValue;
+        InterpreterEnvironment.Stack.FramesInformation.push_back(
+                {EnvironmentStackFramesInformation::FrameKind::FunctionStackFrame,
+                 InterpreterEnvironment.Stack.FramesInformation.back().From +
+                 InterpreterEnvironment.Stack.FramesInformation.back().Length,
+                 Param.HeapPointerValue,
+                 InterpreterEnvironment.ProgramCounter
+                });
+
+        InterpreterEnvironment.ProgramCounter = (ProgramCounterInformation) {Item.Value.FuncPointerVal->BytecodeArray,
+                                                                             Item.Value.FuncPointerVal->PackageID};
+        InterpreterEnvironment.ProgramCounter.NowIndex += Param.IntValue - 1;
     }
 
     void BytecodeInterpreter::InstructionFuncReturn(BytecodeStructure::InstructionParam Param) {
@@ -1345,7 +1359,7 @@ namespace XScript {
         /**
          * 留给MainLoop更新PC的值
          */
-        InterpreterEnvironment.ProgramCounter.NowIndex --;
+        InterpreterEnvironment.ProgramCounter.NowIndex--;
     }
 
     void BytecodeInterpreter::InstructionStaticGet(BytecodeStructure::InstructionParam param) {
@@ -1353,7 +1367,9 @@ namespace XScript {
     }
 
     void BytecodeInterpreter::InstructionStackPushFunction(BytecodeStructure::InstructionParam param) {
-
+        InterpreterEnvironment.Stack.PushValueToStack(
+                (EnvironmentStackItem) {EnvironmentStackItem::ItemKind::FunctionPointer,
+                                        (EnvironmentStackItem::ItemValue) &InterpreterEnvironment.Packages[InterpreterEnvironment.ProgramCounter.Package].FunctionPool[param.HeapPointerValue]});
     }
 
     void BytecodeInterpreter::InstructionClassNew(BytecodeStructure::InstructionParam param) {

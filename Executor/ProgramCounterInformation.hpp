@@ -14,8 +14,9 @@ namespace XScript {
     public:
         XArray<BytecodeStructure> *Pointer;
         XIndexType NowIndex;
+        XIndexType Package;
 
-        explicit ProgramCounterInformation(XArray<BytecodeStructure> &NewCounter);
+        explicit ProgramCounterInformation(XArray<BytecodeStructure> &NewCounter, XIndexType InWhichPackage);
 
         explicit ProgramCounterInformation(XArray<BytecodeStructure> &Counter, XInteger Start);
 

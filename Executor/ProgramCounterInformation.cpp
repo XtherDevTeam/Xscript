@@ -5,9 +5,10 @@
 #include "ProgramCounterInformation.hpp"
 
 namespace XScript {
-    ProgramCounterInformation::ProgramCounterInformation(XArray<BytecodeStructure> &NewCounter) {
+    ProgramCounterInformation::ProgramCounterInformation(XArray<BytecodeStructure> &NewCounter, XIndexType InWhichPackage) {
         Pointer = &NewCounter;
         NowIndex = 0;
+        Package = InWhichPackage;
     }
 
     ProgramCounterInformation::ProgramCounterInformation(XArray<BytecodeStructure> &NewCounter, XInteger From)

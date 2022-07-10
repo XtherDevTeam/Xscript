@@ -279,7 +279,6 @@ namespace XScript::Compiler {
                                                               (BytecodeStructure::InstructionParam) {Item.first}});
                     } catch (InternalException &E) {
                         try {
-                            /* If variable doesn't exist, then GetStatic will throw an error */
                             auto Item = Environment.MainPackage.GetStatic(Target.Node.Value);
                             Result.push_back(
                                     (BytecodeStructure) {BytecodeStructure::InstructionEnum::static_get,
@@ -303,20 +302,25 @@ namespace XScript::Compiler {
             }
             case AST::TreeType::FunctionCallingExpression: {
                 if (!IsMemberExpression) {
-                    MergeArray(Result, Generate(Target.Subtrees[0]));
-
                     for (auto &I: Target.Subtrees[1].Subtrees) {
                         MergeArray(Result, Generate(I));
                     }
+
+                    /* let the executor get the function address first */
+                    MergeArray(Result, Generate(Target.Subtrees[0]));
+
                     Result.push_back((BytecodeStructure) {
                             BytecodeStructure::InstructionEnum::func_invoke,
                             (BytecodeStructure::InstructionParam) {(XHeapIndexType) Target.Subtrees[1].Subtrees.size()}
                     });
                 } else {
-                    MergeArray(Result, ParseMemberExpression(Target.Subtrees[0], IsMemberExpression));
                     for (auto &I: Target.Subtrees[1].Subtrees) {
                         MergeArray(Result, Generate(I));
                     }
+
+                    /* let the executor get the function address first */
+                    MergeArray(Result, ParseMemberExpression(Target.Subtrees[0], IsMemberExpression));
+
                     Result.push_back((BytecodeStructure) {
                             BytecodeStructure::InstructionEnum::func_invoke,
                             (BytecodeStructure::InstructionParam) {(XHeapIndexType) Target.Subtrees[1].Subtrees.size()}

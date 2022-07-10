@@ -5,13 +5,14 @@
 #include "Executor.hpp"
 
 namespace XScript {
-    void Executor::Load(const XString& ExecutableFilePath) {
+    void Executor::Load(const XString &ExecutableFilePath) {
         VM.LoadFromFile(ExecutableFilePath, L"main", true);
     }
 
     void Executor::Init() {
-        for (auto &PackageID : VM.LoadedPackageIDs) {
-            VM.ProgramCounter = (ProgramCounterInformation){VM.DependencyPackages[PackageID].PackageInitializeCodes};
+        for (auto &PackageID: VM.LoadedPackageIDs) {
+            VM.ProgramCounter = (ProgramCounterInformation) {VM.Packages[PackageID].PackageInitializeCodes,
+                                                             PackageID};
             Interpreter.MainLoop();
         }
     }
