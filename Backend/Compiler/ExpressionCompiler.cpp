@@ -28,7 +28,12 @@ namespace XScript::Compiler {
             case AST::TreeType::Primary: {
                 switch (Target.Node.Kind) {
                     case Lexer::TokenKind::String:
-                        /* TODO: Add constant pool to XScript 2 */
+                        Result.push_back(
+                                (BytecodeStructure) {BytecodeStructure::InstructionEnum::constants_load,
+                                                     (BytecodeStructure::InstructionParam) {
+                                                             Environment.MainPackage.Constants.Push(
+                                                                     (ConstantPool::ItemStructure) {
+                                                                             Target.Node.Value})}});
                         break;
                     case Lexer::TokenKind::Integer:
                         Result.push_back(

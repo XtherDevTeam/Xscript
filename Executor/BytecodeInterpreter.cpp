@@ -1052,11 +1052,26 @@ namespace XScript {
 
     void BytecodeInterpreter::InstructionStaticStore(BytecodeStructure::InstructionParam Param) {
         EnvironmentStackItem Element = InterpreterEnvironment.Stack.PopValueFromStack();
-        /* TODO: Add packages to XScript2 */
+        InterpreterEnvironment.Packages[InterpreterEnvironment.ProgramCounter.Package].SetStatic(Param.HeapPointerValue,
+                                                                                                 Element);
     }
 
     void BytecodeInterpreter::InstructionConstantsLoad(BytecodeStructure::InstructionParam Param) {
-        /* TODO: Add constant pool to XScript 2 */
+        auto &Element = InterpreterEnvironment.Packages[InterpreterEnvironment.ProgramCounter.Package].Constants[Param.HeapPointerValue];
+        switch (Element.Kind) {
+            case EnvConstantPool::EnvConstant::ItemKind::StringVal:
+                InterpreterEnvironment.Stack.PushValueToStack(
+                        (EnvironmentStackItem) {EnvironmentStackItem::ItemKind::HeapPointer,
+                                                (EnvironmentStackItem::ItemValue) {
+                                                        InterpreterEnvironment.Heap.PushElement(
+                                                                (EnvObject) {EnvObject::ObjectKind::StringObject,
+                                                                             (EnvObject::ObjectValue) {
+                                                                                     CreateEnvStringObjectFromXString(
+                                                                                             Element.Value)}})}
+                        });
+
+                break;
+        }
     }
 
     void BytecodeInterpreter::InstructionCalculationNegate(BytecodeStructure::InstructionParam Param) {
@@ -1363,7 +1378,9 @@ namespace XScript {
     }
 
     void BytecodeInterpreter::InstructionStaticGet(BytecodeStructure::InstructionParam param) {
-
+        InterpreterEnvironment.Stack.PushValueToStack(
+                InterpreterEnvironment.Packages[InterpreterEnvironment.ProgramCounter.Package].GetStatic(
+                        param.HeapPointerValue));
     }
 
     void BytecodeInterpreter::InstructionStackPushFunction(BytecodeStructure::InstructionParam param) {

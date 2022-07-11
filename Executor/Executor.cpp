@@ -22,6 +22,10 @@ namespace XScript {
     }
 
     void Executor::Start() {
-        /* TODO: add invoke command */
+        // 设置启动地址
+        // 不用设置ProgramCounter的Package, 最后Init的一定是主包
+        Interpreter.InstructionFuncInvoke((BytecodeStructure::InstructionParam) {Hash(L"main")});
+
+        Interpreter.MainLoop();
     }
 } // XScript

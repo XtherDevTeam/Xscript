@@ -45,4 +45,12 @@ namespace XScript {
             fread(&PackageInitializeCodes[BytecodeIndex], sizeof(BytecodeStructure), 1, FilePointer);
         }
     }
+
+    void EnvPackageStructure::SetStatic(XHeapIndexType i, EnvironmentStackItem stackItem) {
+        Statics[i] = stackItem;
+    }
+
+    const EnvironmentStackItem &EnvPackageStructure::GetStatic(XHeapIndexType i) {
+        return Statics[i];
+    }
 } // XScript

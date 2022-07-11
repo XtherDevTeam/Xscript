@@ -25,6 +25,10 @@ namespace XScript {
 
 
         void ReadFromFile(FILE *FilePointer);
+
+        void SetStatic(XHeapIndexType i, EnvironmentStackItem stackItem);
+
+        const EnvironmentStackItem &GetStatic(XHeapIndexType i);
     };
 
 } // XScript
