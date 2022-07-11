@@ -13,7 +13,13 @@ namespace XScript {
         for (auto &PackageID: VM.LoadedPackageIDs) {
             VM.ProgramCounter = (ProgramCounterInformation) {VM.Packages[PackageID].PackageInitializeCodes,
                                                              PackageID};
+            VM.Stack.FramesInformation.push_back(
+                    {EnvironmentStackFramesInformation::FrameKind::FunctionStackFrame,
+                     0,
+                     0,
+                     VM.ProgramCounter});
             Interpreter.MainLoop();
+            VM.Stack.FramesInformation.pop_back();
         }
     }
 
@@ -24,8 +30,15 @@ namespace XScript {
     void Executor::Start() {
         // 设置启动地址
         // 不用设置ProgramCounter的Package, 最后Init的一定是主包
-        Interpreter.InstructionFuncInvoke((BytecodeStructure::InstructionParam) {Hash(L"main")});
+        VM.Stack.FramesInformation.push_back(
+                {EnvironmentStackFramesInformation::FrameKind::FunctionStackFrame,
+                 0,
+                 0,
+                 VM.ProgramCounter});
 
+        Interpreter.InstructionStackPushFunction((BytecodeStructure::InstructionParam) {Hash(L"main")});
+        Interpreter.InstructionFuncInvoke((BytecodeStructure::InstructionParam) {(XHeapIndexType) {0}});
+        VM.ProgramCounter.NowIndex++;
         Interpreter.MainLoop();
     }
 } // XScript

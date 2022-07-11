@@ -2,7 +2,7 @@
 // Created by Jerry Chou on 2022/5/14.
 //
 
-//#include <iostream>
+#include <iostream>
 #include "BytecodeInterpreter.hpp"
 
 namespace XScript {
@@ -14,7 +14,7 @@ namespace XScript {
                InterpreterEnvironment.ProgramCounter.Pointer->size()) {
             auto &CurrentInstruction = (*InterpreterEnvironment.ProgramCounter.Pointer)[InterpreterEnvironment.ProgramCounter.NowIndex];
             /* process commands */
-//            std::cout << "VMInstruction: " << wstring2string(CurrentInstruction.ToString()) << std::endl;
+            std::wcout << L"VMInstruction: " << CurrentInstruction.ToString() << std::endl << std::flush;
 
             switch (CurrentInstruction.Instruction) {
                 case BytecodeStructure::InstructionEnum::calculation_add:

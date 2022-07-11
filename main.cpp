@@ -7,14 +7,30 @@
 #include "Share/Exceptions/CompilerError.hpp"
 #include "Share/Exceptions/ParserException.hpp"
 #include "Core/CompilerCore.hpp"
+#include "Executor/Executor.hpp"
 
 
 int main(int argc, const char **argv) {
+    std::wcout << L"[XScript 2 Early Test] Demo developed by Jerry Chou (Winghong Zau)\n";
+
     if (argc == 2 && XScript::XBytes{argv[1]} == "ci") {
         std::cout << "CI detected, skipped.\n";
         return 0;
+    } else if (argc == 2 && XScript::XBytes{argv[1]} == "vm") {
+        std::wcout << L"XScript Program Executor Early Test\n";
+        XScript::Executor Executor;
+        Executor.VM.PathsToSearch.push_back(L".");
+
+        std::wcout << L"Input package filename.\n";
+        XScript::XString PkgFilePath;
+        std::wcout << L"(filename) ";
+        std::wcin >> PkgFilePath;
+
+        Executor.Load(PkgFilePath);
+        Executor.Init();
+        Executor.Start();
+        return 0;
     }
-    std::wcout << L"[XScript 2 Early Test] Demo developed by Jerry Chou (Winghong Zau)\n";
     std::wcout << L"Input filenames to compile and type 'End' and press Enter to stop input.\n";
     XScript::XArray<XScript::XString> FilesToCompile;
     while (true) {

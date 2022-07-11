@@ -91,7 +91,8 @@ namespace XScript {
 
             XIndexType FunctionsLength = BaseTypeReader().ReadIndex(FilePointer);
             for (XIndexType I = 0; I < FunctionsLength; I++) {
-                Result.FunctionPool[BaseTypeReader().ReadIndex(FilePointer)] = ReadFunction(FilePointer);
+                XString FuncName = BaseTypeReader().ReadString(FilePointer);
+                Result.FunctionPool[Hash(FuncName)] = ReadFunction(FilePointer);
             }
 
             Result.PackageInitializeCodes = ReadInstructionArray(FilePointer);

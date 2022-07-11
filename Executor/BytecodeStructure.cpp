@@ -114,6 +114,10 @@ namespace XScript {
                 Result += L"stack_push_boolean";
                 ParamType = B;
                 break;
+            case InstructionEnum::stack_push_function:
+                Result += L"stack_push_function";
+                ParamType = H;
+                break;
             case InstructionEnum::stack_push_empty:
                 Result += L"stack_push_empty";
                 ParamType = N;
