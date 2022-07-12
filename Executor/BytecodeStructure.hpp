@@ -75,6 +75,7 @@ namespace XScript {
             fake_command_break,
             func_invoke,
             func_return,
+            force_exit,
             /*未完成命令*/
             calculation_increment,
             calculation_decrement,

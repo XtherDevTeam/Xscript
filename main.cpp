@@ -45,6 +45,17 @@ int main(int argc, const char **argv) {
     try {
         XScript::Compiler::CompilerEnvironment Environ{};
 
+        std::wcout << L"Input compiler flags and type 'End' and press Enter to stop input.\n";
+        while (true) {
+            XScript::XString Temp;
+            std::wcout << L"(flag) ";
+            std::wcin >> Temp;
+            if (Temp == L"End")
+                break;
+            if (!Temp.empty())
+                Environ.CompilerFlags.push_back(Temp);
+        }
+
         for (auto &I : FilesToCompile) {
             XScript::CompileForFile(Environ, I);
         }

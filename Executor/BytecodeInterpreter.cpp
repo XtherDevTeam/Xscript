@@ -154,6 +154,8 @@ namespace XScript {
                 case BytecodeStructure::InstructionEnum::func_return:
                     InstructionFuncReturn(CurrentInstruction.Param);
                     break;
+                case BytecodeStructure::InstructionEnum::force_exit:
+                    return;
                 case BytecodeStructure::InstructionEnum::fake_command_continue:
                 case BytecodeStructure::InstructionEnum::fake_command_break:
                     break;
@@ -1345,7 +1347,9 @@ namespace XScript {
 
         InterpreterEnvironment.ProgramCounter = (ProgramCounterInformation) {Item.Value.FuncPointerVal->BytecodeArray,
                                                                              Item.Value.FuncPointerVal->PackageID};
-        InterpreterEnvironment.ProgramCounter.NowIndex += Param.IntValue - 1;
+
+        // Fix bugs
+        InterpreterEnvironment.ProgramCounter.NowIndex -= 1;
     }
 
     void BytecodeInterpreter::InstructionFuncReturn(BytecodeStructure::InstructionParam Param) {
@@ -1369,10 +1373,7 @@ namespace XScript {
          */
         InterpreterEnvironment.Stack.PushValueToStack(Element);
 
-        /**
-         * 留给MainLoop更新PC的值
-         */
-        InterpreterEnvironment.ProgramCounter.NowIndex--;
+        /* 不需要调整ProgramCounter, 进入Invoke下一条指令 */
     }
 
     void BytecodeInterpreter::InstructionStaticGet(BytecodeStructure::InstructionParam param) {

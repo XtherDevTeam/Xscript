@@ -8,11 +8,13 @@
 #include "../Backend/CompilerEnvironment.hpp"
 
 namespace XScript {
-    void CompileForFile(XScript::Compiler::CompilerEnvironment &Environment, const XScript::XString &FilePath);
+    void CompileForFile(Compiler::CompilerEnvironment &Environment, const XString &FilePath);
 
     XString GetFilenameFromPath(const XString& Filepath);
 
-    void OutputBinary(XScript::Compiler::CompilerEnvironment &Environment, const XScript::XString &FilePath);
+    void GenerateRuntimeFunction(Compiler::CompilerEnvironment &Environment);
+
+    void OutputBinary(Compiler::CompilerEnvironment &Environment, const XString &FilePath);
 }
 
 #endif //XSCRIPT2_COMPILERCORE_HPP

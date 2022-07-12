@@ -211,6 +211,10 @@ namespace XScript {
                 Result += L"func_return";
                 ParamType = N;
                 break;
+            case InstructionEnum::force_exit:
+                Result += L"force_exit";
+                ParamType = N;
+                break;
         }
 
         Result = L"<XCommand Instruction=" + Result;

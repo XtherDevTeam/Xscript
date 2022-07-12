@@ -30,7 +30,7 @@ namespace XScript {
         if (IsMainPackage) {
             Packages[PkgID] = Reader::ExtendedTypeReader().ReadPackage(FilePointer);
             if (!Packages[PkgID].FunctionPool.count(Hash(L"main")))
-                throw InternalException(L"Environment::LoadFromFile() : Cannot find main() function for entry.");
+                throw InternalException(L"Environment::LoadFromFile() : Cannot find __XScriptRuntimeEntry__() function for entry.");
 
             for (auto &Function : Packages[Hash(PackageName)].FunctionPool) {
                 Function.second.PackageID = PkgID;

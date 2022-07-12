@@ -13,6 +13,8 @@ namespace XScript::Compiler {
 
     class CompilerEnvironment {
     public:
+        XArray<XString> CompilerFlags;
+
         CompilingTimePackageStructure MainPackage;
 
         XArray<std::pair<XString, CompilingTimePackageStructure>> DependencyPackages;

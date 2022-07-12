@@ -36,7 +36,7 @@ namespace XScript {
                  0,
                  VM.ProgramCounter});
 
-        Interpreter.InstructionStackPushFunction((BytecodeStructure::InstructionParam) {Hash(L"main")});
+        Interpreter.InstructionStackPushFunction((BytecodeStructure::InstructionParam) {Hash(L"__XScriptRuntimeEntry__")});
         Interpreter.InstructionFuncInvoke((BytecodeStructure::InstructionParam) {(XHeapIndexType) {0}});
         VM.ProgramCounter.NowIndex++;
         Interpreter.MainLoop();

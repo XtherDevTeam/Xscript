@@ -41,12 +41,16 @@ namespace XScript {
     }
 
     void OutputBinary(Compiler::CompilerEnvironment &Environment, const XString &FilePath) {
+        // 写入运行时函数
+        GenerateRuntimeFunction(Environment);
+
         FILE *FilePointer = fopen(XScript::wstring2string(FilePath).c_str(), "w+");
         XIndexType MagicNumber = 0x114514ff2b;
         Serializatior::BaseTypeSerializatior()(FilePointer, MagicNumber);
         /* 写入依赖 */
-        Serializatior::BaseTypeSerializatior()(FilePointer, static_cast<XIndexType>(Environment.DependencyPackages.size()));
-        for (auto &I:Environment.DependencyPackages) {
+        Serializatior::BaseTypeSerializatior()(FilePointer,
+                                               static_cast<XIndexType>(Environment.DependencyPackages.size()));
+        for (auto &I: Environment.DependencyPackages) {
             Serializatior::BaseTypeSerializatior()(FilePointer, GetFilenameFromPath(I.first));
         }
         /* 写入主包 */
@@ -62,6 +66,29 @@ namespace XScript {
         if (From == XString::npos)
             return L"";
         return Filepath.substr(From);
+    }
+
+    void GenerateRuntimeFunction(Compiler::CompilerEnvironment &Environment) {
+        if (std::find(Environment.CompilerFlags.begin(), Environment.CompilerFlags.end(),
+                      L"compile_as_executable.true") != Environment.CompilerFlags.end()) {
+            Compiler::CompilingTimeFunction XScriptRuntimeEntryFunction = Compiler::CompilingTimeFunction({}, {});
+
+            auto ISExist = Environment.MainPackage.GetFunction(L"main").first;
+
+            XScriptRuntimeEntryFunction.BytecodeArray.push_back(
+                    (BytecodeStructure) {BytecodeStructure::InstructionEnum::stack_push_function,
+                                         (BytecodeStructure::InstructionParam) {Hash(L"main")}});
+
+            XScriptRuntimeEntryFunction.BytecodeArray.push_back((BytecodeStructure) {
+                    BytecodeStructure::InstructionEnum::func_invoke,
+                    (BytecodeStructure::InstructionParam) {static_cast<XIndexType>(0)}
+            });
+            XScriptRuntimeEntryFunction.BytecodeArray.push_back((BytecodeStructure) {
+                    BytecodeStructure::InstructionEnum::force_exit,
+                    (BytecodeStructure::InstructionParam) {static_cast<XIndexType>(0)}
+            });
+            Environment.MainPackage.PushFunction(L"__XScriptRuntimeEntry__", XScriptRuntimeEntryFunction);
+        }
     }
 
 }

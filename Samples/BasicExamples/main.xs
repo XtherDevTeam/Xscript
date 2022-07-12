@@ -6,10 +6,10 @@ class ClassA {
     }
 };
 
+def add_number(a, b) {
+    return a + b;
+}
+
 def main () {
-    var i = 0;
-    i = 114514;
-    var j = 1;
-    j = i + 1919810;
-    return j;
+    return add_number(1+1+4, 514);
 }
