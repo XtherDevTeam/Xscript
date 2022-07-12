@@ -11,4 +11,5 @@ def main () {
     i = 114514;
     var j = 1;
     j = i + 1919810;
+    return j;
 }

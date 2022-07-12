@@ -1357,10 +1357,8 @@ namespace XScript {
         /**
          * 调整栈帧
          */
-        for (XIndexType Start = InterpreterEnvironment.Stack.FramesInformation.back().From;
-             Start != InterpreterEnvironment.Stack.FramesInformation.back().From +
-                      InterpreterEnvironment.Stack.FramesInformation.back().Length;
-             Start++) {
+        XIndexType S = InterpreterEnvironment.Stack.FramesInformation.back().Length;
+        while (S--) {
             InterpreterEnvironment.Stack.PopValueFromStack();
         }
         InterpreterEnvironment.ProgramCounter = InterpreterEnvironment.Stack.FramesInformation.back().ReturnAddress;
