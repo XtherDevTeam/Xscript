@@ -33,6 +33,7 @@ namespace XScript {
         }
 
         void ExtendedTypeSerializatior::operator()(FILE *FilePointer, const Compiler::CompilingTimeFunction &Function) {
+            BaseTypeSerializatior()(FilePointer, static_cast<XIndexType>(Function.ArgumentsList.size()));
             ExtendedTypeSerializatior()(FilePointer, Function.BytecodeArray);
         }
 
@@ -111,6 +112,10 @@ namespace XScript {
             ExtendedTypeSerializatior()(FilePointer, Package.PackageInitializeCodes);
 
             BaseTypeSerializatior()(FilePointer, static_cast<XIndexType>(Package.Statics.size()));
+            for (auto &Item : Package.Statics) {
+                BaseTypeSerializatior()(FilePointer, Item.first);
+                BaseTypeSerializatior()(FilePointer, Item.second.IsConstant);
+            }
         }
     } // XScript
 } // Serializatior

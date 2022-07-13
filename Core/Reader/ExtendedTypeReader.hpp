@@ -10,6 +10,8 @@
 #include "../../Executor/EnvConstantPool.hpp"
 #include "../../Executor/EnvPackageStructure.hpp"
 #include "../../Executor/Environment.hpp"
+#include "../../Backend/CompilingTimeFunction.hpp"
+#include "../../Backend/CompilingTimePackageStructure.hpp"
 
 namespace XScript {
     namespace Reader {
@@ -37,6 +39,16 @@ namespace XScript {
             EnvConstantPool ReadConstants(FILE *FilePointer);
 
             EnvPackageStructure ReadPackage(FILE *FilePointer);
+
+            Compiler::CompilingTimeFunction ReadFunctionEx(FILE *FilePointer);
+
+            XArray<Compiler::CompilingTimeFunction> ReadFunctionArrayEx(FILE *FilePointer);
+
+            Compiler::ConstantPool::ItemStructure ReadConstantEx(FILE *FilePointer);
+
+            Compiler::ConstantPool ReadConstantsEx(FILE *FilePointer);
+
+            Compiler::CompilingTimePackageStructure ReadPackageEx(FILE *FilePointer);
         };
 
     } // XScript

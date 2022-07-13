@@ -54,6 +54,7 @@ namespace XScript {
         }
 
         EnvFunction ExtendedTypeReader::ReadFunction(FILE *FilePointer) {
+            BaseTypeReader().ReadIndex(FilePointer);
             return (EnvFunction) {0, ReadInstructionArray(FilePointer)};
         }
 
@@ -98,8 +99,65 @@ namespace XScript {
             Result.PackageInitializeCodes = ReadInstructionArray(FilePointer);
 
             Result.Statics.resize(BaseTypeReader().ReadIndex(FilePointer));
+            for (XIndexType X = 0; X < Result.Statics.size(); X++) {
+                BaseTypeReader().ReadString(FilePointer);
+                BaseTypeReader().ReadBoolean(FilePointer);
+            }
 
             return Result;
         }
+
+        Compiler::CompilingTimeFunction ExtendedTypeReader::ReadFunctionEx(FILE *FilePointer) {
+            XArray<XString> ArgList;
+            ArgList.resize(BaseTypeReader().ReadIndex(FilePointer));
+            return {{}, ArgList, ReadInstructionArray(FilePointer)};
+        }
+
+        XArray<Compiler::CompilingTimeFunction> ExtendedTypeReader::ReadFunctionArrayEx(FILE *FilePointer) {
+            XArray<Compiler::CompilingTimeFunction> Res;
+            XIndexType ReadIndex = BaseTypeReader().ReadIndex(FilePointer);
+            while (ReadIndex--) {
+                Res.push_back(ReadFunctionEx(FilePointer));
+            }
+            return Res;
+        }
+
+        Compiler::ConstantPool::ItemStructure ExtendedTypeReader::ReadConstantEx(FILE *FilePointer) {
+            BaseTypeReader().ReadInteger(FilePointer);
+            return (Compiler::ConstantPool::ItemStructure) {BaseTypeReader().ReadString(FilePointer)};
+        }
+
+        Compiler::ConstantPool ExtendedTypeReader::ReadConstantsEx(FILE *FilePointer) {
+            Compiler::ConstantPool Res;
+            XIndexType IdxForRes = BaseTypeReader().ReadIndex(FilePointer);
+            while (IdxForRes--) {
+                Res.Push(ReadConstantEx(FilePointer));
+            }
+            return Res;
+        }
+
+        Compiler::CompilingTimePackageStructure ExtendedTypeReader::ReadPackageEx(FILE *FilePointer) {
+            Compiler::CompilingTimePackageStructure Result;
+            Result.Constants = ReadConstantsEx(FilePointer);
+
+            XIndexType FunctionsLength = BaseTypeReader().ReadIndex(FilePointer);
+            for (XIndexType I = 0; I < FunctionsLength; I++) {
+                XString FuncName = BaseTypeReader().ReadString(FilePointer);
+                Result.PushFunction(FuncName, ReadFunctionEx(FilePointer));
+            }
+
+            Result.PackageInitializeCodes = ReadInstructionArray(FilePointer);
+
+            XIndexType StaticsLength = BaseTypeReader().ReadIndex(FilePointer);
+            while (StaticsLength--) {
+                Result.PushStatic(BaseTypeReader().ReadString(FilePointer), (Compiler::SymbolItem) {
+                        (Compiler::Typename) {Compiler::Typename::TypenameKind::Unknown},
+                        BaseTypeReader().ReadBoolean(FilePointer)});
+            }
+
+            return Result;
+        }
+
+
     } // XScript
 } // Reader

@@ -13,6 +13,8 @@ namespace XScript::Compiler {
 
     class CompilerEnvironment {
     public:
+        XArray<XString> PathsToSearch;
+
         XArray<XString> CompilerFlags;
 
         CompilingTimePackageStructure MainPackage;
@@ -20,6 +22,8 @@ namespace XScript::Compiler {
         XArray<std::pair<XString, CompilingTimePackageStructure>> DependencyPackages;
 
         XArray<std::pair<XString, SymbolItem>> Locals;
+
+        void ImportFromPackage(const XString& FileName);
 
         XIndexType PushLocal(const XString &Name, const SymbolItem &Item);
 
