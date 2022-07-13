@@ -30,7 +30,6 @@ int main(int argc, const char **argv) {
         Executor.Init();
         XScript::XIndexType Duration = Executor.StartWithRuntimeDuration();
         std::wcout << L"Executing duration: " << Duration << "ms\n";
-        std::wcout << XScript::CovertToXString(Executor.VM.Heap.HeapData[Executor.VM.Stack.Elements.back().Value.HeapPointerVal].Value.StringObjectPointer) << std::endl;
         return 0;
     }
     std::wcout << L"Input filenames to compile and type 'End' and press Enter to stop input.\n";
