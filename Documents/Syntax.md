@@ -29,6 +29,16 @@ Status: `Implmented`
 
 Syntax: `Arguments ::= TokenLeftParentheses [ Expression { ", " Expression } ] TokenRightParentheses`
 
+### CrossPackageAccessExpression
+
+Status: `Unimplmented`
+
+Syntax:
+
+```
+CrossPackageAccessExpression ::= "@" "{" TokenString "}" TokenToSign MemberExpression
+```
+
 ### IndexExpression
 
 Status: `Implmented`
@@ -69,8 +79,8 @@ Status: `Implmented`
 Syntax:
 
 ```
-NegativeExpression ::= TokenMinus ( MemberExpression | Primary )
-                     | ( MemberExpression | Primary )
+NegativeExpression ::= TokenMinus ( CrossPackageAccessExpression | MemberExpression | Primary )
+                     | ( CrossPackageAccessExpression | MemberExpression | Primary )
 ```
 
 ### IncrementExpression
@@ -371,6 +381,7 @@ Syntax:
 
 ```
 ImportStatement ::= "import" TokenString
+```
 
 ### FileStatement
 

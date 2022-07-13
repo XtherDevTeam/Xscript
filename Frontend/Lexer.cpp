@@ -122,6 +122,9 @@ namespace XScript {
             } else if (String[Position] == L'-') {
                 NextCharacter();   // Read after '+'
                 LastToken = {TokenKind::DecrementSign, L"--", Line, Column};
+            } else if (String[Position] == L'>') {
+                NextCharacter();   // Read after '>'
+                LastToken = {TokenKind::ToSign, L"->", Line, Column};
             } else {
                 LastToken = {TokenKind::Minus, L"-", Line, Column};
             }

@@ -24,6 +24,9 @@ namespace XScript::Compiler {
                                                       (BytecodeStructure::InstructionParam) {(XIndexType) 0}});
                 break;
             }
+            case AST::TreeType::CrossPackageAccessExpression: {
+                /* TODO: Adding backend for cross package access expression */
+            }
 
             case AST::TreeType::Primary: {
                 switch (Target.Node.Kind) {

@@ -40,7 +40,7 @@ namespace XScript {
     }
 
     bool IsAlpha(wchar_t Char) {
-        return ((Char >= L'A' && Char <= L'Z') || (Char >= L'a' && Char <= 'z') || Char == L'_');
+        return ((Char >= L'A' && Char <= L'Z') || (Char >= L'a' && Char <= 'z') || Char == L'_' || Char == L'@');
     }
 
     XInteger XStringToXInteger(const XString &T) {
