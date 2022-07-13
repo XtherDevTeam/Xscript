@@ -2,6 +2,7 @@
 // Created by Jerry Chou on 2022/5/14.
 //
 
+//#include <iostream>
 #include "BytecodeInterpreter.hpp"
 
 namespace XScript {
@@ -228,8 +229,35 @@ namespace XScript {
                 }
                 InterpreterEnvironment.Stack.PushValueToStack(Left);
                 break;
-            case EnvironmentStackItem::ItemKind::FunctionPointer:
             case EnvironmentStackItem::ItemKind::HeapPointer:
+                switch (InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal].Kind) {
+                    case EnvObject::ObjectKind::ClassObject:
+                        break;
+                    case EnvObject::ObjectKind::ArrayObject:
+                        /* TODO: Adding support for array objects */
+                        break;
+                    case EnvObject::ObjectKind::StringObject:
+                        if (Right.Kind == EnvironmentStackItem::ItemKind::HeapPointer and
+                            InterpreterEnvironment.Heap.HeapData[Right.Value.HeapPointerVal].Kind ==
+                            EnvObject::ObjectKind::StringObject) {
+                            auto ObjPointer = InterpreterEnvironment.Heap.PushElement(
+                                    {EnvObject::ObjectKind::StringObject,
+                                     (EnvObject::ObjectValue) {MergeEnvStringObject(
+                                             InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal].Value.StringObjectPointer,
+                                             InterpreterEnvironment.Heap.HeapData[Right.Value.HeapPointerVal].Value.StringObjectPointer)}});
+
+                            InterpreterEnvironment.Stack.PushValueToStack(
+                                    (EnvironmentStackItem) {EnvironmentStackItem::ItemKind::HeapPointer,
+                                                            (EnvironmentStackItem::ItemValue) {ObjPointer}});
+                        } else {
+                            throw BytecodeInterpretError(L"Unsupported string operation.");
+                        }
+                        break;
+                    default:
+                        throw BytecodeInterpretError(L"Cannot operate an basic-type heap item.");
+                }
+                break;
+            case EnvironmentStackItem::ItemKind::FunctionPointer:
                 break;
             case EnvironmentStackItem::ItemKind::Null:
                 throw BytecodeInterpretError(L"Cannot add elements with a null value.");
@@ -301,7 +329,19 @@ namespace XScript {
                 InterpreterEnvironment.Stack.PushValueToStack(Left);
                 break;
             case EnvironmentStackItem::ItemKind::FunctionPointer:
+                break;
             case EnvironmentStackItem::ItemKind::HeapPointer:
+                switch (InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal].Kind) {
+                    case EnvObject::ObjectKind::ClassObject:
+                        break;
+                    case EnvObject::ObjectKind::ArrayObject:
+                        /* TODO: Adding support for array objects */
+                        break;
+                    case EnvObject::ObjectKind::StringObject:
+                        throw BytecodeInterpretError(L"Unsupported string operation.");
+                    default:
+                        throw BytecodeInterpretError(L"Cannot operate an basic-type heap item.");
+                }
                 break;
             case EnvironmentStackItem::ItemKind::Null:
                 throw BytecodeInterpretError(L"Cannot add elements with a null value.");
@@ -374,7 +414,19 @@ namespace XScript {
                 InterpreterEnvironment.Stack.PushValueToStack(Left);
                 break;
             case EnvironmentStackItem::ItemKind::FunctionPointer:
+                break;
             case EnvironmentStackItem::ItemKind::HeapPointer:
+                switch (InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal].Kind) {
+                    case EnvObject::ObjectKind::ClassObject:
+                        break;
+                    case EnvObject::ObjectKind::ArrayObject:
+                        /* TODO: Adding support for array objects */
+                        break;
+                    case EnvObject::ObjectKind::StringObject:
+                        throw BytecodeInterpretError(L"Unsupported string operation.");
+                    default:
+                        throw BytecodeInterpretError(L"Cannot operate an basic-type heap item.");
+                }
                 break;
             case EnvironmentStackItem::ItemKind::Null:
                 throw BytecodeInterpretError(L"Cannot add elements with a null value.");
@@ -447,8 +499,19 @@ namespace XScript {
                 InterpreterEnvironment.Stack.PushValueToStack(Left);
                 break;
             case EnvironmentStackItem::ItemKind::FunctionPointer:
-            case EnvironmentStackItem::ItemKind::HeapPointer:
                 break;
+            case EnvironmentStackItem::ItemKind::HeapPointer:
+                switch (InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal].Kind) {
+                    case EnvObject::ObjectKind::ClassObject:
+                        break;
+                    case EnvObject::ObjectKind::ArrayObject:
+                        /* TODO: Adding support for array objects */
+                        break;
+                    case EnvObject::ObjectKind::StringObject:
+                        throw BytecodeInterpretError(L"Unsupported string operation.");
+                    default:
+                        throw BytecodeInterpretError(L"Cannot operate an basic-type heap item.");
+                }
             case EnvironmentStackItem::ItemKind::Null:
                 throw BytecodeInterpretError(L"Cannot add elements with a null value.");
         }

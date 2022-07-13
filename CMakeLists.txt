@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.0)
 project(Xscript2)
 
 set(CMAKE_CXX_STANDARD 17)
-add_compile_options(-g)
+set(CMAKE_BUILD_TYPE Debug)
 
 add_executable(Xscript2
         main.cpp

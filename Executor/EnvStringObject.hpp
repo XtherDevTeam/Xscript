@@ -22,7 +22,7 @@ namespace XScript {
     class EnvStringObject {
     public:
         XIndexType Length;
-        XCharacter *Dest;
+        XCharacter Dest;
 
         EnvStringObject();
 
@@ -38,6 +38,8 @@ namespace XScript {
     EnvStringObject *MergeEnvStringObject(EnvStringObject *Left, EnvStringObject *Right);
 
     EnvStringObject *CreateEnvStringObjectFromXString(const XString &Str);
+
+    XString CovertToXString(EnvStringObject *Object);
 } // XScript
 
 #endif //XSCRIPT2_ENVSTRINGOBJECT_HPP

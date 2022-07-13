@@ -64,8 +64,8 @@ namespace XScript {
                 return true;
             case ObjectKind::StringObject:
                 if (Value.StringObjectPointer->Length != RightHandSide.Value.StringObjectPointer->Length) return false;
-                for (auto Left = Value.StringObjectPointer->Dest, Right = RightHandSide.Value.StringObjectPointer->Dest;
-                     Left != Value.StringObjectPointer->Dest + Value.StringObjectPointer->Length; ++Left, ++Right) {
+                for (auto Left = &Value.StringObjectPointer->Dest, Right = &RightHandSide.Value.StringObjectPointer->Dest;
+                     Left != &Value.StringObjectPointer->Dest + Value.StringObjectPointer->Length; ++Left, ++Right) {
                     if (*Left != *Right)
                         return false;
                 }

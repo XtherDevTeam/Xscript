@@ -18,6 +18,7 @@ namespace XScript {
                 case ItemKind::StringVal:
                     return StrVal == rhs.StrVal;
             }
+            return false;
         }
 
         XIndexType ConstantPool::Push(const ConstantPool::ItemStructure &Structure) {
