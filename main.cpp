@@ -66,13 +66,13 @@ int main(int argc, const char **argv) {
         std::wcin >> OutputFilename;
         XScript::OutputBinary(Environ, OutputFilename);
     } catch (XScript::ParserException &E) {
-        std::cout << E.what() << std::endl;
+        std::wcerr << E.what() << std::endl;
     } catch (XScript::CompilerError &E) {
-        std::cout << E.what() << std::endl;
+        std::wcerr << E.what() << std::endl;
     } catch (XScript::LexerException &E) {
-        std::cout << E.what() << std::endl;
+        std::wcerr << E.what() << std::endl;
     } catch (XScript::InternalException &E) {
-        std::cout << E.what() << std::endl;
+        std::wcerr << E.what() << std::endl;
     }
     return 0;
 }

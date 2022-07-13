@@ -19,5 +19,7 @@ def fib(a) {
 }
 
 def main () {
-    return fib(20);
+    var string_object_hello = "Hello";
+    var string_object_world = ", world!";
+    return string_object_hello + string_object_world;
 }

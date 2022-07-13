@@ -20,7 +20,7 @@ namespace XScript {
                 AST Name = {AST::TreeType::Identifier, L.LastToken};
                 L.Scan();
                 AST Extends{AST::TreeType::ClassExtends, (XArray<AST>) {}};
-                if (L.LastToken != (Lexer::Token) {Lexer::TokenKind::ReservedWords, L"extends", 0, 0}) {
+                if (L.LastToken == (Lexer::Token) {Lexer::TokenKind::ReservedWords, L"extends", 0, 0}) {
                     L.Scan();
                     if (L.LastToken.Kind != Lexer::TokenKind::LeftParentheses)
                         MakeException(L"ClassDefinitionNodeGenerator: InvalidSyntax -> Expected a left parentheses");

@@ -13,7 +13,7 @@ namespace XScript {
         }
 
         AST FunctionDefinitionNodeGenerator::Parse() {
-            if (L.LastToken != (Lexer::Token) {Lexer::TokenKind::ReservedWords, L"def", 0, 0}) {
+            if (L.LastToken == (Lexer::Token) {Lexer::TokenKind::ReservedWords, L"def", 0, 0}) {
                 L.Scan();
                 if (L.LastToken.Kind != Lexer::TokenKind::Identifier) {
                     MakeException(L"FunctionDefinitionNodeGenerator: InvalidSyntax -> Expected an identifier");

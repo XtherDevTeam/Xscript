@@ -302,6 +302,6 @@ namespace XScript {
     }
 
     bool Lexer::Token::operator!=(const Lexer::Token &rhs) const {
-        return (Kind == rhs.Kind && Value == rhs.Value);
+        return !(Kind == rhs.Kind && Value == rhs.Value);
     }
 } // XScript
