@@ -21,10 +21,23 @@ namespace XScript {
         /* 加载依赖 */
         XArray<XString> DependPackages = Reader::ExtendedTypeReader().ReadStringArray(FilePointer);
         for (auto &Package: DependPackages) {
+            bool LoadFail = true;
+
             for (auto &Prefix: PathsToSearch) {
-                LoadFromFile(Prefix + (Prefix.back() == L'/' ? L"" : L"/") + Package, Package,false);
+                XString FinalPath = Prefix + (Prefix.back() == L'/' or Prefix == L"" ? L"" : L"/") + Package;
+                FILE* IsExist = fopen(wstring2string(FinalPath).c_str(), "r+");
+                if (IsExist == nullptr)
+                    continue;
+                fclose(IsExist);
+
+                LoadFromFile(FinalPath, Package,false);
+                LoadFail = false;
             }
+
+            if (LoadFail)
+                throw InternalException(L"Environment::LoadFromFile() : Cannot open file.");
         }
+
 
         XIndexType PkgID = Hash(PackageName);
         if (IsMainPackage) {

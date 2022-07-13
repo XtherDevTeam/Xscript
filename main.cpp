@@ -13,13 +13,17 @@
 int main(int argc, const char **argv) {
     std::wcout << L"[XScript 2 Early Test] Demo developed by Jerry Chou (Winghong Zau)\n";
 
+    XScript::XArray<XScript::XString> PathsToSearch = {
+            L".", L""
+    };
+
     if (argc == 2 && XScript::XBytes{argv[1]} == "ci") {
         std::cout << "CI detected, skipped.\n";
         return 0;
     } else if (argc == 2 && XScript::XBytes{argv[1]} == "vm") {
         std::wcout << L"XScript Program Executor Early Test\n";
         XScript::Executor Executor;
-        Executor.VM.PathsToSearch.push_back(L".");
+        Executor.VM.PathsToSearch = PathsToSearch;
 
         std::wcout << L"Input package filename.\n";
         XScript::XString PkgFilePath;
@@ -45,6 +49,7 @@ int main(int argc, const char **argv) {
     }
     try {
         XScript::Compiler::CompilerEnvironment Environ{};
+        Environ.PathsToSearch = PathsToSearch;
 
         std::wcout << L"Input compiler flags and type 'End' and press Enter to stop input.\n";
         while (true) {

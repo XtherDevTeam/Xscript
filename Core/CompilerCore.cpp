@@ -51,7 +51,7 @@ namespace XScript {
         Serializatior::BaseTypeSerializatior()(FilePointer,
                                                static_cast<XIndexType>(Environment.DependencyPackages.size()));
         for (auto &I: Environment.DependencyPackages) {
-            Serializatior::BaseTypeSerializatior()(FilePointer, GetFilenameFromPath(I.first));
+            Serializatior::BaseTypeSerializatior()(FilePointer, I.first);
         }
         /* 写入主包 */
         Serializatior::ExtendedTypeSerializatior()(FilePointer, Environment.MainPackage);

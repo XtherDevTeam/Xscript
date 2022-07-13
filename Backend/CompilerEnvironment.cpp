@@ -25,15 +25,17 @@ namespace XScript::Compiler {
 
     void CompilerEnvironment::ImportFromPackage(const XString& FileName) {
         for (auto &PathToSearch : PathsToSearch) {
-            XBytes FinalPath = wstring2string(PathToSearch + L"/" + FileName);
+            XBytes FinalPath = wstring2string(PathToSearch + (PathToSearch.back() == L'/' or PathToSearch == L"" ? L"" : L"/") + FileName);
             FILE *FilePointer = fopen(FinalPath.c_str(), "r+");
             if (FilePointer == nullptr) {
-                throw InternalException(L"Cannot open file.");
+                continue;
             }
             if (XScript::Reader::BaseTypeReader().ReadIndex(FilePointer) != 0x114514ff2b)
                 throw InternalException(L"CompilerEnvironment::ImportFromPackage(): Wrong magic number.");
 
-            DependencyPackages[Hash(FileName)] = std::make_pair(FileName, Reader::ExtendedTypeReader().ReadPackageEx(FilePointer));
+            DependencyPackages.push_back(std::make_pair(FileName, Reader::ExtendedTypeReader().ReadPackageEx(FilePointer)));
+            return;
         }
+        throw InternalException(L"Cannot open file.");
     }
 } // Compiler

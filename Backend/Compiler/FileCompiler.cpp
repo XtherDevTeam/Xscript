@@ -24,6 +24,8 @@ namespace XScript {
                     return GenerateForVariableDefinition(Target);
                 case AST::TreeType::ClassDefinition:
                     return GenerateForClassDefinition(Target);
+                case AST::TreeType::ImportStatement:
+                    return GenerateForImportStatement(Target);
                 default:
                     throw InternalException(L"FileCompiler::Generate : Invalid invoke");
             }
@@ -165,6 +167,11 @@ namespace XScript {
             Environment.Locals = Backup;
 
             return (CompilingTimeFunction) {Descriptors, Arguments, FunctionBytecodeArray};
+        }
+
+        XArray<BytecodeStructure> FileCompiler::GenerateForImportStatement(AST &Target) {
+            Environment.ImportFromPackage(Target.Node.Value);
+            return {};
         }
     } // XScript
 } // Compiler

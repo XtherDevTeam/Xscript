@@ -1,3 +1,5 @@
+import "package_test";
+
 var i = 0;
 
 class ClassA {
@@ -19,7 +21,5 @@ def fib(a) {
 }
 
 def main () {
-    var string_object_hello = "Hello";
-    var string_object_world = ", world!";
-    return string_object_hello + string_object_world;
+    return 114514;
 }
