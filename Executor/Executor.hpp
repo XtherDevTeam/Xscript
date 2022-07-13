@@ -17,11 +17,13 @@ namespace XScript {
 
         Executor();
 
-        void Load(const XString& ExecutableFilePath);
+        void Load(const XString &ExecutableFilePath);
 
         void Init();
 
         void Start();
+
+        XIndexType StartWithRuntimeDuration();
     };
 
 } // XScript

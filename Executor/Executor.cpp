@@ -2,6 +2,7 @@
 // Created by chou on 22-7-10.
 //
 
+#include <chrono>
 #include "Executor.hpp"
 
 namespace XScript {
@@ -36,9 +37,17 @@ namespace XScript {
                  0,
                  VM.ProgramCounter});
 
-        Interpreter.InstructionStackPushFunction((BytecodeStructure::InstructionParam) {Hash(L"__XScriptRuntimeEntry__")});
+        Interpreter.InstructionStackPushFunction(
+                (BytecodeStructure::InstructionParam) {Hash(L"__XScriptRuntimeEntry__")});
         Interpreter.InstructionFuncInvoke((BytecodeStructure::InstructionParam) {(XHeapIndexType) {0}});
         VM.ProgramCounter.NowIndex++;
         Interpreter.MainLoop();
+    }
+
+    XIndexType Executor::StartWithRuntimeDuration() {
+        auto StartTime = std::chrono::system_clock::now();
+        Start();
+        auto Duration = std::chrono::system_clock::now() - StartTime;
+        return std::chrono::duration_cast<std::chrono::milliseconds>(Duration).count();
     }
 } // XScript
