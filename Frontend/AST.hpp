@@ -38,6 +38,7 @@ namespace XScript {
             LogicExpression,
 /* rvalue expression */
             AssignmentExpression,
+            NewExpression,
 /* literals */
             ArrayLiteral,
 /* Descriptors */

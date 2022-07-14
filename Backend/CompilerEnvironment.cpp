@@ -20,7 +20,7 @@ namespace XScript::Compiler {
                 return {I, Index.second};
             I++;
         }
-        throw XScript::InternalException(L"Cannot find a local variable is named " + Name + L" during compiling");
+        throw XScript::InternalException(L"Cannot find a local variable named " + Name + L" during compiling");
     }
 
     void CompilerEnvironment::ImportFromPackage(const XString& FileName) {
@@ -51,6 +51,6 @@ namespace XScript::Compiler {
                 return {I, Index.second};
             I++;
         }
-        throw XScript::InternalException(L"Cannot find a dependency package is named " + std::to_wstring(Name) + L" during compiling");
+        throw XScript::InternalException(L"Cannot find a dependency package named " + std::to_wstring(Name) + L" during compiling");
     }
 } // Compiler

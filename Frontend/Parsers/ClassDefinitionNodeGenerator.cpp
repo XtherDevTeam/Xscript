@@ -48,9 +48,6 @@ namespace XScript {
                 for (AST Stmt = MethodDefinitionNodeGenerator(L).Parse(); !Stmt.IsNotMatchNode();
                      Stmt = MethodDefinitionNodeGenerator(L).Parse()) {
                     ClassInnerStmts.Subtrees.push_back(Stmt);
-                    if (L.LastToken.Kind != Lexer::TokenKind::Semicolon)
-                        break;
-                    L.Scan();
                 }
 
                 if (L.LastToken.Kind != Lexer::TokenKind::RightBraces)

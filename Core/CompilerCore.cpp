@@ -59,15 +59,6 @@ namespace XScript {
         fclose(FilePointer);
     }
 
-    XString GetFilenameFromPath(const XString &Filepath) {
-        XIndexType From = Filepath.rfind('/');
-        if (From == XString::npos)
-            From = Filepath.rfind('\\');
-        if (From == XString::npos)
-            return L"";
-        return Filepath.substr(From);
-    }
-
     void GenerateRuntimeFunction(Compiler::CompilerEnvironment &Environment) {
         if (std::find(Environment.CompilerFlags.begin(), Environment.CompilerFlags.end(),
                       L"compile_as_executable.true") != Environment.CompilerFlags.end()) {

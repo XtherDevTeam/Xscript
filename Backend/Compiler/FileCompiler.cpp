@@ -131,7 +131,7 @@ namespace XScript {
                 Environment.MainPackage.PushFunction(MethodName, Func);
                 Methods.push_back(MethodName);
             }
-            Environment.MainPackage.PushClass(ClassName, (CompilingTimeClass) {Extends, Methods});
+            Environment.MainPackage.PushClass(ClassName, (CompilingTimeClass) {ClassName, Extends, Methods});
 
             return {};
         }

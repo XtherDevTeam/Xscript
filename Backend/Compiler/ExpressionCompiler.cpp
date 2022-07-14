@@ -258,7 +258,10 @@ namespace XScript::Compiler {
                 MergeArray(Result, ParseMemberExpressionEndWithAssignment(Target.Subtrees[0], false));
                 break;
             }
-
+            case AST::TreeType::NewExpression: {
+                MergeArray(Result, ParseNewExpression(Target));
+                break;
+            }
             default:
                 throw XScript::CompilerError(Target.GetFirstNotNullToken().Line,
                                              Target.GetFirstNotNullToken().Column,
@@ -518,7 +521,35 @@ namespace XScript::Compiler {
         XArray<BytecodeStructure> Result;
         switch (Target.Type) {
             case AST::TreeType::FunctionCallingExpression: {
+                if (IsInParsing == nullptr) {
+                    throw CompilerError(Target.GetFirstNotNullToken().Line,
+                                        Target.GetFirstNotNullToken().Column,
+                                        L"ParseClassMethodInvoke: Cannot invoke constructor with class name directly.");
+                }
+                /* 第一个参数为函数外手动压入的this指针 */
+                for (auto &I: Target.Subtrees[1].Subtrees) {
+                    MergeArray(Result, Generate(I));
+                }
 
+                /* let the executor get the function address first */
+                XIndexType Index = IsInParsing->IsMethodExist(IsInParsing->ClassName + L"$" + Target.Subtrees[0].Node.Value);
+                if (Index == -1) {
+                    throw CompilerError(Target.GetFirstNotNullToken().Line,
+                                        Target.GetFirstNotNullToken().Column,
+                                        L"ParseClassMethodInvoke: 操你妈个傻逼玩意，你他妈脑瘫啊？这个类他麻痹没有 " +
+                                        Target.Node.Value + L" 这个方法啊，傻逼？");
+                }
+
+                Result.push_back((BytecodeStructure) {
+                        BytecodeStructure::InstructionEnum::stack_push_function,
+                        (BytecodeStructure::InstructionParam) Hash(IsInParsing->Methods[Index])
+                });
+
+                /* 参数数量带this指针一个 */
+                Result.push_back((BytecodeStructure) {
+                        BytecodeStructure::InstructionEnum::func_invoke,
+                        (BytecodeStructure::InstructionParam) {(XHeapIndexType) Target.Subtrees[1].Subtrees.size() + 1}
+                });
                 break;
             }
             case AST::TreeType::Identifier: {
@@ -558,7 +589,8 @@ namespace XScript::Compiler {
             }
             case AST::TreeType::MemberExpression: {
                 if (Target.Subtrees[0].Node.Kind != Lexer::TokenKind::Identifier or
-                    Target.Subtrees[1].Node.Kind != Lexer::TokenKind::Identifier) {
+                    (Target.Subtrees[1].Type != AST::TreeType::FunctionCallingExpression and
+                     Target.Subtrees[1].Node.Kind != Lexer::TokenKind::Identifier)) {
                     throw CompilerError(Target.GetFirstNotNullToken().Line,
                                         Target.GetFirstNotNullToken().Column,
                                         L"ParseClassMethodInvoke: 不是类方法调用你他妈调用这函数调你妈呢？");
@@ -599,6 +631,40 @@ namespace XScript::Compiler {
                                     L"ParserMemberExpression: Unexpected AST Type");
             }
         }
+        return Result;
+    }
+
+    XArray<BytecodeStructure> ExpressionCompiler::ParseNewExpression(AST &Target) {
+        XArray<BytecodeStructure> Result;
+        Lexer::Token ClassName = Target.Subtrees[0].Subtrees[0].Node;
+        try {
+            if (Environment.InWhichPackage) {
+                CompilingTimeClass &Class = Environment.GetPackage(
+                        Environment.InWhichPackage).second.GetClass(ClassName.Value).second;
+            } else {
+                CompilingTimeClass &Class = Environment.MainPackage.GetClass(ClassName.Value).second;
+            }
+        } catch (InternalException &E) {
+            throw CompilerError(Target.GetFirstNotNullToken().Line,
+                                Target.GetFirstNotNullToken().Column,
+                                L"ParseNewExpression: 脑瘫？根本没有 " +
+                                ClassName.Value +
+                                L" 这个类！多多少少沾点脑血栓. 有病就他妈去治，别他妈搁这写代码！");
+        }
+
+        Result.push_back((BytecodeStructure) {
+                BytecodeStructure::InstructionEnum::class_new,
+                (BytecodeStructure::InstructionParam) {Hash(ClassName.Value)}
+        });
+        /* 压入第一个参数 this指针 */
+        Result.push_back((BytecodeStructure) {
+                BytecodeStructure::InstructionEnum::stack_duplicate,
+                (BytecodeStructure::InstructionParam) {(XHeapIndexType) {}}
+        });
+
+        CompilingTimeClass *Dummy = nullptr;
+        MergeArray(Result, ParseClassMethodInvoke(Target.Subtrees[0], Dummy));
+
         return Result;
     }
 } // Compiler

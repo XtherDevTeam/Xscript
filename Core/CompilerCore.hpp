@@ -10,8 +10,6 @@
 namespace XScript {
     void CompileForFile(Compiler::CompilerEnvironment &Environment, const XString &FilePath);
 
-    XString GetFilenameFromPath(const XString& Filepath);
-
     void GenerateRuntimeFunction(Compiler::CompilerEnvironment &Environment);
 
     void OutputBinary(Compiler::CompilerEnvironment &Environment, const XString &FilePath);

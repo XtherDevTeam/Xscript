@@ -31,12 +31,22 @@ Syntax: `Arguments ::= TokenLeftParentheses [ Expression { ", " Expression } ] T
 
 ### CrossPackageAccessExpression
 
-Status: `Unimplmented`
+Status: `Implmented`
 
 Syntax:
 
 ```
 CrossPackageAccessExpression ::= "@" "{" TokenString "}" TokenToSign MemberExpression
+```
+
+### NewExpression
+
+Status: `Implmented`
+
+Syntax:
+
+```
+NewExpression ::= "new" MemberExpression
 ```
 
 ### IndexExpression

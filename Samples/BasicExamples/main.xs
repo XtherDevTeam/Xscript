@@ -3,8 +3,12 @@ import "package_test";
 var i = 0;
 
 class ClassA {
-    public def test () {
+    def test () {
         return this.test();
+    }
+
+    def constructor () {
+        return this;
     }
 };
 
@@ -21,6 +25,6 @@ def fib(a) {
 }
 
 def main () {
-    var OMG = 1 + 1 + 4;
-    return @{"package_test"} -> test_func(OMG);
+    var Class = new ClassA.constructor();
+    return @{"package_test"} -> test_func(1+1+4);
 }

@@ -14,8 +14,7 @@ namespace XScript::Compiler {
 
     class CompilingTimeClass {
     public:
-        explicit CompilingTimeClass(const XArray<XIndexType> &parentClasses,
-                                    XArray<XString> methods);
+        XString ClassName;
 
         XArray<XIndexType> ParentClasses;
 
@@ -24,6 +23,10 @@ namespace XScript::Compiler {
          * Records full method name, like ClassName$MethodName
          */
         XArray<XString> Methods;
+
+        explicit CompilingTimeClass(const XString &Name,
+                                    const XArray<XIndexType> &parentClasses,
+                                    XArray<XString> methods);
 
         void PushMethod(const XString &Name);
 

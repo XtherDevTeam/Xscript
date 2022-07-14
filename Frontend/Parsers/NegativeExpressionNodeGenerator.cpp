@@ -3,6 +3,7 @@
 //
 
 #include "NegativeExpressionNodeGenerator.hpp"
+#include "NewExpressionNodeGenerator.hpp"
 
 namespace XScript::Generator {
     NegativeExpressionNodeGenerator::NegativeExpressionNodeGenerator(Lexer &L) : BaseGenerator(L) {
@@ -13,16 +14,22 @@ namespace XScript::Generator {
             L.Scan();
             AST Right = MemberExpressionNodeGenerator(L).Parse();
             if (Right.IsNotMatchNode()) {
-                Right = PrimaryNodeGenerator(L).Parse();
+                Right = NewExpressionNodeGenerator(L).Parse();
                 if (Right.IsNotMatchNode()) {
-                    MakeException(L"Expected a rvalue expression.");
+                    Right = PrimaryNodeGenerator(L).Parse();
+                    if (Right.IsNotMatchNode()) {
+                        MakeException(L"Expected a rvalue expression.");
+                    }
                 }
             }
             return {AST::TreeType::NegativeExpression, {Right}};
         }
         AST Right = MemberExpressionNodeGenerator(L).Parse();
         if (Right.IsNotMatchNode()) {
-            return PrimaryNodeGenerator(L).Parse();
+            Right = NewExpressionNodeGenerator(L).Parse();
+            if (Right.IsNotMatchNode()) {
+                return PrimaryNodeGenerator(L).Parse();
+            }
         }
         return Right;
     }

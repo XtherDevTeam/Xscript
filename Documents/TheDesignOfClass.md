@@ -1,22 +1,22 @@
 # The design of class in XScript 2
 
-There are 2 kinds of class structure in XScript 2 source codes.
+ ### Definition
 
-One is for compiling time, the another is for bytecode interpreter.
+```c++
+class EnvClassObject {
+public:
+    XArray<XIndexType> Parents;
+    XMap<XIndexType, XHeapIndexType> Members;
+    
+    bool IsInstanceOf(XIndexType Idx);
+    XHeapIndexType GetMember(XIndexType Name);
+};
+```
 
-Now let's take a look to the another one.
+### Creation
 
-It saves `class id`, `methods`, `members` and `vtable`.
-
-### The class id
-
-It's a number of this class structure, just like an identifier.
-
-### The methods
-
-It saves all methods of this class structure (included bytecode array of methods)
-
-### The members
-
-It saves all member information of this class structure. (but no data, only typename and descriptions)
-
+First, use instruction `new_class <class name : hashed>` to create a class.
+After, executor will create a new `EnvClassObject` with template.
+Then, use `duplicate` to copy the object, push some necessary params into stack.
+Finally, push the constructor into stack,
+use `func_invoke <1(object pointer 'this') + params count>` to invoke the constructor.

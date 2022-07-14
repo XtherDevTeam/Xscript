@@ -19,6 +19,8 @@ namespace XScript::Compiler {
 
         XArray<BytecodeStructure> ParseMemberExpressionEndWithAssignment(AST &Target, bool IsMemberExpression);
 
+        XArray<BytecodeStructure> ParseNewExpression(AST &Target);
+
         XArray<BytecodeStructure> Generate(AST &Target) override;
     };
 
