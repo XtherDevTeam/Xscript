@@ -3,6 +3,7 @@
 //
 
 #include "IdentifierNodeGenerator.hpp"
+#include "CrossPackageAccessExpressionNodeGenerator.hpp"
 
 namespace XScript::Generator {
     IdentifierNodeGenerator::IdentifierNodeGenerator(Lexer &L) : BaseGenerator(L) {
@@ -14,6 +15,10 @@ namespace XScript::Generator {
             AST Result{AST::TreeType::Identifier, L.LastToken};
             L.Scan();   // prepare for next-time's read.
             return Result;
+        } else {
+            AST Result = CrossPackageAccessExpressionNodeGenerator(L).Parse();
+            if (!Result.IsNotMatchNode())
+                return Result;
         }
         Rollback(); // rollback to initial state.
         return {};

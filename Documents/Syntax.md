@@ -15,7 +15,7 @@ Primary ::= TokenInteger | TokenDecimal | TokenString
 
 Status: `Implmented`
 
-Syntax: `Identifier ::= TokenIdentifier`
+Syntax: `Identifier ::= TokenIdentifier | CrossPackageAccessExpression`
 
 ### ListLiteral
 
@@ -79,8 +79,8 @@ Status: `Implmented`
 Syntax:
 
 ```
-NegativeExpression ::= TokenMinus ( CrossPackageAccessExpression | MemberExpression | Primary )
-                     | ( CrossPackageAccessExpression | MemberExpression | Primary )
+NegativeExpression ::= TokenMinus ( MemberExpression | Primary )
+                     | ( MemberExpression | Primary )
 ```
 
 ### IncrementExpression

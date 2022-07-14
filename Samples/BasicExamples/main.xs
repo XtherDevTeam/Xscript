@@ -21,5 +21,6 @@ def fib(a) {
 }
 
 def main () {
-    return @{"package_test"} -> test;
+    var OMG = 1 + 1 + 4;
+    return @{"package_test"} -> test_func(OMG);
 }

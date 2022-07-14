@@ -1,9 +1,9 @@
 //
-// Created by chou on 22-7-13.
+// Created by Jerry Chou on 22-7-13.
 //
 
 #include "CrossPackageAccessExpressionNodeGenerator.hpp"
-#include "MemberExpressionNodeGenerator.hpp"
+#include "IdentifierNodeGenerator.hpp"
 
 namespace XScript {
     namespace Generator {
@@ -34,7 +34,7 @@ namespace XScript {
                 MakeException(L"CrossPackageAccessExpressionNodeGenerator: Expected a `->`");
             L.Scan();
 
-            AST MemberExpression = MemberExpressionNodeGenerator(L).Parse();
+            AST MemberExpression = IdentifierNodeGenerator(L).Parse();
             if (MemberExpression.IsNotMatchNode())
                 MakeException(L"CrossPackageAccessExpressionNodeGenerator: Expected a member expression");
 

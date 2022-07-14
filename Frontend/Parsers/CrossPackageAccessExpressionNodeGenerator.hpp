@@ -1,5 +1,5 @@
 //
-// Created by chou on 22-7-13.
+// Created by Jerry Chou on 22-7-13.
 //
 
 #ifndef XSCRIPT2_CROSSPACKAGEACCESSEXPRESSIONNODEGENERATOR_HPP
