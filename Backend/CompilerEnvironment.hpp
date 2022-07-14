@@ -13,6 +13,8 @@ namespace XScript::Compiler {
 
     class CompilerEnvironment {
     public:
+        XIndexType InWhichPackage;
+
         XArray<XString> PathsToSearch;
 
         XArray<XString> CompilerFlags;
@@ -28,6 +30,8 @@ namespace XScript::Compiler {
         XIndexType PushLocal(const XString &Name, const SymbolItem &Item);
 
         std::pair<XIndexType, SymbolItem> GetLocal(const XString &Name);
+
+        std::pair<XIndexType, CompilingTimePackageStructure> GetPackage(XIndexType Name);
     };
 
 } // Compiler

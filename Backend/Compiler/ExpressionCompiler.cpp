@@ -18,16 +18,13 @@ namespace XScript::Compiler {
             case AST::TreeType::Identifier:
             case AST::TreeType::IndexExpression:
             case AST::TreeType::FunctionCallingExpression:
-            case AST::TreeType::MemberExpression: {
+            case AST::TreeType::MemberExpression:
+            case AST::TreeType::CrossPackageAccessExpression: {
                 MergeArray(Result, ParseMemberExpression(Target, false));
                 Result.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::object_lvalue2rvalue,
                                                       (BytecodeStructure::InstructionParam) {(XIndexType) 0}});
                 break;
             }
-            case AST::TreeType::CrossPackageAccessExpression: {
-                /* TODO: Adding backend for cross package access expression */
-            }
-
             case AST::TreeType::Primary: {
                 switch (Target.Node.Kind) {
                     case Lexer::TokenKind::String:
@@ -287,10 +284,18 @@ namespace XScript::Compiler {
                                                               (BytecodeStructure::InstructionParam) {Item.first}});
                     } catch (InternalException &E) {
                         try {
-                            auto Item = Environment.MainPackage.GetStatic(Target.Node.Value);
-                            Result.push_back(
-                                    (BytecodeStructure) {BytecodeStructure::InstructionEnum::static_get,
-                                                         (BytecodeStructure::InstructionParam) {Item.first}});
+                            if (Environment.InWhichPackage) {
+                                auto Item = Environment.GetPackage(Environment.InWhichPackage).second.GetStatic(
+                                        Target.Node.Value);
+                                Result.push_back(
+                                        (BytecodeStructure) {BytecodeStructure::InstructionEnum::static_get,
+                                                             (BytecodeStructure::InstructionParam) {Item.first}});
+                            } else {
+                                auto Item = Environment.MainPackage.GetStatic(Target.Node.Value);
+                                Result.push_back(
+                                        (BytecodeStructure) {BytecodeStructure::InstructionEnum::static_get,
+                                                             (BytecodeStructure::InstructionParam) {Item.first}});
+                            }
                         } catch (InternalException &E) {
                             throw CompilerError(Target.Node.Line, Target.Node.Column, string2wstring(E.what()));
                         }
@@ -341,6 +346,32 @@ namespace XScript::Compiler {
                 MergeArray(Result, ParseMemberExpression(Target.Subtrees[1], true));
                 break;
             }
+            case AST::TreeType::CrossPackageAccessExpression: {
+                Result.push_back((BytecodeStructure) {
+                        BytecodeStructure::InstructionEnum::pc_get_current_package_id,
+                        (BytecodeStructure::InstructionParam) {(XHeapIndexType) {}}
+                });
+                XIndexType Backup = Environment.InWhichPackage;
+                Environment.InWhichPackage = Hash(Target.Subtrees[0].Node.Value);
+
+                Result.push_back((BytecodeStructure) {
+                        BytecodeStructure::InstructionEnum::pc_get_current_package_id,
+                        (BytecodeStructure::InstructionParam) {(XHeapIndexType) {}}
+                });
+
+                MergeArray(Result, ParseMemberExpression(Target.Subtrees[1], false));
+
+                Environment.InWhichPackage = Backup;
+
+                /* 整个阴间活 */
+                /* restore_package_id 实际上是从栈顶指针下移一个元素获取的package_id */
+                Result.push_back((BytecodeStructure) {
+                        BytecodeStructure::InstructionEnum::pc_restore_package_id,
+                        (BytecodeStructure::InstructionParam) {(XHeapIndexType) {}}
+                });
+
+                break;
+            }
 
             default:
                 throw CompilerError(Target.GetFirstNotNullToken().Line,
@@ -374,10 +405,18 @@ namespace XScript::Compiler {
                     } catch (InternalException &E) {
                         try {
                             /* If variable doesn't exist, then GetStatic will throw an error */
-                            auto Item = Environment.MainPackage.GetStatic(Target.Node.Value);
-                            Result.push_back(
-                                    (BytecodeStructure) {BytecodeStructure::InstructionEnum::static_store,
-                                                         (BytecodeStructure::InstructionParam) {Item.first}});
+                            if (Environment.InWhichPackage) {
+                                auto Item = Environment.GetPackage(Environment.InWhichPackage).second.GetStatic(
+                                        Target.Node.Value);
+                                Result.push_back(
+                                        (BytecodeStructure) {BytecodeStructure::InstructionEnum::static_store,
+                                                             (BytecodeStructure::InstructionParam) {Item.first}});
+                            } else {
+                                auto Item = Environment.MainPackage.GetStatic(Target.Node.Value);
+                                Result.push_back(
+                                        (BytecodeStructure) {BytecodeStructure::InstructionEnum::static_store,
+                                                             (BytecodeStructure::InstructionParam) {Item.first}});
+                            }
                         } catch (InternalException &E) {
                             throw CompilerError(Target.Node.Line, Target.Node.Column, string2wstring(E.what()));
                         }
@@ -424,7 +463,12 @@ namespace XScript::Compiler {
             }
             case AST::TreeType::MemberExpression: {
                 try {
-                    Environment.MainPackage.GetClass(Target.Subtrees[0].Node.Value);
+                    if (Environment.InWhichPackage) {
+                        Environment.GetPackage(Environment.InWhichPackage).second.GetClass(
+                                Target.Subtrees[0].Node.Value);
+                    } else {
+                        Environment.MainPackage.GetClass(Target.Subtrees[0].Node.Value);
+                    }
                     CompilingTimeClass *Dummy = nullptr;
                     MergeArray(Result, ParseClassMethodInvoke(Target, Dummy));
                 } catch (InternalException &E) {
@@ -433,12 +477,39 @@ namespace XScript::Compiler {
                 }
                 break;
             }
+            case AST::TreeType::CrossPackageAccessExpression: {
+                Result.push_back((BytecodeStructure) {
+                        BytecodeStructure::InstructionEnum::pc_get_current_package_id,
+                        (BytecodeStructure::InstructionParam) {(XHeapIndexType) {}}
+                });
+                XIndexType Backup = Environment.InWhichPackage;
+                Environment.InWhichPackage = Hash(Target.Subtrees[0].Node.Value);
+
+                Result.push_back((BytecodeStructure) {
+                        BytecodeStructure::InstructionEnum::pc_get_current_package_id,
+                        (BytecodeStructure::InstructionParam) {(XHeapIndexType) {}}
+                });
+
+                MergeArray(Result, ParseMemberExpressionEndWithAssignment(Target.Subtrees[1], false));
+
+                Environment.InWhichPackage = Backup;
+
+                /* 整个阴间活 */
+                /* restore_package_id 实际上是从栈顶指针下移一个元素获取的package_id */
+                Result.push_back((BytecodeStructure) {
+                        BytecodeStructure::InstructionEnum::pc_restore_package_id,
+                        (BytecodeStructure::InstructionParam) {(XHeapIndexType) {}}
+                });
+
+                break;
+            }
 
             default:
                 throw CompilerError(Target.GetFirstNotNullToken().Line,
                                     Target.GetFirstNotNullToken().Column,
                                     L"ParserMemberExpression: Unexpected AST Type");
         }
+
         return Result;
     }
 
@@ -467,8 +538,14 @@ namespace XScript::Compiler {
                     }
                 } else {
                     try {
-                        CompilingTimeClass &Class = Environment.MainPackage.GetClass(Target.Node.Value).second;
-                        IsInParsing = &Class;
+                        if (Environment.InWhichPackage) {
+                            CompilingTimeClass &Class = Environment.GetPackage(
+                                    Environment.InWhichPackage).second.GetClass(Target.Node.Value).second;
+                            IsInParsing = &Class;
+                        } else {
+                            CompilingTimeClass &Class = Environment.MainPackage.GetClass(Target.Node.Value).second;
+                            IsInParsing = &Class;
+                        }
                     } catch (InternalException &E) {
                         throw CompilerError(Target.GetFirstNotNullToken().Line,
                                             Target.GetFirstNotNullToken().Column,
@@ -488,6 +565,32 @@ namespace XScript::Compiler {
                 }
                 MergeArray(Result, ParseClassMethodInvoke(Target.Subtrees[0], IsInParsing));
                 MergeArray(Result, ParseClassMethodInvoke(Target.Subtrees[1], IsInParsing));
+                break;
+            }
+            case AST::TreeType::CrossPackageAccessExpression: {
+                Result.push_back((BytecodeStructure) {
+                        BytecodeStructure::InstructionEnum::pc_get_current_package_id,
+                        (BytecodeStructure::InstructionParam) {(XHeapIndexType) {}}
+                });
+                XIndexType Backup = Environment.InWhichPackage;
+                Environment.InWhichPackage = Hash(Target.Subtrees[0].Node.Value);
+
+                Result.push_back((BytecodeStructure) {
+                        BytecodeStructure::InstructionEnum::pc_get_current_package_id,
+                        (BytecodeStructure::InstructionParam) {(XHeapIndexType) {}}
+                });
+
+                MergeArray(Result, ParseClassMethodInvoke(Target.Subtrees[1], IsInParsing));
+
+                Environment.InWhichPackage = Backup;
+
+                /* 整个阴间活 */
+                /* restore_package_id 实际上是从栈顶指针下移一个元素获取的package_id */
+                Result.push_back((BytecodeStructure) {
+                        BytecodeStructure::InstructionEnum::pc_restore_package_id,
+                        (BytecodeStructure::InstructionParam) {(XHeapIndexType) {}}
+                });
+
                 break;
             }
             default: {

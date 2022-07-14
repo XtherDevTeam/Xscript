@@ -150,7 +150,8 @@ namespace XScript {
 
             XIndexType StaticsLength = BaseTypeReader().ReadIndex(FilePointer);
             while (StaticsLength--) {
-                Result.PushStatic(BaseTypeReader().ReadString(FilePointer), (Compiler::SymbolItem) {
+                XString Str = BaseTypeReader().ReadString(FilePointer);
+                Result.PushStatic(Str, (Compiler::SymbolItem) {
                         (Compiler::Typename) {Compiler::Typename::TypenameKind::Unknown},
                         BaseTypeReader().ReadBoolean(FilePointer)});
             }

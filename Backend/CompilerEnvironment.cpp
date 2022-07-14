@@ -20,7 +20,7 @@ namespace XScript::Compiler {
                 return {I, Index.second};
             I++;
         }
-        throw XScript::InternalException(L"Cannot find a local variable named " + Name + L" while compiling");
+        throw XScript::InternalException(L"Cannot find a local variable is named " + Name + L" during compiling");
     }
 
     void CompilerEnvironment::ImportFromPackage(const XString& FileName) {
@@ -33,9 +33,24 @@ namespace XScript::Compiler {
             if (XScript::Reader::BaseTypeReader().ReadIndex(FilePointer) != 0x114514ff2b)
                 throw InternalException(L"CompilerEnvironment::ImportFromPackage(): Wrong magic number.");
 
+            XIndexType DependenciesCount = XScript::Reader::BaseTypeReader().ReadIndex(FilePointer);
+            while(DependenciesCount and DependenciesCount--) {
+                ImportFromPackage(XScript::Reader::BaseTypeReader().ReadString(FilePointer));
+            }
+
             DependencyPackages.push_back(std::make_pair(FileName, Reader::ExtendedTypeReader().ReadPackageEx(FilePointer)));
             return;
         }
         throw InternalException(L"Cannot open file.");
+    }
+
+    std::pair<XIndexType, CompilingTimePackageStructure> CompilerEnvironment::GetPackage(XIndexType Name) {
+        XIndexType I = 0;
+        for (auto &Index: DependencyPackages) {
+            if (Hash(Index.first) == Name)
+                return {I, Index.second};
+            I++;
+        }
+        throw XScript::InternalException(L"Cannot find a dependency package is named " + std::to_wstring(Name) + L" during compiling");
     }
 } // Compiler

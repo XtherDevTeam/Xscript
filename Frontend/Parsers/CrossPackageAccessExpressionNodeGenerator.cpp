@@ -37,7 +37,6 @@ namespace XScript {
             AST MemberExpression = MemberExpressionNodeGenerator(L).Parse();
             if (MemberExpression.IsNotMatchNode())
                 MakeException(L"CrossPackageAccessExpressionNodeGenerator: Expected a member expression");
-            L.Scan();
 
             return {AST::TreeType::CrossPackageAccessExpression, {PkgName, MemberExpression}};
         }

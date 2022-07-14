@@ -102,6 +102,18 @@ namespace XScript {
                 Result += L"binary_rm";
                 ParamType = N;
                 break;
+            case InstructionEnum::pc_get_current_package_id:
+                Result += L"pc_get_current_package_id";
+                ParamType = N;
+                break;
+            case InstructionEnum::pc_restore_package_id:
+                Result += L"pc_restore_package_id";
+                ParamType = N;
+                break;
+            case InstructionEnum::pc_set_current_package_id:
+                Result += L"pc_set_current_package_id";
+                ParamType = H;
+                break;
             case InstructionEnum::stack_push_integer:
                 Result += L"stack_push_integer";
                 ParamType = I;

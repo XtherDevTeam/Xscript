@@ -21,5 +21,5 @@ def fib(a) {
 }
 
 def main () {
-    return 114514;
+    return @{"package_test"} -> test;
 }
