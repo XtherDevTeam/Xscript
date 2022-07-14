@@ -2,7 +2,7 @@
 // Created by Jerry Chou on 2022/5/14.
 //
 
-//#include <iostream>
+#include <iostream>
 #include "BytecodeInterpreter.hpp"
 
 namespace XScript {
@@ -14,7 +14,7 @@ namespace XScript {
                InterpreterEnvironment.ProgramCounter.Pointer->size()) {
             auto &CurrentInstruction = (*InterpreterEnvironment.ProgramCounter.Pointer)[InterpreterEnvironment.ProgramCounter.NowIndex];
             /* process commands */
-//            std::wcout << L"VMInstruction: " << CurrentInstruction.ToString() << std::endl << std::flush;
+            std::wcout << L"VMInstruction: " << CurrentInstruction.ToString() << std::endl << std::flush;
 
             switch (CurrentInstruction.Instruction) {
                 case BytecodeStructure::InstructionEnum::calculation_add:
@@ -133,6 +133,15 @@ namespace XScript {
                     break;
                 case BytecodeStructure::InstructionEnum::pc_jump:
                     InstructionPCJump(CurrentInstruction.Param);
+                    break;
+                case BytecodeStructure::InstructionEnum::pc_get_current_package_id:
+                    InstructionPCGetCurrentPackageID(CurrentInstruction.Param);
+                    break;
+                case BytecodeStructure::InstructionEnum::pc_set_current_package_id:
+                    InstructionPCSetCurrentPackageID(CurrentInstruction.Param);
+                    break;
+                case BytecodeStructure::InstructionEnum::pc_restore_package_id:
+                    InstructionPCRestorePackageID(CurrentInstruction.Param);
                     break;
                 case BytecodeStructure::InstructionEnum::debugger:
                     break;
@@ -1460,5 +1469,22 @@ namespace XScript {
 
     void BytecodeInterpreter::InstructionListRemoveIndex(BytecodeStructure::InstructionParam param) {
 
+    }
+
+    void BytecodeInterpreter::InstructionPCGetCurrentPackageID(BytecodeStructure::InstructionParam Param) {
+        InterpreterEnvironment.Stack.PushValueToStack(
+                (EnvironmentStackItem) {EnvironmentStackItem::ItemKind::Null,
+                                        (EnvironmentStackItem::ItemValue) InterpreterEnvironment.ProgramCounter.Package});
+    }
+
+    void BytecodeInterpreter::InstructionPCSetCurrentPackageID(BytecodeStructure::InstructionParam Param) {
+        InterpreterEnvironment.ProgramCounter.Package = Param.HeapPointerValue;
+    }
+
+    void BytecodeInterpreter::InstructionPCRestorePackageID(BytecodeStructure::InstructionParam Param) {
+        EnvironmentStackItem Item = InterpreterEnvironment.Stack.PopValueFromStack();
+        EnvironmentStackItem PkgID = InterpreterEnvironment.Stack.PopValueFromStack();
+        InterpreterEnvironment.Stack.PushValueToStack(Item);
+        InterpreterEnvironment.ProgramCounter.Package = PkgID.Value.HeapPointerVal;
     }
 } // XScript

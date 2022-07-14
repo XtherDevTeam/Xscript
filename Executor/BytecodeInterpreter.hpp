@@ -94,6 +94,12 @@ namespace XScript {
 
         void InstructionPCJump(BytecodeStructure::InstructionParam Param);
 
+        void InstructionPCGetCurrentPackageID(BytecodeStructure::InstructionParam Param);
+
+        void InstructionPCSetCurrentPackageID(BytecodeStructure::InstructionParam Param);
+
+        void InstructionPCRestorePackageID(BytecodeStructure::InstructionParam Param);
+
         void InstructionFuncInvoke(BytecodeStructure::InstructionParam Param);
 
         void InstructionFuncReturn(BytecodeStructure::InstructionParam Param);

@@ -355,8 +355,8 @@ namespace XScript::Compiler {
                 Environment.InWhichPackage = Hash(Target.Subtrees[0].Node.Value);
 
                 Result.push_back((BytecodeStructure) {
-                        BytecodeStructure::InstructionEnum::pc_get_current_package_id,
-                        (BytecodeStructure::InstructionParam) {(XHeapIndexType) {}}
+                        BytecodeStructure::InstructionEnum::pc_set_current_package_id,
+                        (BytecodeStructure::InstructionParam) {(XHeapIndexType) {Environment.InWhichPackage}}
                 });
 
                 MergeArray(Result, ParseMemberExpression(Target.Subtrees[1], false));
@@ -486,8 +486,8 @@ namespace XScript::Compiler {
                 Environment.InWhichPackage = Hash(Target.Subtrees[0].Node.Value);
 
                 Result.push_back((BytecodeStructure) {
-                        BytecodeStructure::InstructionEnum::pc_get_current_package_id,
-                        (BytecodeStructure::InstructionParam) {(XHeapIndexType) {}}
+                        BytecodeStructure::InstructionEnum::pc_set_current_package_id,
+                        (BytecodeStructure::InstructionParam) {(XHeapIndexType) {Environment.InWhichPackage}}
                 });
 
                 MergeArray(Result, ParseMemberExpressionEndWithAssignment(Target.Subtrees[1], false));
@@ -576,8 +576,8 @@ namespace XScript::Compiler {
                 Environment.InWhichPackage = Hash(Target.Subtrees[0].Node.Value);
 
                 Result.push_back((BytecodeStructure) {
-                        BytecodeStructure::InstructionEnum::pc_get_current_package_id,
-                        (BytecodeStructure::InstructionParam) {(XHeapIndexType) {}}
+                        BytecodeStructure::InstructionEnum::pc_set_current_package_id,
+                        (BytecodeStructure::InstructionParam) {(XHeapIndexType) {Environment.InWhichPackage}}
                 });
 
                 MergeArray(Result, ParseClassMethodInvoke(Target.Subtrees[1], IsInParsing));
