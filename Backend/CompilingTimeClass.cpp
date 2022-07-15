@@ -9,7 +9,7 @@
 
 namespace XScript {
     namespace Compiler {
-        CompilingTimeClass::CompilingTimeClass(const XString &Name, const XArray<XIndexType> &parentClasses,
+        CompilingTimeClass::CompilingTimeClass(const XString &Name, const XArray <ClassDescriptor> &parentClasses,
                                                XArray<XString> methods)
                 : ClassName(Name), ParentClasses(parentClasses), Methods(std::move(methods)) {}
 

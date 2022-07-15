@@ -9,6 +9,7 @@
 #include "../Share/Utils.hpp"
 #include "CompilingTimeFunction.hpp"
 #include "SymbolItem.hpp"
+#include "ClassDescriptor.hpp"
 
 namespace XScript::Compiler {
 
@@ -16,7 +17,7 @@ namespace XScript::Compiler {
     public:
         XString ClassName;
 
-        XArray<XIndexType> ParentClasses;
+        XArray<ClassDescriptor> ParentClasses;
 
         /**
          * Only record method names.
@@ -25,7 +26,7 @@ namespace XScript::Compiler {
         XArray<XString> Methods;
 
         explicit CompilingTimeClass(const XString &Name,
-                                    const XArray<XIndexType> &parentClasses,
+                                    const XArray <ClassDescriptor> &parentClasses,
                                     XArray<XString> methods);
 
         void PushMethod(const XString &Name);

@@ -112,12 +112,21 @@ namespace XScript {
 
         XArray<BytecodeStructure> FileCompiler::GenerateForClassDefinition(AST &Target) {
             XString ClassName = Target.Subtrees[0].Node.Value;
-            XArray<XIndexType> Extends;
+            XArray<ClassDescriptor> Extends;
             XArray<XString> Methods;
 
             for (auto &I: Target.Subtrees[1].Subtrees) {
                 try {
-                    Extends.push_back(Environment.MainPackage.GetClass(I.Node.Value).first);
+                    // 本包調用和外包調用
+                    if (I.Type == AST::TreeType::Identifier) {
+                        Extends.push_back({0, Environment.MainPackage.GetClass(I.Node.Value).first});
+                    } else if (I.Type == AST::TreeType::CrossPackageAccessExpression) {
+                        if (I.Subtrees[1].Node.Kind != Lexer::TokenKind::Identifier)
+                            throw CompilerError(I.Subtrees[1].Node.Line, I.Subtrees[1].Node.Column,
+                                                L"GenerateForClassDefinition: Expected a cross package access expression with an identifier");
+                        auto Pkg = Environment.GetPackage(Hash(I.Subtrees[0].Node.Value));
+                        Extends.push_back({Pkg.first, Pkg.second.GetClass(I.Subtrees[1].Node.Value).first});
+                    }
                 } catch (InternalException &E) {
                     throw CompilerError(I.Node.Line, I.Node.Column,
                                         L"GenerateForClassDefinition: Class " + I.Node.Value + L" doesn't exist");
@@ -125,7 +134,8 @@ namespace XScript {
             }
             for (auto &Subtree: Target.Subtrees[2].Subtrees) {
                 XString MethodName = ClassName + L"$" + Subtree.Subtrees[1].Subtrees[0].Node.Value;
-                Environment.MainPackage.PushFunction(MethodName, {{}, {}});
+                Environment.MainPackage.PushFunction(MethodName, {{},
+                                                                  {}});
 
                 auto Func = ParseMethodDefinition(Subtree);
                 Environment.MainPackage.PushFunction(MethodName, Func);
