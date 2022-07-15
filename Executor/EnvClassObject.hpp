@@ -6,16 +6,19 @@
 #define XSCRIPT2_ENVCLASSOBJECT_HPP
 
 #include "../Share/Config.hpp"
+#include "../Backend/ClassDescriptor.hpp"
 
 namespace XScript {
 
     class EnvClassObject {
     public:
-        XArray<XIndexType> Parents;
+        XArray<ClassDescriptor> Parents;
+
+        XMap<XIndexType, XIndexType> Methods;
 
         XMap<XIndexType, XHeapIndexType> Members;
 
-        bool IsInstanceOf(XIndexType Idx);
+        bool IsInstanceOf(ClassDescriptor Idx);
 
         XHeapIndexType GetMember(XIndexType Name);
     };

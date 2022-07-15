@@ -7,7 +7,7 @@
 #include "../Share/Exceptions/InternalException.hpp"
 
 namespace XScript {
-    bool EnvClassObject::IsInstanceOf(XIndexType Idx) {
+    bool EnvClassObject::IsInstanceOf(ClassDescriptor Idx) {
         return std::find(Parents.begin(), Parents.end(), Idx) != Parents.end();
     }
 

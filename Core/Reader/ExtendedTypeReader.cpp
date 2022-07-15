@@ -90,6 +90,12 @@ namespace XScript {
             EnvPackageStructure Result;
             Result.Constants = ReadConstants(FilePointer);
 
+            XIndexType ClassesCount = BaseTypeReader().ReadIndex(FilePointer);
+            for (XIndexType I = 0; I < ClassesCount; I++) {
+                XString Name = BaseTypeReader().ReadString(FilePointer);
+                Result.ClassTemplates[Hash(Name)] = ReadClass(FilePointer);
+            }
+
             XIndexType FunctionsLength = BaseTypeReader().ReadIndex(FilePointer);
             for (XIndexType I = 0; I < FunctionsLength; I++) {
                 XString FuncName = BaseTypeReader().ReadString(FilePointer);
@@ -140,6 +146,14 @@ namespace XScript {
             Compiler::CompilingTimePackageStructure Result;
             Result.Constants = ReadConstantsEx(FilePointer);
 
+            XIndexType ClassesCount = BaseTypeReader().ReadIndex(FilePointer);
+            for (XIndexType I = 0; I < ClassesCount; I++) {
+                XString Name = BaseTypeReader().ReadString(FilePointer);
+                Compiler::CompilingTimeClass Class{ReadClassEx(FilePointer)};
+                Class.ClassName = Name;
+                Result.PushClass(Name, Class);
+            }
+
             XIndexType FunctionsLength = BaseTypeReader().ReadIndex(FilePointer);
             for (XIndexType I = 0; I < FunctionsLength; I++) {
                 XString FuncName = BaseTypeReader().ReadString(FilePointer);
@@ -157,6 +171,50 @@ namespace XScript {
             }
 
             return Result;
+        }
+
+        ClassDescriptor ExtendedTypeReader::ReadClassDescriptor(FILE *FilePointer) {
+            return {BaseTypeReader().ReadIndex(FilePointer), BaseTypeReader().ReadIndex(FilePointer)};
+        }
+
+        XArray<ClassDescriptor> ExtendedTypeReader::ReadClassDescriptorArray(FILE *FilePointer) {
+            XArray<ClassDescriptor> Res;
+            XIndexType Cnt = BaseTypeReader().ReadIndex(FilePointer);
+            while (Cnt--) {
+                Res.push_back(ReadClassDescriptor(FilePointer));
+            }
+            return Res;
+        }
+
+        EnvClassObject ExtendedTypeReader::ReadClass(FILE *FilePointer) {
+            EnvClassObject Res;
+            XArray<std::pair<XString, XString>> Methods;
+            Res.Parents = ReadClassDescriptorArray(FilePointer);
+
+            XIndexType Cnt = BaseTypeReader().ReadIndex(FilePointer);
+            while (Cnt--) {
+                Methods.push_back({BaseTypeReader().ReadString(FilePointer), BaseTypeReader().ReadString(FilePointer)});
+            }
+
+            for (auto &I: Methods) {
+                Res.Methods[Hash(I.first)] = Hash(I.second);
+            }
+        }
+
+        Compiler::CompilingTimeClass ExtendedTypeReader::ReadClassEx(FILE *FilePointer) {
+            Compiler::CompilingTimeClass Res{{},
+                                             {},
+                                             {}};
+            Res.ParentClasses = ReadClassDescriptorArray(FilePointer);
+            XIndexType Cnt = BaseTypeReader().ReadIndex(FilePointer);
+            while (Cnt--) {
+                XString N, RN;
+                N = BaseTypeReader().ReadString(FilePointer);
+                RN = BaseTypeReader().ReadString(FilePointer);
+                Res.Methods.push_back({N, RN});
+            }
+
+            return Res;
         }
 
 

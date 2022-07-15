@@ -19,17 +19,13 @@ namespace XScript::Compiler {
 
         XArray<ClassDescriptor> ParentClasses;
 
-        /**
-         * Only record method names.
-         * Records full method name, like ClassName$MethodName
-         */
-        XArray<XString> Methods;
+        // alias(invoke name), real name
+        XArray<std::pair<XString, XString>> Methods;
 
-        explicit CompilingTimeClass(const XString &Name,
-                                    const XArray <ClassDescriptor> &parentClasses,
-                                    XArray<XString> methods);
+        explicit CompilingTimeClass(const XString &ClassName, const XArray<ClassDescriptor> &parentClasses,
+                                    XArray<std::pair<XString, XString>> methods);
 
-        void PushMethod(const XString &Name);
+        void PushMethod(const XString &Name, const XString &RealName);
 
         XIndexType IsMethodExist(const XString &Name);
     };

@@ -22,6 +22,17 @@ namespace XScript {
             Interpreter.MainLoop();
             VM.Stack.FramesInformation.pop_back();
         }
+
+        /* correct the packageID of classes */
+        for (auto &Package: VM.Packages) {
+            for (auto &Class: Package.second.ClassTemplates) {
+                for (auto &Parent: Class.second.Parents) {
+                    /* equals to zero */
+                    if (!Parent.PackageID)
+                        Parent.PackageID = Package.first;
+                }
+            }
+        }
     }
 
     Executor::Executor() : Interpreter(VM) {

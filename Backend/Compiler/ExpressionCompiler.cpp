@@ -542,7 +542,7 @@ namespace XScript::Compiler {
 
                 Result.push_back((BytecodeStructure) {
                         BytecodeStructure::InstructionEnum::stack_push_function,
-                        (BytecodeStructure::InstructionParam) Hash(IsInParsing->Methods[Index])
+                        (BytecodeStructure::InstructionParam) Hash(IsInParsing->Methods[Index].second)
                 });
 
                 /* 参数数量带this指针一个 */
@@ -558,7 +558,7 @@ namespace XScript::Compiler {
                     if (Index != -1) {
                         Result.push_back((BytecodeStructure) {
                                 BytecodeStructure::InstructionEnum::stack_push_function,
-                                (BytecodeStructure::InstructionParam) Hash(IsInParsing->Methods[Index])
+                                (BytecodeStructure::InstructionParam) Hash(IsInParsing->Methods[Index].second)
                         });
                         break;
                     } else {

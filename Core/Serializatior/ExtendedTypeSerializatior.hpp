@@ -35,13 +35,19 @@ namespace XScript {
 
             void operator()(FILE *FilePointer, const XArray<Compiler::CompilingTimeFunction::Descriptor> &Descriptors);
 
+            void operator()(FILE *FilePointer, const ClassDescriptor &Class);
+
+            void operator()(FILE *FilePointer, const XArray<ClassDescriptor> &ClassArr);
+
             void operator()(FILE *FilePointer, const Compiler::CompilingTimeClass &Class);
+
+            void operator()(FILE *FilePointer, const XArray<std::pair<XString, Compiler::CompilingTimeClass>> &Classes);
 
             void operator()(FILE *FilePointer, const Compiler::ConstantPool::ItemStructure &Item);
 
             void operator()(FILE *FilePointer, const Compiler::ConstantPool &Pool);
 
-            void operator()(FILE* FilePointer, const Compiler::CompilingTimePackageStructure &Package);
+            void operator()(FILE *FilePointer, const Compiler::CompilingTimePackageStructure &Package);
         };
 
     } // XScript

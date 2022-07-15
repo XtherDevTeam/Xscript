@@ -57,7 +57,7 @@ namespace XScript {
 
         void CompilingTimePackageStructure::AddMethodToClass(XIndexType ClassIndex, const XString &MethodName,
                                                              const CompilingTimeFunction &Func) {
-            Classes[ClassIndex].second.PushMethod(Classes[ClassIndex].first + L"$" + MethodName);
+            Classes[ClassIndex].second.PushMethod(MethodName, Classes[ClassIndex].first + L"$" + MethodName);
             PushFunction(Classes[ClassIndex].first + L"$" + MethodName, Func);
         }
 

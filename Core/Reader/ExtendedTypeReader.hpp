@@ -38,6 +38,12 @@ namespace XScript {
 
             EnvConstantPool ReadConstants(FILE *FilePointer);
 
+            ClassDescriptor ReadClassDescriptor(FILE *FilePointer);
+
+            XArray<ClassDescriptor> ReadClassDescriptorArray(FILE *FilePointer);
+
+            EnvClassObject ReadClass(FILE *FilePointer);
+
             EnvPackageStructure ReadPackage(FILE *FilePointer);
 
             Compiler::CompilingTimeFunction ReadFunctionEx(FILE *FilePointer);
@@ -47,6 +53,8 @@ namespace XScript {
             Compiler::ConstantPool::ItemStructure ReadConstantEx(FILE *FilePointer);
 
             Compiler::ConstantPool ReadConstantsEx(FILE *FilePointer);
+
+            Compiler::CompilingTimeClass ReadClassEx(FILE *FilePointer);
 
             Compiler::CompilingTimePackageStructure ReadPackageEx(FILE *FilePointer);
         };

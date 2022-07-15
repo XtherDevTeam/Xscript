@@ -70,15 +70,15 @@ namespace XScript {
         }
 
         void ExtendedTypeSerializatior::operator()(FILE *FilePointer, const Compiler::CompilingTimeClass &Class) {
-            XArray<XIndexType> Constructors;
-            XArray<XIndexType> Methods;
+            ExtendedTypeSerializatior()(FilePointer, Class.ParentClasses);
+
+            XIndexType Length = Class.Methods.size();
+            BaseTypeSerializatior()(FilePointer, Length);
 
             for (auto &Method: Class.Methods) {
-                Constructors.push_back(Hash(Method));
+                BaseTypeSerializatior()(FilePointer, Method.first);
+                BaseTypeSerializatior()(FilePointer, Method.second);
             }
-
-            ExtendedTypeSerializatior()(FilePointer, Class.ParentClasses);
-            ExtendedTypeSerializatior()(FilePointer, Methods);
         }
 
         void ExtendedTypeSerializatior::operator()(FILE *FilePointer, const Compiler::ConstantPool &Pool) {
@@ -101,6 +101,8 @@ namespace XScript {
                                                    const Compiler::CompilingTimePackageStructure &Package) {
             ExtendedTypeSerializatior()(FilePointer, Package.Constants);
 
+            ExtendedTypeSerializatior()(FilePointer, Package.Classes);
+
             XIndexType FuncArrLength = Package.Functions.size();
             BaseTypeSerializatior()(FilePointer, FuncArrLength);
 
@@ -112,9 +114,31 @@ namespace XScript {
             ExtendedTypeSerializatior()(FilePointer, Package.PackageInitializeCodes);
 
             BaseTypeSerializatior()(FilePointer, static_cast<XIndexType>(Package.Statics.size()));
-            for (auto &Item : Package.Statics) {
+            for (auto &Item: Package.Statics) {
                 BaseTypeSerializatior()(FilePointer, Item.first);
                 BaseTypeSerializatior()(FilePointer, Item.second.IsConstant);
+            }
+        }
+
+        void ExtendedTypeSerializatior::operator()(FILE *FilePointer, const ClassDescriptor &Class) {
+            BaseTypeSerializatior()(FilePointer, Class.PackageID);
+            BaseTypeSerializatior()(FilePointer, Class.ClassID);
+        }
+
+        void ExtendedTypeSerializatior::operator()(FILE *FilePointer, const XArray<ClassDescriptor> &ClassArr) {
+            BaseTypeSerializatior()(FilePointer, static_cast<XIndexType>(ClassArr.size()));
+            for (auto &I: ClassArr) {
+                ExtendedTypeSerializatior()(FilePointer, I);
+            }
+        }
+
+        void
+        ExtendedTypeSerializatior::operator()(FILE *FilePointer,
+                                              const XArray<std::pair<XString, Compiler::CompilingTimeClass>> &Classes) {
+            BaseTypeSerializatior()(FilePointer, static_cast<XIndexType>(Classes.size()));
+            for (auto &I: Classes) {
+                BaseTypeSerializatior()(FilePointer, I.first);
+                ExtendedTypeSerializatior()(FilePointer, I.second);
             }
         }
     } // XScript

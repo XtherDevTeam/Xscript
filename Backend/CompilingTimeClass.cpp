@@ -9,17 +9,18 @@
 
 namespace XScript {
     namespace Compiler {
-        CompilingTimeClass::CompilingTimeClass(const XString &Name, const XArray <ClassDescriptor> &parentClasses,
-                                               XArray<XString> methods)
-                : ClassName(Name), ParentClasses(parentClasses), Methods(std::move(methods)) {}
+        CompilingTimeClass::CompilingTimeClass(const XString &ClassName, const XArray<ClassDescriptor> &parentClasses,
+                                               XArray<std::pair<XString, XString>> methods)
+                : ClassName(ClassName), ParentClasses(parentClasses), Methods(std::move(methods)) {}
 
-        void CompilingTimeClass::PushMethod(const XString &Name) {
-            Methods.push_back(Name);
+        void CompilingTimeClass::PushMethod(const XString &Name, const XString &RealName) {
+            Methods.push_back({Name, RealName});
         }
 
+        // by real name
         XIndexType CompilingTimeClass::IsMethodExist(const XString &Name) {
             for (XIndexType Idx = 0; Idx < Methods.size(); Idx++) {
-                if (Methods[Idx] == Name) {
+                if (Methods[Idx].second == Name) {
                     return Idx;
                 }
             }

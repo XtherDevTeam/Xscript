@@ -113,7 +113,7 @@ namespace XScript {
         XArray<BytecodeStructure> FileCompiler::GenerateForClassDefinition(AST &Target) {
             XString ClassName = Target.Subtrees[0].Node.Value;
             XArray<ClassDescriptor> Extends;
-            XArray<XString> Methods;
+            XArray<std::pair<XString, XString>> Methods;
 
             for (auto &I: Target.Subtrees[1].Subtrees) {
                 try {
@@ -139,7 +139,7 @@ namespace XScript {
 
                 auto Func = ParseMethodDefinition(Subtree);
                 Environment.MainPackage.PushFunction(MethodName, Func);
-                Methods.push_back(MethodName);
+                Methods.push_back({Subtree.Subtrees[1].Subtrees[0].Node.Value, MethodName});
             }
             Environment.MainPackage.PushClass(ClassName, (CompilingTimeClass) {ClassName, Extends, Methods});
 

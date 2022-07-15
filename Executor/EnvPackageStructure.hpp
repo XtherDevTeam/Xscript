@@ -10,14 +10,17 @@
 #include "EnvironmentStackItem.hpp"
 #include "../Backend/ConstantPool.hpp"
 #include "EnvConstantPool.hpp"
+#include "EnvClassObject.hpp"
 
 namespace XScript {
 
     class EnvPackageStructure {
     public:
         EnvConstantPool Constants;
-        
+
         XArray<BytecodeStructure> PackageInitializeCodes;
+
+        XMap<XIndexType, EnvClassObject> ClassTemplates;
 
         XMap<XIndexType, EnvFunction> FunctionPool;
 
