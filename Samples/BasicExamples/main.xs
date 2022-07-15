@@ -4,11 +4,11 @@ var i = 0;
 
 class ClassA {
     def test () {
-        return this.test();
+        return 11451419;
     }
 
     def constructor () {
-        return this;
+        return this; // whatever you return, but you must return a value.
     }
 };
 
@@ -26,5 +26,5 @@ def fib(a) {
 
 def main () {
     var Class = new ClassA.constructor();
-    return @{"package_test"} -> test_func(1+1+4);
+    return Class.test();
 }

@@ -10,7 +10,7 @@
 #include "EnvironmentStackItem.hpp"
 #include "../Backend/ConstantPool.hpp"
 #include "EnvConstantPool.hpp"
-#include "EnvClassObject.hpp"
+#include "EnvClassTemplate.hpp"
 
 namespace XScript {
 
@@ -20,7 +20,7 @@ namespace XScript {
 
         XArray<BytecodeStructure> PackageInitializeCodes;
 
-        XMap<XIndexType, EnvClassObject> ClassTemplates;
+        XMap<XIndexType, EnvClassTemplate> ClassTemplates;
 
         XMap<XIndexType, EnvFunction> FunctionPool;
 

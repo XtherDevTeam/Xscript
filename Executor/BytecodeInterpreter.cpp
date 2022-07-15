@@ -1460,11 +1460,37 @@ namespace XScript {
     }
 
     void BytecodeInterpreter::InstructionClassNew(BytecodeStructure::InstructionParam param) {
+        if (InterpreterEnvironment.Packages[InterpreterEnvironment.ProgramCounter.Package].ClassTemplates.count(
+                param.HeapPointerValue)) {
+            const auto &Template = InterpreterEnvironment.Packages[InterpreterEnvironment.ProgramCounter.Package].ClassTemplates[param.HeapPointerValue];
+            EnvClassObject *Object = NewEnvClassObject();
+            Object->Parents = Template.Parents;
+            for (auto &I: Template.Methods) {
+                EnvObject MethodPointer{EnvObject::ObjectKind::FunctionPointer,
+                                        (EnvObject::ObjectValue) {
+                                                &InterpreterEnvironment.Packages[InterpreterEnvironment.ProgramCounter.Package].FunctionPool[I.second]}};
+                XHeapIndexType Idx = InterpreterEnvironment.Heap.PushElement(MethodPointer);
+                Object->Members.insert({I.first, Idx});
+            }
+            XHeapIndexType ClassPointer = InterpreterEnvironment.Heap.PushElement({EnvObject::ObjectKind::ClassObject,
+                                                                                   (EnvObject::ObjectValue) {Object}});
+            InterpreterEnvironment.Stack.PushValueToStack(
+                    (EnvironmentStackItem) {EnvironmentStackItem::ItemKind::HeapPointer,
+                                            (EnvironmentStackItem::ItemValue) {ClassPointer}});
+            return;
+        } else {
+            throw BytecodeInterpretError(L"BytecodeInterpreter::InstructionClassNew(): class does not exist.");
+        }
 
     }
 
     void BytecodeInterpreter::InstructionClassGetMember(BytecodeStructure::InstructionParam param) {
-
+        auto *ClassPointer =
+                InterpreterEnvironment.Heap.HeapData[InterpreterEnvironment.Stack.PopValueFromStack().Value.HeapPointerVal].Value.ClassObjectPointer;
+        InterpreterEnvironment.Stack.PushValueToStack(
+                (EnvironmentStackItem) {EnvironmentStackItem::ItemKind::HeapPointer,
+                                        (EnvironmentStackItem::ItemValue) {
+                                                ClassPointer->GetMember(param.HeapPointerValue)}});
     }
 
     void BytecodeInterpreter::InstructionListRemoveIndex(BytecodeStructure::InstructionParam param) {

@@ -12,6 +12,7 @@
 #include "../../Executor/Environment.hpp"
 #include "../../Backend/CompilingTimeFunction.hpp"
 #include "../../Backend/CompilingTimePackageStructure.hpp"
+#include "../../Executor/EnvClassTemplate.hpp"
 
 namespace XScript {
     namespace Reader {
@@ -42,7 +43,7 @@ namespace XScript {
 
             XArray<ClassDescriptor> ReadClassDescriptorArray(FILE *FilePointer);
 
-            EnvClassObject ReadClass(FILE *FilePointer);
+            EnvClassTemplate ReadClass(FILE *FilePointer);
 
             EnvPackageStructure ReadPackage(FILE *FilePointer);
 

@@ -5,6 +5,7 @@
 #include "ExtendedTypeReader.hpp"
 #include "BaseTypeReader.hpp"
 #include "../../Share/Exceptions/InternalException.hpp"
+#include "../../Executor/EnvClassTemplate.hpp"
 
 namespace XScript {
     namespace Reader {
@@ -186,8 +187,8 @@ namespace XScript {
             return Res;
         }
 
-        EnvClassObject ExtendedTypeReader::ReadClass(FILE *FilePointer) {
-            EnvClassObject Res;
+        EnvClassTemplate ExtendedTypeReader::ReadClass(FILE *FilePointer) {
+            EnvClassTemplate Res;
             XArray<std::pair<XString, XString>> Methods;
             Res.Parents = ReadClassDescriptorArray(FilePointer);
 
@@ -199,6 +200,8 @@ namespace XScript {
             for (auto &I: Methods) {
                 Res.Methods[Hash(I.first)] = Hash(I.second);
             }
+
+            return Res;
         }
 
         Compiler::CompilingTimeClass ExtendedTypeReader::ReadClassEx(FILE *FilePointer) {

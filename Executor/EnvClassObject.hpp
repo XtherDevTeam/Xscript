@@ -14,8 +14,6 @@ namespace XScript {
     public:
         XArray<ClassDescriptor> Parents;
 
-        XMap<XIndexType, XIndexType> Methods;
-
         XMap<XIndexType, XHeapIndexType> Members;
 
         bool IsInstanceOf(ClassDescriptor Idx);

@@ -336,10 +336,17 @@ namespace XScript::Compiler {
 
                     /* let the executor get the function address first */
                     MergeArray(Result, ParseMemberExpression(Target.Subtrees[0], IsMemberExpression));
+                    /* get the function pointer not heap index */
+                    Result.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::object_lvalue2rvalue,
+                                                          (BytecodeStructure::InstructionParam) {(XIndexType) 0}});
 
                     Result.push_back((BytecodeStructure) {
                             BytecodeStructure::InstructionEnum::func_invoke,
                             (BytecodeStructure::InstructionParam) {(XHeapIndexType) Target.Subtrees[1].Subtrees.size()}
+                    });
+                    Result.push_back((BytecodeStructure) {
+                            BytecodeStructure::InstructionEnum::stack_pop,
+                            (BytecodeStructure::InstructionParam) {(XHeapIndexType) {}}
                     });
                 }
                 break;
