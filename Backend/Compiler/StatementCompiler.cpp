@@ -46,6 +46,9 @@ namespace XScript {
                 case AST::TreeType::VariableDefinition: {
                     return GenerateForVariableDefinition(Target);
                 }
+                case AST::TreeType::MemberDefineStatement: {
+                    return GenerateForMemberDefineStatement(Target);
+                }
                 case AST::TreeType::IfStatement: {
                     return GenerateForIfStatement(Target);
                 }
@@ -281,6 +284,15 @@ namespace XScript {
             MergeArray(Result, ExpressionCompiler(Environment).Generate(Target.Subtrees[0]));
             Result.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::func_return,
                                                   (BytecodeStructure::InstructionParam) {(XHeapIndexType) 0}});
+            return Result;
+        }
+
+        XArray<BytecodeStructure> StatementCompiler::GenerateForMemberDefineStatement(AST &Target) {
+            XArray<BytecodeStructure> Result;
+            MergeArray(Result, ExpressionCompiler(Environment).ParseMemberExpression(Target.Subtrees[1], false));
+            Result.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::class_new_member,
+                                                  (BytecodeStructure::InstructionParam) {
+                                                          (XHeapIndexType) Hash(Target.Subtrees[0].Node.Value)}});
             return Result;
         }
     } // XScript

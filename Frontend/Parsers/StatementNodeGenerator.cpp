@@ -12,6 +12,7 @@
 #include "BreakStatementNodeGenerator.hpp"
 #include "ContinueStatementNodeGenerator.hpp"
 #include "ReturnStatementNodeGenerator.hpp"
+#include "MemberDefineStatementNodeGenerator.hpp"
 
 namespace XScript {
     namespace Generator {
@@ -22,6 +23,10 @@ namespace XScript {
         AST StatementNodeGenerator::Parse() {
             AST Result{};
             Result = VariableStatementNodeGenerator(L).Parse();
+            if (!Result.IsNotMatchNode())
+                return Result;
+
+            Result = MemberDefineStatementNodeGenerator(L).Parse();
             if (!Result.IsNotMatchNode())
                 return Result;
 
@@ -54,9 +59,6 @@ namespace XScript {
                 return Result;
 
             Result = ExpressionNodeGenerator(L).Parse();
-            if (!Result.IsNotMatchNode())
-                return Result;
-
             return Result;
         }
     } // XScript

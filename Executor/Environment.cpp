@@ -24,14 +24,15 @@ namespace XScript {
             bool LoadFail = true;
 
             for (auto &Prefix: PathsToSearch) {
-                XString FinalPath = Prefix + (Prefix.back() == L'/' or Prefix == L"" ? L"" : L"/") + Package;
-                FILE* IsExist = fopen(wstring2string(FinalPath).c_str(), "r+");
+                XString FFF = Prefix + (Prefix.back() == L'/' or Prefix == L"" ? L"" : L"/") + Package;
+                FILE *IsExist = fopen(wstring2string(FFF).c_str(), "r+");
                 if (IsExist == nullptr)
                     continue;
                 fclose(IsExist);
 
-                LoadFromFile(FinalPath, Package,false);
+                LoadFromFile(FFF, Package, false);
                 LoadFail = false;
+                break;
             }
 
             if (LoadFail)

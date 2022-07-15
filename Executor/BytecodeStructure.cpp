@@ -142,6 +142,10 @@ namespace XScript {
                 Result += L"stack_duplicate";
                 ParamType = H;
                 break;
+            case InstructionEnum::stack_get_top:
+                Result += L"stack_get_top";
+                ParamType = N;
+                break;
             case InstructionEnum::stack_store:
                 Result += L"stack_store";
                 ParamType = H;
@@ -156,6 +160,10 @@ namespace XScript {
                 break;
             case InstructionEnum::class_get_member:
                 Result += L"class_get_member";
+                ParamType = H;
+                break;
+            case InstructionEnum::class_new_member:
+                Result += L"class_new_member";
                 ParamType = H;
                 break;
             case InstructionEnum::list_new:

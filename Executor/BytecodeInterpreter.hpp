@@ -68,6 +68,8 @@ namespace XScript {
 
         void InstructionStackDuplicate(BytecodeStructure::InstructionParam Param);
 
+        void InstructionStackGetTop(BytecodeStructure::InstructionParam Param);
+
         void InstructionStackStore(BytecodeStructure::InstructionParam Param);
 
         void InstructionStaticStore(BytecodeStructure::InstructionParam Param);
@@ -111,6 +113,8 @@ namespace XScript {
         void InstructionClassNew(BytecodeStructure::InstructionParam param);
 
         void InstructionClassGetMember(BytecodeStructure::InstructionParam param);
+
+        void InstructionClassNewMember(BytecodeStructure::InstructionParam param);
 
         void InstructionListRemoveIndex(BytecodeStructure::InstructionParam param);
     };

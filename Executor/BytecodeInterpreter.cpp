@@ -98,6 +98,9 @@ namespace XScript {
                 case BytecodeStructure::InstructionEnum::stack_duplicate:
                     InstructionStackDuplicate(CurrentInstruction.Param);
                     break;
+                case BytecodeStructure::InstructionEnum::stack_get_top:
+                    InstructionStackGetTop(CurrentInstruction.Param);
+                    break;
                 case BytecodeStructure::InstructionEnum::stack_store:
                     InstructionStackStore(CurrentInstruction.Param);
                     break;
@@ -109,6 +112,9 @@ namespace XScript {
                     break;
                 case BytecodeStructure::InstructionEnum::class_get_member:
                     InstructionClassGetMember(CurrentInstruction.Param);
+                    break;
+                case BytecodeStructure::InstructionEnum::class_new_member:
+                    InstructionClassNewMember(CurrentInstruction.Param);
                     break;
                 case BytecodeStructure::InstructionEnum::list_new:
                     InstructionListNew(CurrentInstruction.Param);
@@ -1113,9 +1119,12 @@ namespace XScript {
     }
 
     void BytecodeInterpreter::InstructionStackDuplicate(BytecodeStructure::InstructionParam Param) {
-        EnvironmentStackItem Element = InterpreterEnvironment.Stack.GetValueFromStack(
-                Param.HeapPointerValue);
-        InterpreterEnvironment.Stack.PushValueToStack(Element);
+        InterpreterEnvironment.Stack.PushValueToStack(InterpreterEnvironment.Stack.GetValueFromStack(
+                Param.HeapPointerValue));
+    }
+
+    void BytecodeInterpreter::InstructionStackGetTop(BytecodeStructure::InstructionParam Param) {
+        InterpreterEnvironment.Stack.PushValueToStack(InterpreterEnvironment.Stack.Elements.back());
     }
 
     void BytecodeInterpreter::InstructionStackStore(BytecodeStructure::InstructionParam Param) {
@@ -1274,8 +1283,8 @@ namespace XScript {
     }
 
     void BytecodeInterpreter::InstructionObjectStore(BytecodeStructure::InstructionParam Param) {
-        EnvironmentStackItem RightValue = InterpreterEnvironment.Stack.PopValueFromStack();
         EnvironmentStackItem LeftValue = InterpreterEnvironment.Stack.PopValueFromStack();
+        EnvironmentStackItem RightValue = InterpreterEnvironment.Stack.PopValueFromStack();
 
         switch (RightValue.Kind) {
             case EnvironmentStackItem::ItemKind::Integer:
@@ -1481,16 +1490,24 @@ namespace XScript {
         } else {
             throw BytecodeInterpretError(L"BytecodeInterpreter::InstructionClassNew(): class does not exist.");
         }
-
     }
 
     void BytecodeInterpreter::InstructionClassGetMember(BytecodeStructure::InstructionParam param) {
+        EnvironmentStackItem Item = InterpreterEnvironment.Stack.PopValueFromStack();
         auto *ClassPointer =
-                InterpreterEnvironment.Heap.HeapData[InterpreterEnvironment.Stack.PopValueFromStack().Value.HeapPointerVal].Value.ClassObjectPointer;
+                InterpreterEnvironment.Heap.HeapData[Item.Value.HeapPointerVal].Value.ClassObjectPointer;
         InterpreterEnvironment.Stack.PushValueToStack(
                 (EnvironmentStackItem) {EnvironmentStackItem::ItemKind::HeapPointer,
                                         (EnvironmentStackItem::ItemValue) {
                                                 ClassPointer->GetMember(param.HeapPointerValue)}});
+    }
+
+    void BytecodeInterpreter::InstructionClassNewMember(BytecodeStructure::InstructionParam param) {
+        EnvironmentStackItem Item = InterpreterEnvironment.Stack.PopValueFromStack();
+        auto *ClassPointer =
+                InterpreterEnvironment.Heap.HeapData[Item.Value.HeapPointerVal].Value.ClassObjectPointer;
+        EnvObject Object{EnvObject::ObjectKind::Integer, (EnvObject::ObjectValue) {(XInteger) {0}}};
+        ClassPointer->Members[param.HeapPointerValue] = InterpreterEnvironment.Heap.PushElement(Object);
     }
 
     void BytecodeInterpreter::InstructionListRemoveIndex(BytecodeStructure::InstructionParam param) {

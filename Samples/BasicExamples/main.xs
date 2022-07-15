@@ -8,7 +8,9 @@ class ClassA {
     }
 
     def constructor () {
-        return this; // whatever you return, but you must return a value.
+        def t in this;
+        this.t = 11451419198;
+        return this;
     }
 };
 
@@ -26,5 +28,5 @@ def fib(a) {
 
 def main () {
     var Class = new ClassA.constructor();
-    return Class.test();
+    return Class.t;
 }

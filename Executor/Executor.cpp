@@ -22,7 +22,6 @@ namespace XScript {
             Interpreter.MainLoop();
             VM.Stack.FramesInformation.pop_back();
         }
-
         /* correct the packageID of classes */
         for (auto &Package: VM.Packages) {
             for (auto &Class: Package.second.ClassTemplates) {

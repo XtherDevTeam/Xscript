@@ -226,7 +226,6 @@ namespace XScript::Compiler {
 
             case AST::TreeType::AssignmentExpression: {
                 /* Push lvalue into stack */
-                MergeArray(Result, Generate(Target.Subtrees[0]));
                 MergeArray(Result, Generate(Target.Subtrees[2]));
 
                 switch (Target.Subtrees[1].Node.Kind) {
@@ -410,7 +409,7 @@ namespace XScript::Compiler {
                     try {
                         /* If variable doesn't exist, then GetLocal will throw an error */
                         auto Item = Environment.GetLocal(Target.Node.Value);
-                        Result.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::stack_store,
+                        Result.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::stack_duplicate,
                                                               (BytecodeStructure::InstructionParam) {Item.first}});
                     } catch (InternalException &E) {
                         try {
@@ -482,8 +481,8 @@ namespace XScript::Compiler {
                     CompilingTimeClass *Dummy = nullptr;
                     MergeArray(Result, ParseClassMethodInvoke(Target, Dummy));
                 } catch (InternalException &E) {
-                    MergeArray(Result, ParseMemberExpressionEndWithAssignment(Target.Subtrees[0], IsMemberExpression));
-                    MergeArray(Result, ParseMemberExpressionEndWithAssignment(Target.Subtrees[2], true));
+                    MergeArray(Result, ParseMemberExpression(Target.Subtrees[0], IsMemberExpression));
+                    MergeArray(Result, ParseMemberExpressionEndWithAssignment(Target.Subtrees[1], true));
                 }
                 break;
             }
@@ -517,7 +516,7 @@ namespace XScript::Compiler {
             default:
                 throw CompilerError(Target.GetFirstNotNullToken().Line,
                                     Target.GetFirstNotNullToken().Column,
-                                    L"ParserMemberExpression: Unexpected AST Type");
+                                    L"ParseMemberExpressionEndWithAssignment: Unexpected AST Type");
         }
 
         return Result;
@@ -635,7 +634,7 @@ namespace XScript::Compiler {
             default: {
                 throw CompilerError(Target.GetFirstNotNullToken().Line,
                                     Target.GetFirstNotNullToken().Column,
-                                    L"ParserMemberExpression: Unexpected AST Type");
+                                    L"ParseClassMethodInvoke: Unexpected AST Type");
             }
         }
         return Result;
@@ -665,7 +664,7 @@ namespace XScript::Compiler {
         });
         /* 压入第一个参数 this指针 */
         Result.push_back((BytecodeStructure) {
-                BytecodeStructure::InstructionEnum::stack_duplicate,
+                BytecodeStructure::InstructionEnum::stack_get_top,
                 (BytecodeStructure::InstructionParam) {(XHeapIndexType) {}}
         });
 

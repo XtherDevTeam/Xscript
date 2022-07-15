@@ -20,6 +20,8 @@ namespace XScript {
 
             XArray<BytecodeStructure> GenerateForVariableDefinition(AST &Target);
 
+            XArray<BytecodeStructure> GenerateForMemberDefineStatement(AST &Target);
+
             XArray<BytecodeStructure> GenerateForIfStatement(AST &Target);
 
             XArray<BytecodeStructure> GenerateForIfElseStatement(AST &Target);

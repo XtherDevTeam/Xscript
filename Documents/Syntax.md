@@ -213,7 +213,7 @@ Expression ::= LogicExpression
              | AssignmentExpression
 ```
 
-### VariableStatementNodeGenerator
+### VariableStatement
 
 Status: `Implmented`
 
@@ -333,24 +333,14 @@ Syntax:
 MethodDefinition ::= MethodDescriptor FunctionDefinition
 ```
 
-### MemberDescriptor
+### MemberDefineStatement
 
 Status: `Implmented`
 
 Syntax:
 
 ```
-MemberDescriptor ::= "public" | "private" 
-```
-
-### MemberDeclaration
-
-Status: `Implmented`
-
-Syntax:
-
-```
-MemberDeclaration ::= MemberDescriptor VariableDeclaration
+DefineStatement ::= "def" Identifier "in" Expression  
 ```
 
 ### CodeBlock
