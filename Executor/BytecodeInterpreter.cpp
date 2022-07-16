@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include "BytecodeInterpreter.hpp"
+#include "../Share/Exceptions/InternalException.hpp"
 
 namespace XScript {
     BytecodeInterpreter::BytecodeInterpreter(Environment &interpreterEnvironment) : InterpreterEnvironment(
@@ -246,12 +247,26 @@ namespace XScript {
                 break;
             case EnvironmentStackItem::ItemKind::HeapPointer:
                 switch (InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal].Kind) {
-                    case EnvObject::ObjectKind::ClassObject:
+                    case EnvObject::ObjectKind::ClassObject: {
+                        auto &ClassObject = *InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal].Value.ClassObjectPointer;
+                        auto &Method = InterpreterEnvironment.Heap.HeapData[ClassObject.GetMember(
+                                Hash(L"__instruction_add__"))];
+                        if (Method.Kind == EnvObject::ObjectKind::FunctionPointer) {
+                            InterpreterEnvironment.Stack.PushValueToStack(Left); // this
+                            InterpreterEnvironment.Stack.PushValueToStack(Right); // rhs
+                            InterpreterEnvironment.Stack.PushValueToStack(
+                                    {EnvironmentStackItem::ItemKind::FunctionPointer,
+                                     (EnvironmentStackItem::ItemValue) {Method.Value.FunctionPointerValue}});
+                            InstructionFuncInvoke((BytecodeStructure::InstructionParam) {static_cast<XIndexType>(2)});
+                        } else {
+                            throw BytecodeInterpretError(L"Member `__instruction_add__` isn't a method");
+                        }
                         break;
-                    case EnvObject::ObjectKind::ArrayObject:
-                        /* TODO: Adding support for array objects */
+                    }
+                    case EnvObject::ObjectKind::ArrayObject: {
                         break;
-                    case EnvObject::ObjectKind::StringObject:
+                    }
+                    case EnvObject::ObjectKind::StringObject: {
                         if (Right.Kind == EnvironmentStackItem::ItemKind::HeapPointer and
                             InterpreterEnvironment.Heap.HeapData[Right.Value.HeapPointerVal].Kind ==
                             EnvObject::ObjectKind::StringObject) {
@@ -268,6 +283,7 @@ namespace XScript {
                             throw BytecodeInterpretError(L"Unsupported string operation.");
                         }
                         break;
+                    }
                     default:
                         throw BytecodeInterpretError(L"Cannot operate an basic-type heap item.");
                 }
@@ -347,10 +363,23 @@ namespace XScript {
                 break;
             case EnvironmentStackItem::ItemKind::HeapPointer:
                 switch (InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal].Kind) {
-                    case EnvObject::ObjectKind::ClassObject:
+                    case EnvObject::ObjectKind::ClassObject: {
+                        auto &ClassObject = *InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal].Value.ClassObjectPointer;
+                        auto &Method = InterpreterEnvironment.Heap.HeapData[ClassObject.GetMember(
+                                Hash(L"__instruction_sub__"))];
+                        if (Method.Kind == EnvObject::ObjectKind::FunctionPointer) {
+                            InterpreterEnvironment.Stack.PushValueToStack(Left); // this
+                            InterpreterEnvironment.Stack.PushValueToStack(Right); // rhs
+                            InterpreterEnvironment.Stack.PushValueToStack(
+                                    {EnvironmentStackItem::ItemKind::FunctionPointer,
+                                     (EnvironmentStackItem::ItemValue) {Method.Value.FunctionPointerValue}});
+                            InstructionFuncInvoke((BytecodeStructure::InstructionParam) {static_cast<XIndexType>(2)});
+                        } else {
+                            throw BytecodeInterpretError(L"Member `__instruction_sub__` isn't a method");
+                        }
                         break;
+                    }
                     case EnvObject::ObjectKind::ArrayObject:
-                        /* TODO: Adding support for array objects */
                         break;
                     case EnvObject::ObjectKind::StringObject:
                         throw BytecodeInterpretError(L"Unsupported string operation.");
@@ -432,10 +461,24 @@ namespace XScript {
                 break;
             case EnvironmentStackItem::ItemKind::HeapPointer:
                 switch (InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal].Kind) {
-                    case EnvObject::ObjectKind::ClassObject:
+                    case EnvObject::ObjectKind::ClassObject: {
+                        auto &ClassObject = *InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal].Value.ClassObjectPointer;
+                        auto &Method = InterpreterEnvironment.Heap.HeapData[ClassObject.GetMember(
+                                Hash(L"__instruction_mul__"))];
+                        if (Method.Kind == EnvObject::ObjectKind::FunctionPointer) {
+                            InterpreterEnvironment.Stack.PushValueToStack(Left); // this
+                            InterpreterEnvironment.Stack.PushValueToStack(Right); // rhs
+                            InterpreterEnvironment.Stack.PushValueToStack(
+                                    {EnvironmentStackItem::ItemKind::FunctionPointer,
+                                     (EnvironmentStackItem::ItemValue) {Method.Value.FunctionPointerValue}});
+                            InstructionFuncInvoke((BytecodeStructure::InstructionParam) {static_cast<XIndexType>(2)});
+                        } else {
+                            throw BytecodeInterpretError(L"Member `__instruction_mul__` isn't a method");
+                        }
                         break;
+                    }
                     case EnvObject::ObjectKind::ArrayObject:
-                        /* TODO: Adding support for array objects */
+                        throw BytecodeInterpretError(L"Unsupported array operation.");
                         break;
                     case EnvObject::ObjectKind::StringObject:
                         throw BytecodeInterpretError(L"Unsupported string operation.");
@@ -517,16 +560,31 @@ namespace XScript {
                 break;
             case EnvironmentStackItem::ItemKind::HeapPointer:
                 switch (InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal].Kind) {
-                    case EnvObject::ObjectKind::ClassObject:
+                    case EnvObject::ObjectKind::ClassObject: {
+                        auto &ClassObject = *InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal].Value.ClassObjectPointer;
+                        auto &Method = InterpreterEnvironment.Heap.HeapData[ClassObject.GetMember(
+                                Hash(L"__instruction_div__"))];
+                        if (Method.Kind == EnvObject::ObjectKind::FunctionPointer) {
+                            InterpreterEnvironment.Stack.PushValueToStack(Left); // this
+                            InterpreterEnvironment.Stack.PushValueToStack(Right); // rhs
+                            InterpreterEnvironment.Stack.PushValueToStack(
+                                    {EnvironmentStackItem::ItemKind::FunctionPointer,
+                                     (EnvironmentStackItem::ItemValue) {Method.Value.FunctionPointerValue}});
+                            InstructionFuncInvoke((BytecodeStructure::InstructionParam) {static_cast<XIndexType>(2)});
+                        } else {
+                            throw BytecodeInterpretError(L"Member `__instruction_div__` isn't a method");
+                        }
                         break;
+                    }
                     case EnvObject::ObjectKind::ArrayObject:
-                        /* TODO: Adding support for array objects */
+                        throw BytecodeInterpretError(L"Unsupported array operation.");
                         break;
                     case EnvObject::ObjectKind::StringObject:
                         throw BytecodeInterpretError(L"Unsupported string operation.");
                     default:
                         throw BytecodeInterpretError(L"Cannot operate an basic-type heap item.");
                 }
+                break;
             case EnvironmentStackItem::ItemKind::Null:
                 throw BytecodeInterpretError(L"Cannot add elements with a null value.");
         }
@@ -583,6 +641,30 @@ namespace XScript {
                 Left.Kind = EnvironmentStackItem::ItemKind::Boolean;
                 break;
             case EnvironmentStackItem::ItemKind::HeapPointer:
+                switch (InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal].Kind) {
+                    case EnvObject::ObjectKind::ClassObject: {
+                        auto &ClassObject = *InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal].Value.ClassObjectPointer;
+                        auto &Method = InterpreterEnvironment.Heap.HeapData[ClassObject.GetMember(
+                                Hash(L"__instruction_logic_and__"))];
+                        if (Method.Kind == EnvObject::ObjectKind::FunctionPointer) {
+                            InterpreterEnvironment.Stack.PushValueToStack(Left); // this
+                            InterpreterEnvironment.Stack.PushValueToStack(Right); // rhs
+                            InterpreterEnvironment.Stack.PushValueToStack(
+                                    {EnvironmentStackItem::ItemKind::FunctionPointer,
+                                     (EnvironmentStackItem::ItemValue) {Method.Value.FunctionPointerValue}});
+                            InstructionFuncInvoke((BytecodeStructure::InstructionParam) {static_cast<XIndexType>(2)});
+                        } else {
+                            throw BytecodeInterpretError(L"Member `__instruction_logic_and__` isn't a method");
+                        }
+                        return;
+                    }
+                    case EnvObject::ObjectKind::ArrayObject:
+                        throw BytecodeInterpretError(L"Unsupported array operation.");
+                    case EnvObject::ObjectKind::StringObject:
+                        throw BytecodeInterpretError(L"Unsupported string operation.");
+                    default:
+                        throw BytecodeInterpretError(L"Cannot operate an basic-type heap item.");
+                }
                 break;
             case EnvironmentStackItem::ItemKind::Null:
                 Left.Value.BoolVal = false;
@@ -644,6 +726,30 @@ namespace XScript {
                 Left.Kind = EnvironmentStackItem::ItemKind::Boolean;
                 break;
             case EnvironmentStackItem::ItemKind::HeapPointer:
+                switch (InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal].Kind) {
+                    case EnvObject::ObjectKind::ClassObject: {
+                        auto &ClassObject = *InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal].Value.ClassObjectPointer;
+                        auto &Method = InterpreterEnvironment.Heap.HeapData[ClassObject.GetMember(
+                                Hash(L"__instruction_logic_or__"))];
+                        if (Method.Kind == EnvObject::ObjectKind::FunctionPointer) {
+                            InterpreterEnvironment.Stack.PushValueToStack(Left); // this
+                            InterpreterEnvironment.Stack.PushValueToStack(Right); // rhs
+                            InterpreterEnvironment.Stack.PushValueToStack(
+                                    {EnvironmentStackItem::ItemKind::FunctionPointer,
+                                     (EnvironmentStackItem::ItemValue) {Method.Value.FunctionPointerValue}});
+                            InstructionFuncInvoke((BytecodeStructure::InstructionParam) {static_cast<XIndexType>(2)});
+                        } else {
+                            throw BytecodeInterpretError(L"Member `__instruction_logic_or__` isn't a method");
+                        }
+                        return;
+                    }
+                    case EnvObject::ObjectKind::ArrayObject:
+                        throw BytecodeInterpretError(L"Unsupported array operation.");
+                    case EnvObject::ObjectKind::StringObject:
+                        throw BytecodeInterpretError(L"Unsupported string operation.");
+                    default:
+                        throw BytecodeInterpretError(L"Cannot operate an basic-type heap item.");
+                }
                 break;
             case EnvironmentStackItem::ItemKind::Null:
                 Left.Value.BoolVal = false;
@@ -780,7 +886,30 @@ namespace XScript {
                 break;
             case EnvironmentStackItem::ItemKind::FunctionPointer:
             case EnvironmentStackItem::ItemKind::HeapPointer:
-                /* TODO: Add classes to XScript 2 */
+                switch (InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal].Kind) {
+                    case EnvObject::ObjectKind::ClassObject: {
+                        auto &ClassObject = *InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal].Value.ClassObjectPointer;
+                        auto &Method = InterpreterEnvironment.Heap.HeapData[ClassObject.GetMember(
+                                Hash(L"__instruction_logic_great_equal__"))];
+                        if (Method.Kind == EnvObject::ObjectKind::FunctionPointer) {
+                            InterpreterEnvironment.Stack.PushValueToStack(Left); // this
+                            InterpreterEnvironment.Stack.PushValueToStack(Right); // rhs
+                            InterpreterEnvironment.Stack.PushValueToStack(
+                                    {EnvironmentStackItem::ItemKind::FunctionPointer,
+                                     (EnvironmentStackItem::ItemValue) {Method.Value.FunctionPointerValue}});
+                            InstructionFuncInvoke((BytecodeStructure::InstructionParam) {static_cast<XIndexType>(2)});
+                        } else {
+                            throw BytecodeInterpretError(L"Member `__instruction_logic_great_equal__` isn't a method");
+                        }
+                        return;
+                    }
+                    case EnvObject::ObjectKind::ArrayObject:
+                        throw BytecodeInterpretError(L"Unsupported array operation.");
+                    case EnvObject::ObjectKind::StringObject:
+                        throw BytecodeInterpretError(L"Unsupported string operation.");
+                    default:
+                        throw BytecodeInterpretError(L"Cannot operate an basic-type heap item.");
+                }
                 break;
             case EnvironmentStackItem::ItemKind::Null:
                 throw BytecodeInterpretError(L"Cannot add elements with a null value.");
@@ -854,7 +983,30 @@ namespace XScript {
                                                                (EnvironmentStackItem::ItemValue) {Result}});
                 break;
             case EnvironmentStackItem::ItemKind::HeapPointer:
-                /* TODO: Add classes to XScript 2 */
+                switch (InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal].Kind) {
+                    case EnvObject::ObjectKind::ClassObject: {
+                        auto &ClassObject = *InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal].Value.ClassObjectPointer;
+                        auto &Method = InterpreterEnvironment.Heap.HeapData[ClassObject.GetMember(
+                                Hash(L"__instruction_logic_less_equal__"))];
+                        if (Method.Kind == EnvObject::ObjectKind::FunctionPointer) {
+                            InterpreterEnvironment.Stack.PushValueToStack(Left); // this
+                            InterpreterEnvironment.Stack.PushValueToStack(Right); // rhs
+                            InterpreterEnvironment.Stack.PushValueToStack(
+                                    {EnvironmentStackItem::ItemKind::FunctionPointer,
+                                     (EnvironmentStackItem::ItemValue) {Method.Value.FunctionPointerValue}});
+                            InstructionFuncInvoke((BytecodeStructure::InstructionParam) {static_cast<XIndexType>(2)});
+                        } else {
+                            throw BytecodeInterpretError(L"Member `__instruction_logic_less_equal__` isn't a method");
+                        }
+                        return;
+                    }
+                    case EnvObject::ObjectKind::ArrayObject:
+                        throw BytecodeInterpretError(L"Unsupported array operation.");
+                    case EnvObject::ObjectKind::StringObject:
+                        throw BytecodeInterpretError(L"Unsupported string operation.");
+                    default:
+                        throw BytecodeInterpretError(L"Cannot operate an basic-type heap item.");
+                }
                 break;
             case EnvironmentStackItem::ItemKind::Null:
                 throw BytecodeInterpretError(L"Cannot add elements with a null value.");
@@ -902,7 +1054,6 @@ namespace XScript {
                         break;
                     case EnvironmentStackItem::ItemKind::FunctionPointer:
                     case EnvironmentStackItem::ItemKind::HeapPointer:
-                        /* TODO: Add classes to XScript 2*/
                         throw BytecodeInterpretError(L"Cannot add integers with a object.");
                     case EnvironmentStackItem::ItemKind::Null:
                         throw BytecodeInterpretError(L"Cannot add integers with a null value.");
@@ -931,7 +1082,30 @@ namespace XScript {
                                                                (EnvironmentStackItem::ItemValue) {Result}});
                 break;
             case EnvironmentStackItem::ItemKind::HeapPointer:
-                /* TODO: Add classes to XScript 2 */
+                switch (InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal].Kind) {
+                    case EnvObject::ObjectKind::ClassObject: {
+                        auto &ClassObject = *InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal].Value.ClassObjectPointer;
+                        auto &Method = InterpreterEnvironment.Heap.HeapData[ClassObject.GetMember(
+                                Hash(L"__instruction_logic_great__"))];
+                        if (Method.Kind == EnvObject::ObjectKind::FunctionPointer) {
+                            InterpreterEnvironment.Stack.PushValueToStack(Left); // this
+                            InterpreterEnvironment.Stack.PushValueToStack(Right); // rhs
+                            InterpreterEnvironment.Stack.PushValueToStack(
+                                    {EnvironmentStackItem::ItemKind::FunctionPointer,
+                                     (EnvironmentStackItem::ItemValue) {Method.Value.FunctionPointerValue}});
+                            InstructionFuncInvoke((BytecodeStructure::InstructionParam) {static_cast<XIndexType>(2)});
+                        } else {
+                            throw BytecodeInterpretError(L"Member `__instruction_logic_great__` isn't a method");
+                        }
+                        return;
+                    }
+                    case EnvObject::ObjectKind::ArrayObject:
+                        throw BytecodeInterpretError(L"Unsupported array operation.");
+                    case EnvObject::ObjectKind::StringObject:
+                        throw BytecodeInterpretError(L"Unsupported string operation.");
+                    default:
+                        throw BytecodeInterpretError(L"Cannot operate an basic-type heap item.");
+                }
                 break;
             case EnvironmentStackItem::ItemKind::Null:
                 throw BytecodeInterpretError(L"Cannot add elements with a null value.");
@@ -959,7 +1133,6 @@ namespace XScript {
                         break;
                     case EnvironmentStackItem::ItemKind::FunctionPointer:
                     case EnvironmentStackItem::ItemKind::HeapPointer:
-                        /* TODO: Add classes to XScript 2 */
                         throw BytecodeInterpretError(L"Cannot compare integers with a object.");
                     case EnvironmentStackItem::ItemKind::Null:
                         throw BytecodeInterpretError(L"Cannot compare integers with a null value.");
@@ -1008,7 +1181,30 @@ namespace XScript {
                                                                (EnvironmentStackItem::ItemValue) {Result}});
                 break;
             case EnvironmentStackItem::ItemKind::HeapPointer:
-                /* TODO: Add classes to XScript 2 */
+                switch (InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal].Kind) {
+                    case EnvObject::ObjectKind::ClassObject: {
+                        auto &ClassObject = *InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal].Value.ClassObjectPointer;
+                        auto &Method = InterpreterEnvironment.Heap.HeapData[ClassObject.GetMember(
+                                Hash(L"__instruction_logic_less__"))];
+                        if (Method.Kind == EnvObject::ObjectKind::FunctionPointer) {
+                            InterpreterEnvironment.Stack.PushValueToStack(Left); // this
+                            InterpreterEnvironment.Stack.PushValueToStack(Right); // rhs
+                            InterpreterEnvironment.Stack.PushValueToStack(
+                                    {EnvironmentStackItem::ItemKind::FunctionPointer,
+                                     (EnvironmentStackItem::ItemValue) {Method.Value.FunctionPointerValue}});
+                            InstructionFuncInvoke((BytecodeStructure::InstructionParam) {static_cast<XIndexType>(2)});
+                        } else {
+                            throw BytecodeInterpretError(L"Member `__instruction_logic_less__` isn't a method");
+                        }
+                        return;
+                    }
+                    case EnvObject::ObjectKind::ArrayObject:
+                        throw BytecodeInterpretError(L"Unsupported array operation.");
+                    case EnvObject::ObjectKind::StringObject:
+                        throw BytecodeInterpretError(L"Unsupported string operation.");
+                    default:
+                        throw BytecodeInterpretError(L"Cannot operate an basic-type heap item.");
+                }
                 break;
             case EnvironmentStackItem::ItemKind::Null:
                 throw BytecodeInterpretError(L"Cannot add elements with a null value.");
@@ -1267,16 +1463,35 @@ namespace XScript {
 
     void BytecodeInterpreter::InstructionListGetMember(BytecodeStructure::InstructionParam Param) {
         EnvironmentStackItem ListItem = InterpreterEnvironment.Stack.PopValueFromStack();
-        if (ListItem.Kind == EnvironmentStackItem::ItemKind::HeapPointer and
-            InterpreterEnvironment.Heap.HeapData[ListItem.Value.HeapPointerVal].Kind ==
-            EnvObject::ObjectKind::ArrayObject) {
-            EnvironmentStackItem Index = InterpreterEnvironment.Stack.PopValueFromStack();
-            /* 不做类型检查 */
-            EnvironmentStackItem Item{EnvironmentStackItem::ItemKind::HeapPointer,
-                                      (EnvironmentStackItem::ItemValue) {
-                                              InterpreterEnvironment.Heap.HeapData[ListItem.Value.HeapPointerVal].Value.ArrayObjectPointer->Elements[Index.Value.IntVal]}};
+        EnvironmentStackItem Index = InterpreterEnvironment.Stack.PopValueFromStack();
+        if (ListItem.Kind == EnvironmentStackItem::ItemKind::HeapPointer) {
+            switch (InterpreterEnvironment.Heap.HeapData[ListItem.Value.HeapPointerVal].Kind) {
+                case EnvObject::ObjectKind::ArrayObject: {
+                    /* 不做类型检查 */
+                    EnvironmentStackItem Item{EnvironmentStackItem::ItemKind::HeapPointer,
+                                              (EnvironmentStackItem::ItemValue) {
+                                                      InterpreterEnvironment.Heap.HeapData[ListItem.Value.HeapPointerVal].Value.ArrayObjectPointer->Elements[Index.Value.IntVal]}};
 
-            InterpreterEnvironment.Stack.PushValueToStack(Item);
+                    InterpreterEnvironment.Stack.PushValueToStack(Item);
+                    break;
+                }
+                case EnvObject::ObjectKind::ClassObject: {
+                    auto &ClassObject = *InterpreterEnvironment.Heap.HeapData[ListItem.Value.HeapPointerVal].Value.ClassObjectPointer;
+                    auto &Method = InterpreterEnvironment.Heap.HeapData[ClassObject.GetMember(
+                            Hash(L"__instruction_indexOf__"))];
+                    if (Method.Kind == EnvObject::ObjectKind::FunctionPointer) {
+                        InterpreterEnvironment.Stack.PushValueToStack(ListItem); // this
+                        InterpreterEnvironment.Stack.PushValueToStack(Index); // rhs
+                        InterpreterEnvironment.Stack.PushValueToStack(
+                                {EnvironmentStackItem::ItemKind::FunctionPointer,
+                                 (EnvironmentStackItem::ItemValue) {Method.Value.FunctionPointerValue}});
+                        InstructionFuncInvoke((BytecodeStructure::InstructionParam) {static_cast<XIndexType>(2)});
+                    } else {
+                        throw BytecodeInterpretError(L"Member `__instruction_indexOf__` isn't a method");
+                    }
+                    break;
+                }
+            }
         } else {
             throw BytecodeInterpretError(L"list_get_member: Unknown item type");
         }

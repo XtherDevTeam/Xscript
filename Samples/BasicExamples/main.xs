@@ -15,10 +15,14 @@ class ClassA extends (ExtendTest) {
         return 11451419;
     }
 
+    def __instruction_add__ (rhs) {
+        return this.t + rhs.t;
+    }
+
     def constructor () {
         ExtendTest.constructor(this);
         def t in this;
-        this.t = 11451419198;
+        this.t = 10;
         return this;
     }
 };
@@ -36,6 +40,7 @@ def fib(a) {
 }
 
 def main () {
-    var Class = new ClassA.constructor();
-    return Class.proto;
+    var a = new ClassA.constructor();
+    var b = new ClassA.constructor();
+    return a + b;
 }
