@@ -144,7 +144,7 @@ namespace XScript {
                 break;
             case InstructionEnum::stack_get_top:
                 Result += L"stack_get_top";
-                ParamType = N;
+                ParamType = H;
                 break;
             case InstructionEnum::stack_store:
                 Result += L"stack_store";

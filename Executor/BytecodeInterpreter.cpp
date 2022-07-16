@@ -1320,7 +1320,9 @@ namespace XScript {
     }
 
     void BytecodeInterpreter::InstructionStackGetTop(BytecodeStructure::InstructionParam Param) {
-        InterpreterEnvironment.Stack.PushValueToStack(InterpreterEnvironment.Stack.Elements.back());
+        InterpreterEnvironment.Stack.PushValueToStack(
+                InterpreterEnvironment.Stack.Elements[InterpreterEnvironment.Stack.Elements.size() - 1 -
+                                                      Param.HeapPointerValue]);
     }
 
     void BytecodeInterpreter::InstructionStackStore(BytecodeStructure::InstructionParam Param) {
@@ -1485,7 +1487,9 @@ namespace XScript {
                         InterpreterEnvironment.Stack.PushValueToStack(
                                 {EnvironmentStackItem::ItemKind::FunctionPointer,
                                  (EnvironmentStackItem::ItemValue) {Method.Value.FunctionPointerValue}});
+                        ProgramCounterInformation Info = InterpreterEnvironment.ProgramCounter;
                         InstructionFuncInvoke((BytecodeStructure::InstructionParam) {static_cast<XIndexType>(2)});
+                        InterpreterEnvironment.ProgramCounter = Info;
                     } else {
                         throw BytecodeInterpretError(L"Member `__instruction_indexOf__` isn't a method");
                     }
@@ -1688,7 +1692,18 @@ namespace XScript {
                 param.HeapPointerValue)) {
             const auto &Template = InterpreterEnvironment.Packages[InterpreterEnvironment.ProgramCounter.Package].ClassTemplates[param.HeapPointerValue];
             EnvClassObject *Object = NewEnvClassObject();
-            Object->Parents = Template.Parents;
+            Object->Parent = Template.Parent;
+            // initialize parent
+            if (Object->Parent.ClassID) {
+                auto ParentTemplate = InterpreterEnvironment.Packages[Object->Parent.PackageID].ClassTemplates[Object->Parent.ClassID];
+                InstructionPCGetCurrentPackageID((BytecodeStructure::InstructionParam) {(XIndexType) {}});
+                InstructionPCSetCurrentPackageID((BytecodeStructure::InstructionParam) {Object->Parent.PackageID});
+                InstructionClassNew((BytecodeStructure::InstructionParam) {Object->Parent.ClassID});
+                InstructionPCRestorePackageID((BytecodeStructure::InstructionParam) {(XIndexType) {}});
+
+                Object->Members[Hash(L"super")] = InterpreterEnvironment.Stack.PopValueFromStack().Value.HeapPointerVal;
+            }
+            // initialize itself
             for (auto &I: Template.Methods) {
                 EnvObject MethodPointer{EnvObject::ObjectKind::FunctionPointer,
                                         (EnvObject::ObjectValue) {

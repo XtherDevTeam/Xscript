@@ -17,12 +17,12 @@ namespace XScript::Compiler {
     public:
         XString ClassName;
 
-        XArray<ClassDescriptor> ParentClasses;
+        ClassDescriptor ParentClass;
 
         // alias(invoke name), real name
         XArray<std::pair<XString, XString>> Methods;
 
-        explicit CompilingTimeClass(const XString &ClassName, const XArray<ClassDescriptor> &parentClasses,
+        explicit CompilingTimeClass(const XString &ClassName, const ClassDescriptor &parentClass,
                                     XArray<std::pair<XString, XString>> methods);
 
         void PushMethod(const XString &Name, const XString &RealName);

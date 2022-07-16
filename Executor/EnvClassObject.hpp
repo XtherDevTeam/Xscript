@@ -12,13 +12,15 @@ namespace XScript {
 
     class EnvClassObject {
     public:
-        XArray<ClassDescriptor> Parents;
+        ClassDescriptor Parent;
 
         XMap<XIndexType, XHeapIndexType> Members;
 
-        bool IsInstanceOf(ClassDescriptor Idx);
+        bool IsInstanceOf(ClassDescriptor Idx) const;
 
         XHeapIndexType GetMember(XIndexType Name);
+
+        EnvClassObject();
     };
 
     EnvClassObject *NewEnvClassObject();

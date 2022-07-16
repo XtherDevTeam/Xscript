@@ -22,21 +22,13 @@ namespace XScript {
                 AST Extends{AST::TreeType::ClassExtends, (XArray<AST>) {}};
                 if (L.LastToken == (Lexer::Token) {Lexer::TokenKind::ReservedWords, L"extends", 0, 0}) {
                     L.Scan();
-                    if (L.LastToken.Kind != Lexer::TokenKind::LeftParentheses)
-                        MakeException(L"ClassDefinitionNodeGenerator: InvalidSyntax -> Expected a left parentheses");
-                    L.Scan();
 
-                    for (AST ExtendName = IdentifierNodeGenerator(L).Parse(); !ExtendName.IsNotMatchNode();
-                         ExtendName = IdentifierNodeGenerator(L).Parse()) {
-                        if (L.LastToken.Kind != Lexer::TokenKind::Colon) {
-                            break;
-                        }
-                        L.Scan();
-                    }
+                    AST ExtendName = IdentifierNodeGenerator(L).Parse();
 
-                    if (L.LastToken.Kind != Lexer::TokenKind::RightParentheses)
-                        MakeException(L"ClassDefinitionNodeGenerator: InvalidSyntax -> Expected a right parentheses");
-                    L.Scan();
+                    if (ExtendName.IsNotMatchNode())
+                        MakeException(L"ClassDefinitionNodeGenerator: InvalidSyntax -> Expected a identifier");
+
+                    Extends.Subtrees.push_back(ExtendName);
                 }
 
                 if (L.LastToken.Kind != Lexer::TokenKind::LeftBraces)

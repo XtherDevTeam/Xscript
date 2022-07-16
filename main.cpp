@@ -1,7 +1,6 @@
 #include <iostream>
 
 /* XScript 2 Project includes */
-#include "Tests/BasicTests.hpp"
 #include "Frontend/Lexer.hpp"
 #include "Share/Exceptions/InternalException.hpp"
 #include "Share/Exceptions/CompilerError.hpp"

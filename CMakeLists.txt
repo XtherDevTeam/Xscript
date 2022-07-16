@@ -42,10 +42,6 @@ add_executable(Xscript2
         Executor/BytecodeInterpreter.hpp
         Share/Exceptions/BytecodeInterpretError.cpp
         Share/Exceptions/BytecodeInterpretError.hpp
-        Tests/BasicTestFramework.cpp
-        Tests/BasicTestFramework.hpp
-        Tests/BasicTests.cpp
-        Tests/BasicTests.hpp
         Frontend/AST.cpp
         Frontend/AST.hpp
         Frontend/Parsers/BaseGenerator.cpp

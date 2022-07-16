@@ -360,7 +360,7 @@ Status: `Implmented`
 Syntax:
 
 ```
-ClassDefinition ::= "class" Identifier "extends" LeftParentheses { Identifier } RightParentheses LeftBrace { MethodDefinition } RightBrace
+ClassDefinition ::= "class" Identifier "extends" Identifier LeftBrace { MethodDefinition } RightBrace
 ```
 
 ### PackageStatement

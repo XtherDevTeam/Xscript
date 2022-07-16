@@ -5,12 +5,12 @@ var i = 0;
 class ExtendTest {
     def constructor () {
         def proto in this;
-        this.proto = 520;
+        this.proto = 510;
         return this;
     }
 };
 
-class ClassA extends (ExtendTest) {
+class ClassA extends ExtendTest {
     def test () {
         return 11451419;
     }
@@ -20,7 +20,7 @@ class ClassA extends (ExtendTest) {
     }
 
     def constructor () {
-        ExtendTest.constructor(this);
+        this.super.constructor();
         def t in this;
         this.t = 10;
         return this;

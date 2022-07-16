@@ -12,10 +12,12 @@ namespace XScript {
 
     class EnvClassTemplate {
     public:
-        XArray<ClassDescriptor> Parents;
+        ClassDescriptor Parent;
 
         /* <AliasName, RealName> */
         XMap<XIndexType, XIndexType> Methods;
+
+        EnvClassTemplate();
     };
 
 } // XScript

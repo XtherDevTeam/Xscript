@@ -190,7 +190,7 @@ namespace XScript {
         EnvClassTemplate ExtendedTypeReader::ReadClass(FILE *FilePointer) {
             EnvClassTemplate Res;
             XArray<std::pair<XString, XString>> Methods;
-            Res.Parents = ReadClassDescriptorArray(FilePointer);
+            Res.Parent = ReadClassDescriptor(FilePointer);
 
             XIndexType Cnt = BaseTypeReader().ReadIndex(FilePointer);
             while (Cnt--) {
@@ -206,9 +206,9 @@ namespace XScript {
 
         Compiler::CompilingTimeClass ExtendedTypeReader::ReadClassEx(FILE *FilePointer) {
             Compiler::CompilingTimeClass Res{{},
-                                             {},
+                                             {0, 0},
                                              {}};
-            Res.ParentClasses = ReadClassDescriptorArray(FilePointer);
+            Res.ParentClass = ReadClassDescriptor(FilePointer);
             XIndexType Cnt = BaseTypeReader().ReadIndex(FilePointer);
             while (Cnt--) {
                 XString N, RN;

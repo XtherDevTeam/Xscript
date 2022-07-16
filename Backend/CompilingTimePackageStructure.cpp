@@ -39,7 +39,7 @@ namespace XScript {
             XIndexType I = 0;
             for (auto &Index: Classes) {
                 if (Index.first == Name)
-                    return {I, Index.second};
+                    return {Hash(Name), Index.second};
                 I++;
             }
             throw XScript::InternalException(L"Cannot find a class named " + Name + L" in package");

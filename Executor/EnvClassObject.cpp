@@ -7,8 +7,8 @@
 #include "../Share/Exceptions/InternalException.hpp"
 
 namespace XScript {
-    bool EnvClassObject::IsInstanceOf(ClassDescriptor Idx) {
-        return std::find(Parents.begin(), Parents.end(), Idx) != Parents.end();
+    bool EnvClassObject::IsInstanceOf(ClassDescriptor Idx) const {
+        return Idx == Parent;
     }
 
     XHeapIndexType EnvClassObject::GetMember(XIndexType Name) {
@@ -19,12 +19,15 @@ namespace XScript {
         }
     }
 
+    EnvClassObject::EnvClassObject() : Parent(0, 0) {
+
+    }
+
     EnvClassObject *NewEnvClassObject() {
         return new EnvClassObject();
     }
 
     void FreeEnvClassObject(EnvClassObject *Object) {
         delete Object;
-        return;
     }
 } // XScript

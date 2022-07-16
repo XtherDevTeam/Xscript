@@ -5,7 +5,7 @@
 ```c++
 class EnvClassObject {
 public:
-    XArray<XIndexType> Parents;
+    XIndexType Parent;
     XMap<XIndexType, XHeapIndexType> Members;
     
     bool IsInstanceOf(XIndexType Idx);

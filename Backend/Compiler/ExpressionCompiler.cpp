@@ -333,6 +333,12 @@ namespace XScript::Compiler {
                         MergeArray(Result, Generate(I));
                     }
 
+                    /* get `this` */
+                    Result.push_back((BytecodeStructure) {
+                            BytecodeStructure::InstructionEnum::stack_get_top,
+                            (BytecodeStructure::InstructionParam) {(XIndexType) {Target.Subtrees[1].Subtrees.size()}}
+                    });
+
                     /* let the executor get the function address first */
                     MergeArray(Result, ParseMemberExpression(Target.Subtrees[0], IsMemberExpression));
                     /* get the function pointer not heap index */
@@ -341,11 +347,8 @@ namespace XScript::Compiler {
 
                     Result.push_back((BytecodeStructure) {
                             BytecodeStructure::InstructionEnum::func_invoke,
-                            (BytecodeStructure::InstructionParam) {(XHeapIndexType) Target.Subtrees[1].Subtrees.size()}
-                    });
-                    Result.push_back((BytecodeStructure) {
-                            BytecodeStructure::InstructionEnum::stack_pop,
-                            (BytecodeStructure::InstructionParam) {(XHeapIndexType) {}}
+                            (BytecodeStructure::InstructionParam) {
+                                    (XHeapIndexType) Target.Subtrees[1].Subtrees.size() + 1}
                     });
                 }
                 break;
@@ -467,13 +470,27 @@ namespace XScript::Compiler {
                                                           (BytecodeStructure::InstructionParam) {
                                                                   (XHeapIndexType) 0}});
                 } else {
-                    MergeArray(Result, ParseMemberExpression(Target.Subtrees[0], IsMemberExpression));
                     for (auto &I: Target.Subtrees[1].Subtrees) {
                         MergeArray(Result, Generate(I));
                     }
+
+
+                    /* get `this` */
+                    Result.push_back((BytecodeStructure) {
+                            BytecodeStructure::InstructionEnum::stack_get_top,
+                            (BytecodeStructure::InstructionParam) {(XIndexType) {Target.Subtrees[1].Subtrees.size()}}
+                    });
+
+                    /* let the executor get the function address first */
+                    MergeArray(Result, ParseMemberExpression(Target.Subtrees[0], IsMemberExpression));
+                    /* get the function pointer not heap index */
+                    Result.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::object_lvalue2rvalue,
+                                                          (BytecodeStructure::InstructionParam) {(XIndexType) 0}});
+
                     Result.push_back((BytecodeStructure) {
                             BytecodeStructure::InstructionEnum::func_invoke,
-                            (BytecodeStructure::InstructionParam) {(XHeapIndexType) Target.Subtrees[1].Subtrees.size()}
+                            (BytecodeStructure::InstructionParam) {
+                                    (XHeapIndexType) Target.Subtrees[1].Subtrees.size() + 1}
                     });
                     Result.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::object_store,
                                                           (BytecodeStructure::InstructionParam) {
@@ -548,6 +565,7 @@ namespace XScript::Compiler {
                                         Target.GetFirstNotNullToken().Column,
                                         L"ParseClassMethodInvoke: Cannot invoke constructor with class name directly.");
                 }
+                /* MemberExpression第一次没写任何代码，只是写了IsInParsing的指针 */
                 /* 第一个参数为函数外手动压入的this指针 */
                 for (auto &I: Target.Subtrees[1].Subtrees) {
                     MergeArray(Result, Generate(I));
@@ -692,6 +710,10 @@ namespace XScript::Compiler {
         CompilingTimeClass *Dummy = nullptr;
         MergeArray(Result, ParseClassMethodInvoke(Target.Subtrees[0], Dummy, true));
 
+        Result.push_back((BytecodeStructure) {
+                BytecodeStructure::InstructionEnum::stack_pop,
+                (BytecodeStructure::InstructionParam) {(XHeapIndexType) {}}
+        });
         return Result;
     }
 } // Compiler

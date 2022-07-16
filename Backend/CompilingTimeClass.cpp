@@ -9,9 +9,9 @@
 
 namespace XScript {
     namespace Compiler {
-        CompilingTimeClass::CompilingTimeClass(const XString &ClassName, const XArray<ClassDescriptor> &parentClasses,
+        CompilingTimeClass::CompilingTimeClass(const XString &ClassName, const ClassDescriptor &parentClass,
                                                XArray<std::pair<XString, XString>> methods)
-                : ClassName(ClassName), ParentClasses(parentClasses), Methods(std::move(methods)) {}
+                : ClassName(ClassName), ParentClass(parentClass), Methods(std::move(methods)) {}
 
         void CompilingTimeClass::PushMethod(const XString &Name, const XString &RealName) {
             Methods.push_back({Name, RealName});

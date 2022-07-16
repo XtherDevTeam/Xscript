@@ -70,7 +70,7 @@ namespace XScript {
         }
 
         void ExtendedTypeSerializatior::operator()(FILE *FilePointer, const Compiler::CompilingTimeClass &Class) {
-            ExtendedTypeSerializatior()(FilePointer, Class.ParentClasses);
+            ExtendedTypeSerializatior()(FilePointer, Class.ParentClass);
 
             XIndexType Length = Class.Methods.size();
             BaseTypeSerializatior()(FilePointer, Length);
