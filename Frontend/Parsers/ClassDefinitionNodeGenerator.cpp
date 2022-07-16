@@ -34,7 +34,6 @@ namespace XScript {
                         L.Scan();
                     }
 
-                    L.Scan();
                     if (L.LastToken.Kind != Lexer::TokenKind::RightParentheses)
                         MakeException(L"ClassDefinitionNodeGenerator: InvalidSyntax -> Expected a right parentheses");
                     L.Scan();

@@ -2,12 +2,21 @@ import "package_test";
 
 var i = 0;
 
-class ClassA {
+class ExtendTest {
+    def constructor () {
+        def proto in this;
+        this.proto = 520;
+        return this;
+    }
+};
+
+class ClassA extends (ExtendTest) {
     def test () {
         return 11451419;
     }
 
     def constructor () {
+        ExtendTest.constructor(this);
         def t in this;
         this.t = 11451419198;
         return this;
@@ -28,5 +37,5 @@ def fib(a) {
 
 def main () {
     var Class = new ClassA.constructor();
-    return Class.t;
+    return Class.proto;
 }

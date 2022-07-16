@@ -15,7 +15,8 @@ namespace XScript::Compiler {
 
         XArray<BytecodeStructure> ParseMemberExpression(AST &Target, bool IsMemberExpression);
 
-        XArray<BytecodeStructure> ParseClassMethodInvoke(AST &Target, CompilingTimeClass *&IsInParsing);
+        XArray<BytecodeStructure> ParseClassMethodInvoke(AST &Target, CompilingTimeClass *&IsInParsing,
+                                                         bool ReservedStackItemForThisPointer);
 
         XArray<BytecodeStructure> ParseMemberExpressionEndWithAssignment(AST &Target, bool IsMemberExpression);
 

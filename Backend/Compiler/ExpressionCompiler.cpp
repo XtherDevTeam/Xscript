@@ -351,8 +351,19 @@ namespace XScript::Compiler {
                 break;
             }
             case AST::TreeType::MemberExpression: {
-                MergeArray(Result, ParseMemberExpression(Target.Subtrees[0], IsMemberExpression));
-                MergeArray(Result, ParseMemberExpression(Target.Subtrees[1], true));
+                try {
+                    if (Environment.InWhichPackage) {
+                        Environment.GetPackage(Environment.InWhichPackage).second.GetClass(
+                                Target.Subtrees[0].Node.Value);
+                    } else {
+                        Environment.MainPackage.GetClass(Target.Subtrees[0].Node.Value);
+                    }
+                    CompilingTimeClass *Dummy = nullptr;
+                    MergeArray(Result, ParseClassMethodInvoke(Target, Dummy, false));
+                } catch (InternalException &E) {
+                    MergeArray(Result, ParseMemberExpression(Target.Subtrees[0], IsMemberExpression));
+                    MergeArray(Result, ParseMemberExpression(Target.Subtrees[1], true));
+                }
                 break;
             }
             case AST::TreeType::CrossPackageAccessExpression: {
@@ -479,7 +490,11 @@ namespace XScript::Compiler {
                         Environment.MainPackage.GetClass(Target.Subtrees[0].Node.Value);
                     }
                     CompilingTimeClass *Dummy = nullptr;
-                    MergeArray(Result, ParseClassMethodInvoke(Target, Dummy));
+                    MergeArray(Result, ParseClassMethodInvoke(Target, Dummy, false));
+                    Result.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::object_store,
+                                                          (BytecodeStructure::InstructionParam) {
+                                                                  (BytecodeStructure::InstructionParam) {
+                                                                          (XHeapIndexType) 0}}});
                 } catch (InternalException &E) {
                     MergeArray(Result, ParseMemberExpression(Target.Subtrees[0], IsMemberExpression));
                     MergeArray(Result, ParseMemberExpressionEndWithAssignment(Target.Subtrees[1], true));
@@ -523,7 +538,8 @@ namespace XScript::Compiler {
     }
 
     XArray<BytecodeStructure>
-    ExpressionCompiler::ParseClassMethodInvoke(AST &Target, CompilingTimeClass *&IsInParsing) {
+    ExpressionCompiler::ParseClassMethodInvoke(AST &Target, CompilingTimeClass *&IsInParsing,
+                                               bool ReservedStackItemForThisPointer) {
         XArray<BytecodeStructure> Result;
         switch (Target.Type) {
             case AST::TreeType::FunctionCallingExpression: {
@@ -538,7 +554,8 @@ namespace XScript::Compiler {
                 }
 
                 /* let the executor get the function address first */
-                XIndexType Index = IsInParsing->IsMethodExist(IsInParsing->ClassName + L"$" + Target.Subtrees[0].Node.Value);
+                XIndexType Index = IsInParsing->IsMethodExist(
+                        IsInParsing->ClassName + L"$" + Target.Subtrees[0].Node.Value);
                 if (Index == -1) {
                     throw CompilerError(Target.GetFirstNotNullToken().Line,
                                         Target.GetFirstNotNullToken().Column,
@@ -554,7 +571,8 @@ namespace XScript::Compiler {
                 /* 参数数量带this指针一个 */
                 Result.push_back((BytecodeStructure) {
                         BytecodeStructure::InstructionEnum::func_invoke,
-                        (BytecodeStructure::InstructionParam) {(XHeapIndexType) Target.Subtrees[1].Subtrees.size() + 1}
+                        (BytecodeStructure::InstructionParam) {(XHeapIndexType) Target.Subtrees[1].Subtrees.size() +
+                                                               (ReservedStackItemForThisPointer ? 1 : 0)}
                 });
                 break;
             }
@@ -601,8 +619,10 @@ namespace XScript::Compiler {
                                         Target.GetFirstNotNullToken().Column,
                                         L"ParseClassMethodInvoke: 不是类方法调用你他妈调用这函数调你妈呢？");
                 }
-                MergeArray(Result, ParseClassMethodInvoke(Target.Subtrees[0], IsInParsing));
-                MergeArray(Result, ParseClassMethodInvoke(Target.Subtrees[1], IsInParsing));
+                MergeArray(Result,
+                           ParseClassMethodInvoke(Target.Subtrees[0], IsInParsing, ReservedStackItemForThisPointer));
+                MergeArray(Result,
+                           ParseClassMethodInvoke(Target.Subtrees[1], IsInParsing, ReservedStackItemForThisPointer));
                 break;
             }
             case AST::TreeType::CrossPackageAccessExpression: {
@@ -618,7 +638,8 @@ namespace XScript::Compiler {
                         (BytecodeStructure::InstructionParam) {(XHeapIndexType) {Environment.InWhichPackage}}
                 });
 
-                MergeArray(Result, ParseClassMethodInvoke(Target.Subtrees[1], IsInParsing));
+                MergeArray(Result,
+                           ParseClassMethodInvoke(Target.Subtrees[1], IsInParsing, ReservedStackItemForThisPointer));
 
                 Environment.InWhichPackage = Backup;
 
@@ -669,7 +690,7 @@ namespace XScript::Compiler {
         });
 
         CompilingTimeClass *Dummy = nullptr;
-        MergeArray(Result, ParseClassMethodInvoke(Target.Subtrees[0], Dummy));
+        MergeArray(Result, ParseClassMethodInvoke(Target.Subtrees[0], Dummy, true));
 
         return Result;
     }
