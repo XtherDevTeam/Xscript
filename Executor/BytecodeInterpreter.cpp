@@ -1556,9 +1556,17 @@ namespace XScript {
                     Item.Kind = EnvironmentStackItem::ItemKind::Boolean;
                     Item.Value.IntVal = Object.Value.IntegerValue;
                     break;
+                case EnvObject::ObjectKind::Index:
+                    Item.Kind = EnvironmentStackItem::ItemKind::HeapPointer;
+                    Item.Value.HeapPointerVal = Object.Value.IndexValue;
+                    break;
                 case EnvObject::ObjectKind::FunctionPointer:
                     Item.Kind = EnvironmentStackItem::ItemKind::FunctionPointer;
                     Item.Value.FuncPointerVal = Object.Value.FunctionPointerValue;
+                    break;
+                case EnvObject::ObjectKind::NativeMethodPointer:
+                    Item.Kind = EnvironmentStackItem::ItemKind::NativeMethodPointer;
+                    Item.Value.NativeMethodPointerVal = Object.Value.NativeMethodPointerValue;
                     break;
             }
 
@@ -1643,12 +1651,25 @@ namespace XScript {
                  Param.HeapPointerValue,
                  InterpreterEnvironment.ProgramCounter
                 });
+        switch (Item.Kind) {
+            case EnvironmentStackItem::ItemKind::FunctionPointer: {
+                InterpreterEnvironment.ProgramCounter = (ProgramCounterInformation) {
+                        Item.Value.FuncPointerVal->BytecodeArray,
+                        Item.Value.FuncPointerVal->PackageID};
 
-        InterpreterEnvironment.ProgramCounter = (ProgramCounterInformation) {Item.Value.FuncPointerVal->BytecodeArray,
-                                                                             Item.Value.FuncPointerVal->PackageID};
-
-        // Fix bugs
-        InterpreterEnvironment.ProgramCounter.NowIndex -= 1;
+                // Fix bugs
+                InterpreterEnvironment.ProgramCounter.NowIndex -= 1;
+                break;
+            }
+            case EnvironmentStackItem::ItemKind::NativeMethodPointer: {
+                /* 被调用者需要手动调整栈帧 */
+                Item.Value.NativeMethodPointerVal->Method({(void *) &InterpreterEnvironment, Param.HeapPointerValue});
+                break;
+            }
+            default: {
+                throw BytecodeInterpretError(L"Expected a FunctionPointer or NativeMethodPointer.");
+            }
+        }
     }
 
     void BytecodeInterpreter::InstructionFuncReturn(BytecodeStructure::InstructionParam Param) {
@@ -1675,22 +1696,22 @@ namespace XScript {
         /* 不需要调整ProgramCounter, 进入Invoke下一条指令 */
     }
 
-    void BytecodeInterpreter::InstructionStaticGet(BytecodeStructure::InstructionParam param) {
+    void BytecodeInterpreter::InstructionStaticGet(BytecodeStructure::InstructionParam Param) {
         InterpreterEnvironment.Stack.PushValueToStack(
                 InterpreterEnvironment.Packages[InterpreterEnvironment.ProgramCounter.Package].GetStatic(
-                        param.HeapPointerValue));
+                        Param.HeapPointerValue));
     }
 
-    void BytecodeInterpreter::InstructionStackPushFunction(BytecodeStructure::InstructionParam param) {
+    void BytecodeInterpreter::InstructionStackPushFunction(BytecodeStructure::InstructionParam Param) {
         InterpreterEnvironment.Stack.PushValueToStack(
                 (EnvironmentStackItem) {EnvironmentStackItem::ItemKind::FunctionPointer,
-                                        (EnvironmentStackItem::ItemValue) &InterpreterEnvironment.Packages[InterpreterEnvironment.ProgramCounter.Package].FunctionPool[param.HeapPointerValue]});
+                                        (EnvironmentStackItem::ItemValue) &InterpreterEnvironment.Packages[InterpreterEnvironment.ProgramCounter.Package].FunctionPool[Param.HeapPointerValue]});
     }
 
-    void BytecodeInterpreter::InstructionClassNew(BytecodeStructure::InstructionParam param) {
+    void BytecodeInterpreter::InstructionClassNew(BytecodeStructure::InstructionParam Param) {
         if (InterpreterEnvironment.Packages[InterpreterEnvironment.ProgramCounter.Package].ClassTemplates.count(
-                param.HeapPointerValue)) {
-            const auto &Template = InterpreterEnvironment.Packages[InterpreterEnvironment.ProgramCounter.Package].ClassTemplates[param.HeapPointerValue];
+                Param.HeapPointerValue)) {
+            const auto &Template = InterpreterEnvironment.Packages[InterpreterEnvironment.ProgramCounter.Package].ClassTemplates[Param.HeapPointerValue];
             EnvClassObject *Object = NewEnvClassObject();
             Object->Parent = Template.Parent;
             // initialize parent
@@ -1722,25 +1743,25 @@ namespace XScript {
         }
     }
 
-    void BytecodeInterpreter::InstructionClassGetMember(BytecodeStructure::InstructionParam param) {
+    void BytecodeInterpreter::InstructionClassGetMember(BytecodeStructure::InstructionParam Param) {
         EnvironmentStackItem Item = InterpreterEnvironment.Stack.PopValueFromStack();
         auto *ClassPointer =
                 InterpreterEnvironment.Heap.HeapData[Item.Value.HeapPointerVal].Value.ClassObjectPointer;
         InterpreterEnvironment.Stack.PushValueToStack(
                 (EnvironmentStackItem) {EnvironmentStackItem::ItemKind::HeapPointer,
                                         (EnvironmentStackItem::ItemValue) {
-                                                ClassPointer->GetMember(param.HeapPointerValue)}});
+                                                ClassPointer->GetMember(Param.HeapPointerValue)}});
     }
 
-    void BytecodeInterpreter::InstructionClassNewMember(BytecodeStructure::InstructionParam param) {
+    void BytecodeInterpreter::InstructionClassNewMember(BytecodeStructure::InstructionParam Param) {
         EnvironmentStackItem Item = InterpreterEnvironment.Stack.PopValueFromStack();
         auto *ClassPointer =
                 InterpreterEnvironment.Heap.HeapData[Item.Value.HeapPointerVal].Value.ClassObjectPointer;
         EnvObject Object{EnvObject::ObjectKind::Integer, (EnvObject::ObjectValue) {(XInteger) {0}}};
-        ClassPointer->Members[param.HeapPointerValue] = InterpreterEnvironment.Heap.PushElement(Object);
+        ClassPointer->Members[Param.HeapPointerValue] = InterpreterEnvironment.Heap.PushElement(Object);
     }
 
-    void BytecodeInterpreter::InstructionListRemoveIndex(BytecodeStructure::InstructionParam param) {
+    void BytecodeInterpreter::InstructionListRemoveIndex(BytecodeStructure::InstructionParam Param) {
 
     }
 
@@ -1759,5 +1780,31 @@ namespace XScript {
         EnvironmentStackItem PkgID = InterpreterEnvironment.Stack.PopValueFromStack();
         InterpreterEnvironment.Stack.PushValueToStack(Item);
         InterpreterEnvironment.ProgramCounter.Package = PkgID.Value.HeapPointerVal;
+    }
+
+    void BytecodeInterpreter::ConstructNativeClass(XIndexType HashOfPath) {
+        if (InterpreterEnvironment.NativeLibraries.IsLoaded(HashOfPath)) {
+            EnvClassObject *Object = NewEnvClassObject();
+
+            Object->Members[Hash(L"__native_library_identifier__")] = InterpreterEnvironment.Heap.PushElement(
+                    {EnvObject::ObjectKind::Index, (EnvObject::ObjectValue) {HashOfPath}});
+
+            /* Because the address of each element in LoadedLibraries are static after initialized, we can use pointer to this address without any worried. */
+            for (auto &I: InterpreterEnvironment.NativeLibraries[HashOfPath].Information.Methods) {
+                Object->Members[I.first] = InterpreterEnvironment.Heap.PushElement(
+                        {EnvObject::ObjectKind::NativeMethodPointer, (EnvObject::ObjectValue) {&I.second}});
+            }
+            InterpreterEnvironment.Stack.PushValueToStack(
+                    (EnvironmentStackItem) {EnvironmentStackItem::ItemKind::HeapPointer,
+                                            (EnvironmentStackItem::ItemValue) {
+                                                    InterpreterEnvironment.Heap.PushElement(
+                                                            {EnvObject::ObjectKind::ClassObject,
+                                                             (EnvObject::ObjectValue) {Object}})
+                                            }});
+        }
+    }
+
+    void BytecodeInterpreter::InstructionNativeClassNew(BytecodeStructure::InstructionParam param) {
+        ConstructNativeClass(param.HeapPointerValue);
     }
 } // XScript

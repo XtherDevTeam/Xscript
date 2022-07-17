@@ -26,6 +26,9 @@ namespace XScript {
 
     }
 
+    EnvironmentStackItem::ItemValue::ItemValue(NativeMethodInformation *NativeMethodPointerVal)
+            : NativeMethodPointerVal(NativeMethodPointerVal) {}
+
     EnvironmentStackItem::EnvironmentStackItem(EnvironmentStackItem::ItemKind Kind,
                                                EnvironmentStackItem::ItemValue Value) : Kind(Kind), Value(Value) {
 

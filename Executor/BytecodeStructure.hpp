@@ -81,6 +81,7 @@ namespace XScript {
             pc_get_current_package_id,
             pc_restore_package_id,
             pc_set_current_package_id,
+            native_class_new,
             /*未完成命令*/
             calculation_increment,
             calculation_decrement,

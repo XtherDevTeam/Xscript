@@ -235,6 +235,10 @@ namespace XScript {
                 Result += L"force_exit";
                 ParamType = N;
                 break;
+            case InstructionEnum::native_class_new:
+                Result += L"native_class_new";
+                ParamType = H;
+                break;
         }
 
         Result = L"<XCommand Instruction=" + Result;

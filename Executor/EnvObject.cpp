@@ -21,6 +21,11 @@ namespace XScript {
     EnvObject::ObjectValue::ObjectValue(EnvFunction *functionPointerValue) : FunctionPointerValue(
             functionPointerValue) {}
 
+    EnvObject::ObjectValue::ObjectValue(XIndexType indexValue) : IndexValue(indexValue) {}
+
+    EnvObject::ObjectValue::ObjectValue(NativeMethodInformation *nativeMethodPointerValue) : NativeMethodPointerValue(
+            nativeMethodPointerValue) {}
+
     EnvObject::EnvObject() : Kind(ObjectKind::Integer), Value(static_cast<XInteger>(0)) {
 
     }

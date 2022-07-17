@@ -18,6 +18,8 @@ namespace XScript {
 
         void MainLoop();
 
+        void ConstructNativeClass(XIndexType HashOfPath);
+
         void InstructionCalculationAdd(BytecodeStructure::InstructionParam Param);
 
         void InstructionCalculationSub(BytecodeStructure::InstructionParam Param);
@@ -106,17 +108,19 @@ namespace XScript {
 
         void InstructionFuncReturn(BytecodeStructure::InstructionParam Param);
 
-        void InstructionStaticGet(BytecodeStructure::InstructionParam param);
+        void InstructionStaticGet(BytecodeStructure::InstructionParam Param);
 
-        void InstructionStackPushFunction(BytecodeStructure::InstructionParam param);
+        void InstructionStackPushFunction(BytecodeStructure::InstructionParam Param);
 
-        void InstructionClassNew(BytecodeStructure::InstructionParam param);
+        void InstructionClassNew(BytecodeStructure::InstructionParam Param);
 
-        void InstructionClassGetMember(BytecodeStructure::InstructionParam param);
+        void InstructionClassGetMember(BytecodeStructure::InstructionParam Param);
 
-        void InstructionClassNewMember(BytecodeStructure::InstructionParam param);
+        void InstructionClassNewMember(BytecodeStructure::InstructionParam Param);
 
-        void InstructionListRemoveIndex(BytecodeStructure::InstructionParam param);
+        void InstructionListRemoveIndex(BytecodeStructure::InstructionParam Param);
+
+        void InstructionNativeClassNew(BytecodeStructure::InstructionParam Param);
     };
 
 } // XScript

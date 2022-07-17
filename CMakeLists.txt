@@ -14,6 +14,7 @@ add_executable(Xscript2
         Share/Config.hpp
         Share/Utils.cpp
         Share/Utils.hpp
+        Share/dlfcn.h
         Executor/BytecodeStructure.cpp
         Executor/BytecodeStructure.hpp
         Executor/EnvironmentStackItem.cpp
@@ -116,4 +117,16 @@ add_executable(Xscript2
         Core/Serializatior/BaseTypeSerializatior.cpp Core/Serializatior/BaseTypeSerializatior.hpp
         Core/Serializatior/ExtendedTypeSerializatior.cpp Core/Serializatior/ExtendedTypeSerializatior.hpp
         Frontend/Parsers/ClassDefinitionNodeGenerator.cpp Frontend/Parsers/ClassDefinitionNodeGenerator.hpp
-        Frontend/Parsers/ReturnStatementNodeGenerator.cpp Frontend/Parsers/ReturnStatementNodeGenerator.hpp Executor/EnvFunction.cpp Executor/EnvFunction.hpp Executor/EnvPackageStructure.cpp Executor/EnvPackageStructure.hpp Backend/ConstantPool.cpp Backend/ConstantPool.hpp Frontend/Parsers/ImportStatementNodeGenerator.cpp Frontend/Parsers/ImportStatementNodeGenerator.hpp Frontend/Parsers/PackageStatementNodeGenerator.cpp Frontend/Parsers/PackageStatementNodeGenerator.hpp Core/Reader/BaseTypeReader.cpp Core/Reader/BaseTypeReader.hpp Core/Reader/ExtendedTypeReader.cpp Core/Reader/ExtendedTypeReader.hpp Executor/EnvConstantPool.cpp Executor/EnvConstantPool.hpp Executor/Executor.cpp Executor/Executor.hpp Frontend/Parsers/CrossPackageAccessExpressionNodeGenerator.cpp Frontend/Parsers/CrossPackageAccessExpressionNodeGenerator.hpp Frontend/Parsers/NewExpressionNodeGenerator.cpp Frontend/Parsers/NewExpressionNodeGenerator.hpp Backend/ClassDescriptor.cpp Backend/ClassDescriptor.hpp Executor/EnvClassTemplate.cpp Executor/EnvClassTemplate.hpp Frontend/Parsers/MemberDefineStatementNodeGenerator.cpp Frontend/Parsers/MemberDefineStatementNodeGenerator.hpp)
+        Frontend/Parsers/ReturnStatementNodeGenerator.cpp Frontend/Parsers/ReturnStatementNodeGenerator.hpp
+        Executor/EnvFunction.cpp Executor/EnvFunction.hpp Executor/EnvPackageStructure.cpp
+        Executor/EnvPackageStructure.hpp Backend/ConstantPool.cpp Backend/ConstantPool.hpp
+        Frontend/Parsers/ImportStatementNodeGenerator.cpp Frontend/Parsers/ImportStatementNodeGenerator.hpp
+        Frontend/Parsers/PackageStatementNodeGenerator.cpp Frontend/Parsers/PackageStatementNodeGenerator.hpp
+        Core/Reader/BaseTypeReader.cpp Core/Reader/BaseTypeReader.hpp Core/Reader/ExtendedTypeReader.cpp
+        Core/Reader/ExtendedTypeReader.hpp Executor/EnvConstantPool.cpp Executor/EnvConstantPool.hpp
+        Executor/Executor.cpp Executor/Executor.hpp Frontend/Parsers/CrossPackageAccessExpressionNodeGenerator.cpp
+        Frontend/Parsers/CrossPackageAccessExpressionNodeGenerator.hpp Frontend/Parsers/NewExpressionNodeGenerator.cpp
+        Frontend/Parsers/NewExpressionNodeGenerator.hpp Backend/ClassDescriptor.cpp Backend/ClassDescriptor.hpp
+        Executor/EnvClassTemplate.cpp Executor/EnvClassTemplate.hpp Frontend/Parsers/MemberDefineStatementNodeGenerator.cpp
+        Frontend/Parsers/MemberDefineStatementNodeGenerator.hpp NativeLibrary/NativeLibrary.cpp NativeLibrary/NativeLibrary.hpp
+        NativeLibrary/NativeLibrariesManager.cpp NativeLibrary/NativeLibrariesManager.hpp)

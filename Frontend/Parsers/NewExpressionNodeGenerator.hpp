@@ -1,5 +1,5 @@
 //
-// Created by chou on 22-7-14.
+// Created by Jerry Chou on 22-7-14.
 //
 
 #ifndef XSCRIPT2_NEWEXPRESSIONNODEGENERATOR_HPP

@@ -7,6 +7,7 @@
 
 #include "../Share/Utils.hpp"
 #include "EnvFunction.hpp"
+#include "../NativeLibrary/NativeLibrary.hpp"
 
 
 namespace XScript {
@@ -20,6 +21,7 @@ namespace XScript {
             Boolean,
             HeapPointer,
             FunctionPointer,
+            NativeMethodPointer,
             Null,
         } Kind;
 
@@ -29,6 +31,7 @@ namespace XScript {
             XBoolean BoolVal;
             XHeapIndexType HeapPointerVal;
             EnvFunction *FuncPointerVal;
+            NativeMethodInformation *NativeMethodPointerVal;
 
 
             explicit ItemValue(XInteger IntVal);
@@ -40,6 +43,8 @@ namespace XScript {
             explicit ItemValue(XHeapIndexType HeapPointerVal);
 
             explicit ItemValue(EnvFunction *FuncPointerVal);
+
+            explicit ItemValue(NativeMethodInformation *NativeMethodPointerVal);
         } Value;
 
         EnvironmentStackItem();

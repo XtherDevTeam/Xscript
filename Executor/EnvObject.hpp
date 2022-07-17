@@ -10,6 +10,7 @@
 #include "EnvArrayObject.hpp"
 #include "EnvStringObject.hpp"
 #include "EnvFunction.hpp"
+#include "../NativeLibrary/NativeLibrary.hpp"
 
 namespace XScript {
 
@@ -22,13 +23,16 @@ namespace XScript {
             Integer,
             Decimal,
             Boolean,
+            Index,
             FunctionPointer,
+            NativeMethodPointer,
         } Kind;
 
         union ObjectValue {
+            EnvClassObject *ClassObjectPointer;
+
             explicit ObjectValue(EnvClassObject *classObjectPointer);
 
-            EnvClassObject *ClassObjectPointer;
             EnvArrayObject *ArrayObjectPointer;
 
             explicit ObjectValue(EnvArrayObject *arrayObjectPointer);
@@ -49,9 +53,17 @@ namespace XScript {
 
             explicit ObjectValue(XBoolean booleanValue);
 
-            EnvFunction* FunctionPointerValue;
+            XIndexType IndexValue;
+
+            explicit ObjectValue(XIndexType indexValue);
+
+            EnvFunction *FunctionPointerValue;
 
             explicit ObjectValue(EnvFunction *functionPointerValue);
+
+            NativeMethodInformation *NativeMethodPointerValue;
+
+            explicit ObjectValue(NativeMethodInformation *nativeMethodPointerValue);
         } Value;
 
         EnvObject();

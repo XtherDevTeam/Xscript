@@ -9,6 +9,7 @@
 #include "EnvironmentStack.hpp"
 #include "EnvironmentHeap.hpp"
 #include "EnvPackageStructure.hpp"
+#include "../NativeLibrary/NativeLibrariesManager.hpp"
 
 namespace XScript {
 
@@ -19,11 +20,13 @@ namespace XScript {
         EnvironmentHeap Heap;
         ProgramCounterInformation ProgramCounter;
 
+        NativeLibrariesManager NativeLibraries;
+
         XArray<XString> PathsToSearch;
         XArray<XIndexType> LoadedPackageIDs;
         XMap<XIndexType, EnvPackageStructure> Packages;
 
-        void LoadFromFile(const XString &FilePath, const XString& PackageName, bool IsMainPackage);
+        void LoadFromFile(const XString &FilePath, const XString &PackageName, bool IsMainPackage);
     };
 
 } // XScript
