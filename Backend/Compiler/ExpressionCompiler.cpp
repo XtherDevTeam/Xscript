@@ -226,31 +226,39 @@ namespace XScript::Compiler {
 
             case AST::TreeType::AssignmentExpression: {
                 /* Push lvalue into stack */
-                MergeArray(Result, Generate(Target.Subtrees[2]));
-
                 switch (Target.Subtrees[1].Node.Kind) {
                     case Lexer::TokenKind::AdditionAssignment:
+                        MergeArray(Result, Generate(Target.Subtrees[0]));
+                        MergeArray(Result, Generate(Target.Subtrees[2]));
                         Result.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::calculation_add,
                                                               (BytecodeStructure::InstructionParam) {(XIndexType) 0}});
                         break;
                     case Lexer::TokenKind::SubtractionAssignment:
+                        MergeArray(Result, Generate(Target.Subtrees[0]));
+                        MergeArray(Result, Generate(Target.Subtrees[2]));
                         Result.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::calculation_sub,
                                                               (BytecodeStructure::InstructionParam) {(XIndexType) 0}});
                         break;
                     case Lexer::TokenKind::MultiplicationAssignment:
+                        MergeArray(Result, Generate(Target.Subtrees[0]));
+                        MergeArray(Result, Generate(Target.Subtrees[2]));
                         Result.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::calculation_mul,
                                                               (BytecodeStructure::InstructionParam) {(XIndexType) 0}});
                         break;
                     case Lexer::TokenKind::DivisionAssignment:
+                        MergeArray(Result, Generate(Target.Subtrees[0]));
+                        MergeArray(Result, Generate(Target.Subtrees[2]));
                         Result.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::calculation_div,
                                                               (BytecodeStructure::InstructionParam) {(XIndexType) 0}});
                         break;
                     case Lexer::TokenKind::RemainderAssignment:
+                        MergeArray(Result, Generate(Target.Subtrees[0]));
+                        MergeArray(Result, Generate(Target.Subtrees[2]));
                         Result.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::calculation_mod,
                                                               (BytecodeStructure::InstructionParam) {(XIndexType) 0}});
                         break;
                     default:
-                        /* never run into here */
+                        MergeArray(Result, Generate(Target.Subtrees[2]));
                         break;
                 }
 
@@ -423,7 +431,7 @@ namespace XScript::Compiler {
                     try {
                         /* If variable doesn't exist, then GetLocal will throw an error */
                         auto Item = Environment.GetLocal(Target.Node.Value);
-                        Result.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::stack_duplicate,
+                        Result.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::stack_store,
                                                               (BytecodeStructure::InstructionParam) {Item.first}});
                     } catch (InternalException &E) {
                         try {
