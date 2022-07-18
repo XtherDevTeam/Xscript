@@ -185,5 +185,25 @@ namespace XScript {
             Environment.ImportFromPackage(Target.Node.Value);
             return {};
         }
+
+        XArray<BytecodeStructure> FileCompiler::GeneratorForNativeClassDeclaration(AST &Target) {
+            if (!Environment.NativeLibraries.IsLoaded(Hash(Target.Subtrees[1].Node.Value))) {
+                Environment.LoadNativeClass(Target.Subtrees[1].Node.Value);
+            }
+            XIndexType StaticIdx = Environment.MainPackage.PushStatic(Target.Subtrees[0].Node.Value,
+                                                                      (SymbolItem) {(Typename) {
+                                                                              Typename::TypenameKind::Unknown}, false});
+
+            Environment.MainPackage.PackageInitializeCodes.push_back((BytecodeStructure) {
+                    BytecodeStructure::InstructionEnum::native_class_new,
+                    (BytecodeStructure::InstructionParam) {Hash(Target.Subtrees[2].Node.Value)}
+            });
+
+            Environment.MainPackage.PackageInitializeCodes.push_back((BytecodeStructure) {
+                    BytecodeStructure::InstructionEnum::static_store,
+                    (BytecodeStructure::InstructionParam) {StaticIdx}
+            });
+            return {};
+        }
     } // XScript
 } // Compiler

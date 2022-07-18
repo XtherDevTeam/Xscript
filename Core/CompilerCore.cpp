@@ -49,6 +49,12 @@ namespace XScript {
         Serializatior::BaseTypeSerializatior()(FilePointer, MagicNumber);
         /* 写入依赖 */
         Serializatior::BaseTypeSerializatior()(FilePointer,
+                                               static_cast<XIndexType>(Environment.DependencyNativeClasses.size()));
+        for (auto &I: Environment.DependencyNativeClasses) {
+            Serializatior::BaseTypeSerializatior()(FilePointer, I);
+        }
+
+        Serializatior::BaseTypeSerializatior()(FilePointer,
                                                static_cast<XIndexType>(Environment.DependencyPackages.size()));
         for (auto &I: Environment.DependencyPackages) {
             Serializatior::BaseTypeSerializatior()(FilePointer, I.first);

@@ -8,6 +8,7 @@
 #include "../Share/Config.hpp"
 #include "SymbolItem.hpp"
 #include "CompilingTimePackageStructure.hpp"
+#include "../NativeLibrary/NativeLibrariesManager.hpp"
 
 namespace XScript::Compiler {
 
@@ -19,13 +20,19 @@ namespace XScript::Compiler {
 
         XArray<XString> CompilerFlags;
 
+        XArray<XString> DependencyNativeClasses;
+
+        NativeLibrariesManager NativeLibraries;
+
         CompilingTimePackageStructure MainPackage;
 
         XArray<std::pair<XString, CompilingTimePackageStructure>> DependencyPackages;
 
         XArray<std::pair<XString, SymbolItem>> Locals;
 
-        void ImportFromPackage(const XString& FileName);
+        void ImportFromPackage(const XString &FileName);
+
+        void LoadNativeClass(const XString &FileName);
 
         XIndexType PushLocal(const XString &Name, const SymbolItem &Item);
 

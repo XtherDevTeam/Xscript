@@ -26,6 +26,8 @@ namespace XScript {
 
             XArray<BytecodeStructure> GenerateForImportStatement(AST &Target);
 
+            XArray<BytecodeStructure> GeneratorForNativeClassDeclaration(AST &Target);
+
             XArray<BytecodeStructure> GenerateForFile(AST &Target);
 
             CompilingTimeFunction ParseMethodDefinition(AST &Target);

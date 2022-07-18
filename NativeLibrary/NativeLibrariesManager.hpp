@@ -14,13 +14,13 @@ namespace XScript {
     public:
         XMap<XIndexType, NativeClass> LoadedLibraries;
 
-        void LoadLibrary(const XString &FullLibraryPath);
+        void LoadLibrary(const XString &FullLibraryPath, XIndexType Alias);
 
         void FreeLibraries();
 
-        bool IsLoaded(XIndexType HashOfPath);
+        bool IsLoaded(XIndexType Alias);
 
-        NativeClass &operator[](XIndexType Idx);
+        NativeClass &operator[](XIndexType Alias);
     };
 
 } // XScript

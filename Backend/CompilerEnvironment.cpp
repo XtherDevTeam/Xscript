@@ -23,9 +23,10 @@ namespace XScript::Compiler {
         throw XScript::InternalException(L"Cannot find a local variable named " + Name + L" during compiling");
     }
 
-    void CompilerEnvironment::ImportFromPackage(const XString& FileName) {
-        for (auto &PathToSearch : PathsToSearch) {
-            XBytes FinalPath = wstring2string(PathToSearch + (PathToSearch.back() == L'/' or PathToSearch == L"" ? L"" : L"/") + FileName);
+    void CompilerEnvironment::ImportFromPackage(const XString &FileName) {
+        for (auto &PathToSearch: PathsToSearch) {
+            XBytes FinalPath = wstring2string(
+                    PathToSearch + (PathToSearch.back() == L'/' or PathToSearch == L"" ? L"" : L"/") + FileName);
             FILE *FilePointer = fopen(FinalPath.c_str(), "r+");
             if (FilePointer == nullptr) {
                 continue;
@@ -33,12 +34,19 @@ namespace XScript::Compiler {
             if (XScript::Reader::BaseTypeReader().ReadIndex(FilePointer) != 0x114514ff2b)
                 throw InternalException(L"CompilerEnvironment::ImportFromPackage(): Wrong magic number.");
 
+            // 读取依赖
+            XIndexType DependencyNativeClassesCount = XScript::Reader::BaseTypeReader().ReadIndex(FilePointer);
+            while (DependencyNativeClassesCount and DependencyNativeClassesCount--) {
+                LoadNativeClass(XScript::Reader::BaseTypeReader().ReadString(FilePointer));
+            }
+
             XIndexType DependenciesCount = XScript::Reader::BaseTypeReader().ReadIndex(FilePointer);
-            while(DependenciesCount and DependenciesCount--) {
+            while (DependenciesCount and DependenciesCount--) {
                 ImportFromPackage(XScript::Reader::BaseTypeReader().ReadString(FilePointer));
             }
 
-            DependencyPackages.push_back(std::make_pair(FileName, Reader::ExtendedTypeReader().ReadPackageEx(FilePointer)));
+            DependencyPackages.push_back(
+                    std::make_pair(FileName, Reader::ExtendedTypeReader().ReadPackageEx(FilePointer)));
             return;
         }
         throw InternalException(L"Cannot open file.");
@@ -51,6 +59,22 @@ namespace XScript::Compiler {
                 return {I, Index.second};
             I++;
         }
-        throw XScript::InternalException(L"Cannot find a dependency package named " + std::to_wstring(Name) + L" during compiling");
+        throw XScript::InternalException(
+                L"Cannot find a dependency package named " + std::to_wstring(Name) + L" during compiling");
+    }
+
+    void CompilerEnvironment::LoadNativeClass(const XString &FileName) {
+        for (auto &PathToSearch: PathsToSearch) {
+            XString FinalPath =
+                    PathToSearch + (PathToSearch.back() == L'/' or PathToSearch == L"" ? L"" : L"/") + FileName;
+            try {
+                NativeLibraries.LoadLibrary(FinalPath, Hash(FileName));
+                DependencyNativeClasses.push_back(FileName);
+                return;
+            } catch (InternalException &I) {
+                continue;
+            }
+        }
+        throw InternalException(L"Cannot open file.");
     }
 } // Compiler

@@ -8,7 +8,7 @@
 #include "../Core/Reader/BaseTypeReader.hpp"
 
 namespace XScript {
-    void Environment::LoadFromFile(const XString &FilePath, const XString& PackageName, bool IsMainPackage) {
+    void Environment::LoadFromFile(const XString &FilePath, const XString &PackageName, bool IsMainPackage) {
         XBytes FinalPath = wstring2string(FilePath);
         FILE *FilePointer = fopen(FinalPath.c_str(), "r+");
         if (FilePointer == nullptr) {
@@ -18,7 +18,25 @@ namespace XScript {
             throw InternalException(L"Environment::LoadFromFile() : Wrong magic number. (MagicNumber != 0x114514ff2b)");
         }
 
+
         /* 加载依赖 */
+        XArray<XString> DependNativeClasses = Reader::ExtendedTypeReader().ReadStringArray(FilePointer);
+        for (auto &Class: DependNativeClasses) {
+            bool LoadFail = true;
+
+            for (auto &Prefix: PathsToSearch) {
+                XString FFF = Prefix + (Prefix.back() == L'/' or Prefix == L"" ? L"" : L"/") + Class;
+                try {
+                    NativeLibraries.LoadLibrary(FFF, Hash(Class));
+                } catch (InternalException &E) {
+                    LoadFail = false;
+                }
+            }
+
+            if (LoadFail)
+                throw InternalException(L"Environment::LoadFromFile() : Cannot open native library.");
+        }
+
         XArray<XString> DependPackages = Reader::ExtendedTypeReader().ReadStringArray(FilePointer);
         for (auto &Package: DependPackages) {
             bool LoadFail = true;
@@ -44,9 +62,10 @@ namespace XScript {
         if (IsMainPackage) {
             Packages[PkgID] = Reader::ExtendedTypeReader().ReadPackage(FilePointer);
             if (!Packages[PkgID].FunctionPool.count(Hash(L"main")))
-                throw InternalException(L"Environment::LoadFromFile() : Cannot find __XScriptRuntimeEntry__() function for entry.");
+                throw InternalException(
+                        L"Environment::LoadFromFile() : Cannot find __XScriptRuntimeEntry__() function for entry.");
 
-            for (auto &Function : Packages[Hash(PackageName)].FunctionPool) {
+            for (auto &Function: Packages[Hash(PackageName)].FunctionPool) {
                 Function.second.PackageID = PkgID;
             }
 
@@ -55,7 +74,7 @@ namespace XScript {
         } else {
             Packages[PkgID] = Reader::ExtendedTypeReader().ReadPackage(FilePointer);
             /* 设置依赖包中函数的包ID */
-            for (auto &Function : Packages[PkgID].FunctionPool) {
+            for (auto &Function: Packages[PkgID].FunctionPool) {
                 Function.second.PackageID = PkgID;
             }
 
