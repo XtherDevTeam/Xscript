@@ -363,16 +363,6 @@ Syntax:
 ClassDefinition ::= "class" Identifier "extends" Identifier LeftBrace { MethodDefinition } RightBrace
 ```
 
-### PackageStatement
-
-Status: `Implmented`
-
-Syntax:
-
-```
-PackageStatement ::= "package" TokenString
-```
-
 ### ImportStatement
 
 Status: `Implmented`
@@ -381,6 +371,16 @@ Syntax:
 
 ```
 ImportStatement ::= "import" TokenString
+```
+
+### NativeClassDeclarationStatement
+
+Status: `Implmented`
+
+Syntax:
+
+```
+NativeClassDeclarationStatement ::= "native_class" Identifier "in" TokenString
 ```
 
 ### FileStatement
@@ -395,6 +395,7 @@ FileStatement ::= FunctionDefinition
                 | VariableDeclaration
                 | ImportStatement
                 | PackageStatement
+                | NativeClassDeclarationStatement
 ```
 
 ### File

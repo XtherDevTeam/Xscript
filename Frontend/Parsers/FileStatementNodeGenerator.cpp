@@ -8,6 +8,7 @@
 #include "ClassDefinitionNodeGenerator.hpp"
 #include "ImportStatementNodeGenerator.hpp"
 #include "PackageStatementNodeGenerator.hpp"
+#include "NativeClassDeclarationStatementNodeGenerator.hpp"
 
 namespace XScript {
     namespace Generator {
@@ -17,6 +18,10 @@ namespace XScript {
 
         AST FileStatementNodeGenerator::Parse() {
             AST Result{};
+
+            Result = NativeClassDeclarationStatementNodeGenerator(L).Parse();
+            if (!Result.IsNotMatchNode())
+                return Result;
 
             Result = ImportStatementNodeGenerator(L).Parse();
             if (!Result.IsNotMatchNode())
@@ -35,9 +40,6 @@ namespace XScript {
                 return Result;
 
             Result = VariableStatementNodeGenerator(L).Parse();
-            if (!Result.IsNotMatchNode())
-                return Result;
-
             return Result;
         }
     } // XScript

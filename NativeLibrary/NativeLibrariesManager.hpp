@@ -1,5 +1,5 @@
 //
-// Created by chou on 22-7-17.
+// Created by Jerry Chou on 22-7-17.
 //
 
 #ifndef XSCRIPT2_NATIVELIBRARIESMANAGER_HPP

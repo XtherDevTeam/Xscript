@@ -129,4 +129,4 @@ add_executable(Xscript2
         Frontend/Parsers/NewExpressionNodeGenerator.hpp Backend/ClassDescriptor.cpp Backend/ClassDescriptor.hpp
         Executor/EnvClassTemplate.cpp Executor/EnvClassTemplate.hpp Frontend/Parsers/MemberDefineStatementNodeGenerator.cpp
         Frontend/Parsers/MemberDefineStatementNodeGenerator.hpp NativeLibrary/NativeLibrary.cpp NativeLibrary/NativeLibrary.hpp
-        NativeLibrary/NativeLibrariesManager.cpp NativeLibrary/NativeLibrariesManager.hpp)
+        NativeLibrary/NativeLibrariesManager.cpp NativeLibrary/NativeLibrariesManager.hpp Frontend/Parsers/NativeClassDeclarationStatementNodeGenerator.cpp Frontend/Parsers/NativeClassDeclarationStatementNodeGenerator.hpp)

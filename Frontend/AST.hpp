@@ -72,6 +72,7 @@ namespace XScript {
             ImportStatement,
             CrossPackageAccessExpression,
             MemberDefineStatement,
+            NativeClassDeclarationStatement,
         } Type;
         Lexer::Token Node;
         XArray<AST> Subtrees;

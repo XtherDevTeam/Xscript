@@ -49,6 +49,7 @@ namespace XScript {
         Interpreter.InstructionFuncInvoke((BytecodeStructure::InstructionParam) {(XHeapIndexType) {0}});
         VM.ProgramCounter.NowIndex++;
         Interpreter.MainLoop();
+        Interpreter.InterpreterEnvironment.NativeLibraries.FreeLibraries();
     }
 
     XIndexType Executor::StartWithRuntimeDuration() {
