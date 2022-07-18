@@ -15,7 +15,7 @@ namespace XScript {
             XIndexType StringLength;
             fread(&StringLength, sizeof(XIndexType), 1, FilePointer);
             Constants[Index].Value.resize(StringLength);
-            fread(Constants[Index].Value.data(), sizeof(XCharacter) * StringLength, 1, FilePointer);
+            fread((void *) Constants[Index].Value.data(), sizeof(XCharacter) * StringLength, 1, FilePointer);
         }
 
         /* Functions */

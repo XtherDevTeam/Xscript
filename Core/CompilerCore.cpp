@@ -22,7 +22,7 @@ namespace XScript {
         XScript::XBytes Dest;
         XScript::XIndexType ReadCount = 0;
         Dest.resize(1024);
-        while (fread(Dest.data(), 1, 1024, FilePointer) > 0) {
+        while (fread((void *) Dest.data(), 1, 1024, FilePointer) > 0) {
             std::wcout << std::to_wstring(Dest.find('\0')) << std::endl;
             if (!Dest.find('\0'))
                 break;

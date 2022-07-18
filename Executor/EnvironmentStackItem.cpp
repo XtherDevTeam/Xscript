@@ -50,8 +50,11 @@ namespace XScript {
                 return L"<XHeapPointer value=" + std::to_wstring(Value.HeapPointerVal) + L">";
             case ItemKind::FunctionPointer:
                 return L"<XFunctionPointer value=" + std::to_wstring(Value.HeapPointerVal) + L">";
+            case ItemKind::NativeMethodPointer:
+                return L"<NativeMethodPointer value=" + std::to_wstring(Value.HeapPointerVal) + L">";
             case ItemKind::Null:
                 return L"<XNull>";
         }
+        return L"<Unknown>";
     }
 } // XScript
