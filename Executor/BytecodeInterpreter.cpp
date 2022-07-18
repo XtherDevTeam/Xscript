@@ -170,6 +170,9 @@ namespace XScript {
                 case BytecodeStructure::InstructionEnum::func_return:
                     InstructionFuncReturn(CurrentInstruction.Param);
                     break;
+                case BytecodeStructure::InstructionEnum::native_class_new:
+                    InstructionNativeClassNew(CurrentInstruction.Param);
+                    break;
                 case BytecodeStructure::InstructionEnum::force_exit:
                     return;
                 case BytecodeStructure::InstructionEnum::fake_command_continue:

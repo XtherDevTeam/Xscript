@@ -24,10 +24,10 @@ void ParseArguments(int argc, const char **argv) {
             XString L = Str.substr(0, Equ);
             XString R = Str.substr(Equ + 1);
             if (L[0] == L'\'' || L[0] == L'"') {
-                L.substr(1, L.size() - 2);
+                L = L.substr(1, L.size() - 2);
             }
             if (R[0] == L'\'' || R[0] == L'"') {
-                R.substr(1, R.size() - 2);
+                R = R.substr(1, R.size() - 2);
             }
 
             Arguments[L] = R;

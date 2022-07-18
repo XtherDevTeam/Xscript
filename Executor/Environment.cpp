@@ -28,8 +28,10 @@ namespace XScript {
                 XString FFF = Prefix + (Prefix.back() == L'/' or Prefix == L"" ? L"" : L"/") + Class;
                 try {
                     NativeLibraries.LoadLib(FFF, Hash(Class));
-                } catch (InternalException &E) {
                     LoadFail = false;
+                    break;
+                } catch (InternalException &E) {
+                    continue;
                 }
             }
 

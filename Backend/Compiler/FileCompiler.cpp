@@ -26,6 +26,8 @@ namespace XScript {
                     return GenerateForClassDefinition(Target);
                 case AST::TreeType::ImportStatement:
                     return GenerateForImportStatement(Target);
+                case AST::TreeType::NativeClassDeclarationStatement:
+                    return GeneratorForNativeClassDeclaration(Target);
                 default:
                     throw InternalException(L"FileCompiler::Generate : Invalid invoke");
             }
@@ -196,7 +198,7 @@ namespace XScript {
 
             Environment.MainPackage.PackageInitializeCodes.push_back((BytecodeStructure) {
                     BytecodeStructure::InstructionEnum::native_class_new,
-                    (BytecodeStructure::InstructionParam) {Hash(Target.Subtrees[2].Node.Value)}
+                    (BytecodeStructure::InstructionParam) {Hash(Target.Subtrees[1].Node.Value)}
             });
 
             Environment.MainPackage.PackageInitializeCodes.push_back((BytecodeStructure) {
