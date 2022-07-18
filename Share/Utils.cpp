@@ -2,37 +2,18 @@
 // Created by Jerry Chou on 2022/5/7.
 //
 
+#include <sstream>
 #include "Utils.hpp"
+
+#include "../ThirdPartyLibraries/localr.hpp"
 
 namespace XScript {
     std::string wstring2string(const std::wstring &ws) {
-        std::string curLocale = setlocale(LC_ALL, nullptr);
-
-        setlocale(LC_ALL, "chs");
-
-        const wchar_t *Source = ws.c_str();
-        size_t d_size = 2 * ws.size() + 1;
-        char *Dest = new char[d_size];
-        memset(Dest, 0, d_size);
-        wcstombs(Dest, Source, d_size);
-        std::string result = Dest;
-        delete[] Dest;
-
-        setlocale(LC_ALL, curLocale.c_str());
-
-        return result;
+        return localr::string_convert<localr::codecvt<wchar_t, char>>::in(ws);
     }
 
     std::wstring string2wstring(const std::string &s) {
-        const char *Source = s.c_str();
-        size_t d_size = s.size() + 1;
-        auto *Dest = new wchar_t[d_size];
-        wmemset(Dest, 0, d_size);
-        mbstowcs(Dest, Source, d_size);
-        std::wstring result = Dest;
-        delete[] Dest;
-
-        return result;
+        return localr::string_convert<localr::codecvt<char, wchar_t>>::in(s);
     }
 
     bool IsDigit(wchar_t Char) {
@@ -58,4 +39,16 @@ namespace XScript {
     XIndexType Hash(const XString &T) {
         return std::hash<XString>()(T);
     }
+
+    XArray<XString> SplitStrings(const XString &Str, XCharacter Delim) {
+        XArray<XString> result;
+        std::wstringstream ss(Str);
+        XString item;
+        while (getline(ss, item, Delim)) {
+            result.push_back(item);
+        }
+        return result;
+    }
+
+
 } // XScript

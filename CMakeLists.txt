@@ -18,9 +18,11 @@ file(GLOB SRC_FILES
         "NativeLibrary/*.cpp"
         )
 
-add_executable(Xscript2 main.cpp ${SRC_FILES})
+add_executable(xsc Binary/Compiler/main.cpp ${SRC_FILES})
+add_executable(xsvm Binary/Executor/main.cpp ${SRC_FILES})
 if (CMAKE_HOST_SYSTEM_NAME MATCHES "Linux")
-    TARGET_LINK_LIBRARIES(Xscript2 dl)
+    TARGET_LINK_LIBRARIES(xsc dl)
+    TARGET_LINK_LIBRARIES(xsvm dl)
 elseif (CMAKE_HOST_SYSTEM_NAME MATCHES "Windows")
     set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")
 endif ()

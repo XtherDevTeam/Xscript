@@ -5,9 +5,9 @@
 #ifndef XSCRIPT2_UTILS_HPP
 #define XSCRIPT2_UTILS_HPP
 
-#include "Config.hpp"
-#include <cstdlib>
 #include <cstring>
+
+#include "Config.hpp"
 
 namespace XScript {
     std::string wstring2string(const std::wstring &ws);
@@ -36,6 +36,7 @@ namespace XScript {
         }
     }
 
+    XArray<XString> SplitStrings(const XString &Str, XCharacter Delim);
 } // XScript
 
 #endif //XSCRIPT2_UTILS_HPP
