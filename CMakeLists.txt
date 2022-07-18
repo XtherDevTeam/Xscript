@@ -19,3 +19,8 @@ file(GLOB SRC_FILES
         )
 
 add_executable(Xscript2 main.cpp ${SRC_FILES})
+if (CMAKE_HOST_SYSTEM_NAME MATCHES "Linux")
+    TARGET_LINK_LIBRARIES(Xscript2 dl)
+elseif (CMAKE_HOST_SYSTEM_NAME MATCHES "Windows")
+    set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")
+endif ()

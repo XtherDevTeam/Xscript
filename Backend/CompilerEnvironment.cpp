@@ -68,7 +68,7 @@ namespace XScript::Compiler {
             XString FinalPath =
                     PathToSearch + (PathToSearch.back() == L'/' or PathToSearch == L"" ? L"" : L"/") + FileName;
             try {
-                NativeLibraries.LoadLibrary(FinalPath, Hash(FileName));
+                NativeLibraries.LoadLib(FinalPath, Hash(FileName));
                 DependencyNativeClasses.push_back(FileName);
                 return;
             } catch (InternalException &I) {

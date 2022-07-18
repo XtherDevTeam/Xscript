@@ -27,7 +27,7 @@ namespace XScript {
             for (auto &Prefix: PathsToSearch) {
                 XString FFF = Prefix + (Prefix.back() == L'/' or Prefix == L"" ? L"" : L"/") + Class;
                 try {
-                    NativeLibraries.LoadLibrary(FFF, Hash(Class));
+                    NativeLibraries.LoadLib(FFF, Hash(Class));
                 } catch (InternalException &E) {
                     LoadFail = false;
                 }

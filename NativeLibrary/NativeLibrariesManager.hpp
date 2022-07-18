@@ -14,7 +14,7 @@ namespace XScript {
     public:
         XMap<XIndexType, NativeClass> LoadedLibraries;
 
-        void LoadLibrary(const XString &FullLibraryPath, XIndexType Alias);
+        void LoadLib(const XString &FullLibraryPath, XIndexType Alias);
 
         void FreeLibraries();
 
