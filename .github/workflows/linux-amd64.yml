@@ -45,7 +45,7 @@ jobs:
         run: cd ${{github.workspace}}/build ; make -j32
 
       - name: Remove useless files
-        run: cd ${{github.workspace}}/build ; rm -Force CMakeFiles Testing
+        run: dir ${{github.workspace}}/build | where {$_. name -notlike '*.exe*'} | Remove-Item -Recurse -force
 
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v3.1.0
