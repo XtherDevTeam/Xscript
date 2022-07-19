@@ -47,6 +47,7 @@ namespace XScript {
             *Pointer = Index;
             Pointer++;
         }
+        *Pointer = '\0';
         return Object;
     }
 
