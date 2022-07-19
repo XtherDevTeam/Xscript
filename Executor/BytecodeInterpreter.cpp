@@ -1665,7 +1665,8 @@ namespace XScript {
             }
             case EnvironmentStackItem::ItemKind::NativeMethodPointer: {
                 /* 被调用者需要手动调整栈帧 */
-                Item.Value.NativeMethodPointerVal->Method({(void *) &InterpreterEnvironment, Param.HeapPointerValue});
+                Item.Value.NativeMethodPointerVal->Method(
+                        {(void *) &InterpreterEnvironment, (void *) &GC, Param.HeapPointerValue});
                 break;
             }
             default: {
