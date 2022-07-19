@@ -14,9 +14,15 @@ namespace XScript {
 
     std::wstring string2wstring(const std::string &s);
 
+    std::wstring unescape_string(const std::wstring &s);
+
     bool IsDigit(wchar_t Char);
 
     bool IsAlpha(wchar_t Char);
+
+    bool IsHexDigit(wchar_t Char);
+
+    wchar_t ToHexDigit(wchar_t Char);
 
     XInteger XStringToXInteger(const XString &T);
 

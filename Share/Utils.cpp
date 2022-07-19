@@ -50,5 +50,67 @@ namespace XScript {
         return result;
     }
 
+    std::wstring unescape_string(const std::wstring &s) {
+        std::wstring output;
+        for (int i = 0; i < s.length(); i++) {
+            if (s[i] == '\\') {
+                i++;
+                switch (s[i]) {
+                    case L'"':
+                        output += L'"';
+                        break;
+                    case L'\'':
+                        output += L'\'';
+                        break;
+                    case L'\\':
+                        output += L'\\';
+                        break;
+                    case L'b':
+                        output += L'\b';
+                        break;
+                    case L'f':
+                        output += L'\f';
+                        break;
+                    case L'n':
+                        output += L'\n';
+                        break;
+                    case L'r':
+                        output += L'\r';
+                        break;
+                    case L't':
+                        output += L'\t';
+                        break;
+                    default:
+                        return L"";
+                }
+            } else {
+                output += s[i];
+            }
+        }
+        return output;
+    }
+
+    bool IsHexDigit(wchar_t Char) {
+        if (Char >= '0' and Char <= '9')
+            return true;
+        if (Char >= 'a' and Char <= 'f')
+            return true;
+        if (Char >= 'A' and Char <= 'F')
+            return true;
+
+        return false;
+    }
+
+    wchar_t ToHexDigit(wchar_t Char) {
+        if (Char >= '0' and Char <= '9')
+            return Char - '0';
+        if (Char >= 'a' and Char <= 'f')
+            return Char - 'a' + 10;
+        if (Char >= 'A' and Char <= 'F')
+            return Char - 'A' + 10;
+
+        return 0;
+    }
+
 
 } // XScript

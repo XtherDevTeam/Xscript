@@ -22,7 +22,6 @@ namespace XScript {
     }
 
     XCharacter Lexer::NextCharacter() {
-        begin:
         if (Position >= String.length()) {
             return L'\0';
         }
@@ -97,7 +96,7 @@ namespace XScript {
             }
             TempStr = String.substr(Start, Position - Start);
             NextCharacter(); // Skip
-            LastToken = {TokenKind::String, TempStr, Line, Column};
+            LastToken = {TokenKind::String, unescape_string(TempStr), Line, Column};
         }
             /* Expression symbols */
             /* Starts with + */
