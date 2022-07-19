@@ -59,5 +59,6 @@ namespace XScript {
 
     void GarbageCollection::Init() {
         GCThread = std::thread(GCThreadFunc, std::ref(*this));
+        GCThread.detach();
     }
 } // XScript
