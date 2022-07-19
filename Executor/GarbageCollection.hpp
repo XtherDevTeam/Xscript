@@ -6,7 +6,6 @@
 #define XSCRIPT2_GARBAGECOLLECTION_HPP
 
 #include "Environment.hpp"
-#include <thread>
 
 namespace XScript {
     /**
@@ -15,16 +14,14 @@ namespace XScript {
     constexpr XIndexType EnvHeapGCStartCondition = 256;
 
     class GarbageCollection {
+        XIndexType Limit = 0 + EnvHeapGCStartCondition;
         Environment &Env;
-        std::thread GCThread;
     public:
         explicit GarbageCollection(Environment &Env);
 
         void Start();
 
-        [[noreturn]] static void GCThreadFunc(GarbageCollection &This);
-
-        void Init();
+        bool Check() const;
     };
 
 } // XScript

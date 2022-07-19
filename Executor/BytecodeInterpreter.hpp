@@ -7,14 +7,16 @@
 
 #include "Environment.hpp"
 #include "../Share/Exceptions/BytecodeInterpretError.hpp"
+#include "GarbageCollection.hpp"
 
 namespace XScript {
 
     class BytecodeInterpreter {
     public:
         Environment &InterpreterEnvironment;
+        GarbageCollection &GC;
 
-        explicit BytecodeInterpreter(Environment &interpreterEnvironment);
+        explicit BytecodeInterpreter(Environment &interpreterEnvironment, GarbageCollection &GC);
 
         void MainLoop();
 

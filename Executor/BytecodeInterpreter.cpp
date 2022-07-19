@@ -2,20 +2,16 @@
 // Created by Jerry Chou on 2022/5/14.
 //
 
-//#include <iostream>
 #include "BytecodeInterpreter.hpp"
-#include "../Share/Exceptions/InternalException.hpp"
 
 namespace XScript {
-    BytecodeInterpreter::BytecodeInterpreter(Environment &interpreterEnvironment) : InterpreterEnvironment(
-            interpreterEnvironment) {}
+    BytecodeInterpreter::BytecodeInterpreter(Environment &interpreterEnvironment, GarbageCollection &GC) :
+            InterpreterEnvironment(interpreterEnvironment), GC(GC) {}
 
     void BytecodeInterpreter::MainLoop() {
         while (InterpreterEnvironment.ProgramCounter.NowIndex !=
                InterpreterEnvironment.ProgramCounter.Pointer->size()) {
             auto &CurrentInstruction = (*InterpreterEnvironment.ProgramCounter.Pointer)[InterpreterEnvironment.ProgramCounter.NowIndex];
-            /* process commands */
-//            std::wcout << CurrentInstruction.ToString() << L"\n" << std::flush;
 
             switch (CurrentInstruction.Instruction) {
                 case BytecodeStructure::InstructionEnum::calculation_add:
@@ -1340,6 +1336,7 @@ namespace XScript {
     }
 
     void BytecodeInterpreter::InstructionConstantsLoad(BytecodeStructure::InstructionParam Param) {
+        GC.Start();
         auto &Element = InterpreterEnvironment.Packages[InterpreterEnvironment.ProgramCounter.Package].Constants[Param.HeapPointerValue];
         switch (Element.Kind) {
             case EnvConstantPool::EnvConstant::ItemKind::StringVal:
@@ -1378,6 +1375,7 @@ namespace XScript {
     }
 
     void BytecodeInterpreter::InstructionListNew(BytecodeStructure::InstructionParam Param) {
+        GC.Start();
         EnvironmentStackItem ListItem{};
         ListItem.Kind = EnvironmentStackItem::ItemKind::HeapPointer;
         ListItem.Value.HeapPointerVal = InterpreterEnvironment.Heap.PushElement(
@@ -1505,6 +1503,7 @@ namespace XScript {
     }
 
     void BytecodeInterpreter::InstructionObjectStore(BytecodeStructure::InstructionParam Param) {
+        GC.Start();
         EnvironmentStackItem LeftValue = InterpreterEnvironment.Stack.PopValueFromStack();
         EnvironmentStackItem RightValue = InterpreterEnvironment.Stack.PopValueFromStack();
 
@@ -1676,6 +1675,7 @@ namespace XScript {
     }
 
     void BytecodeInterpreter::InstructionFuncReturn(BytecodeStructure::InstructionParam Param) {
+        GC.Start();
         /**
          * 保存结果
          */
@@ -1712,6 +1712,7 @@ namespace XScript {
     }
 
     void BytecodeInterpreter::InstructionClassNew(BytecodeStructure::InstructionParam Param) {
+        GC.Start();
         if (InterpreterEnvironment.Packages[InterpreterEnvironment.ProgramCounter.Package].ClassTemplates.count(
                 Param.HeapPointerValue)) {
             const auto &Template = InterpreterEnvironment.Packages[InterpreterEnvironment.ProgramCounter.Package].ClassTemplates[Param.HeapPointerValue];
@@ -1757,6 +1758,7 @@ namespace XScript {
     }
 
     void BytecodeInterpreter::InstructionClassNewMember(BytecodeStructure::InstructionParam Param) {
+        GC.Start();
         EnvironmentStackItem Item = InterpreterEnvironment.Stack.PopValueFromStack();
         auto *ClassPointer =
                 InterpreterEnvironment.Heap.HeapData[Item.Value.HeapPointerVal].Value.ClassObjectPointer;
@@ -1808,6 +1810,7 @@ namespace XScript {
     }
 
     void BytecodeInterpreter::InstructionNativeClassNew(BytecodeStructure::InstructionParam param) {
+        GC.Start();
         ConstructNativeClass(param.HeapPointerValue);
     }
 } // XScript

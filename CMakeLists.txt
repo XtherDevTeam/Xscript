@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 3.0)
 project(Xscript2)
 
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_BUILD_TYPE Debug)
 
 file(GLOB SRC_FILES
         "Frontend/*.cpp"
@@ -28,3 +27,5 @@ if (CMAKE_HOST_SYSTEM_NAME MATCHES "Linux")
 elseif (CMAKE_HOST_SYSTEM_NAME MATCHES "Windows")
     set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")
 endif ()
+
+set(CMAKE_CXX_FLAGS_RELEASE "-O3")

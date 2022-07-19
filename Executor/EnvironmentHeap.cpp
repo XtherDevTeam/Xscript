@@ -13,6 +13,7 @@ namespace XScript {
     XHeapIndexType EnvironmentHeap::PushElement(EnvObject Object) {
         if (!UsedElementSet.empty()) {
             auto Index = *UsedElementSet.begin();
+            UsedElementSet.erase(Index);
             HeapData[Index] = Object;
             return Index;
         } else if (AllocatedElementCount == EnvHeapDataAllocateSize) {

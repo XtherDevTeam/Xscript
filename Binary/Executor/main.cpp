@@ -44,7 +44,10 @@ int main(int argc, const char **argv) {
         Executor.VM.PathsToSearch = SplitStrings(Arguments[L"PATH"], L';');
         Executor.Load(Arguments[L"file"]);
         Executor.Init();
-        Executor.Start();
+        XIndexType Dur = Executor.StartWithRuntimeDuration();
+        if (Arguments[L"show_duration"] == L"true") {
+            std::wcout << L"Execution duration: " << Dur << L" ms" << std::endl;
+        }
     } catch (InternalException &E) {
         std::wcerr << E.what() << L"\n" << std::flush;
     } catch (BytecodeInterpretError &E) {
