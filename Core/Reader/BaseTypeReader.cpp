@@ -44,7 +44,7 @@ namespace XScript {
             XIndexType Idx = ReadIndex(FilePointer);
             XBytes Result;
             Result.resize(Idx);
-            fread((void *) Result.data(), sizeof(char), Idx, FilePointer);
+            fread((void *) Result.data(), sizeof(char) * Idx, 1, FilePointer);
             return Result;
         }
     } // XScript

@@ -31,15 +31,15 @@ namespace XScript {
 
         void BaseTypeSerializatior::operator()(FILE *FilePointer, const XString &String) {
             XBytes Bytes = wstring2string(String);
-            operator()(FilePointer, static_cast<XIndexType>(String.length()));
-            if (fwrite(Bytes.c_str(), Bytes.size(), 1, FilePointer) == -1) {
+            operator()(FilePointer, static_cast<XIndexType>(Bytes.length()));
+            if (fwrite(Bytes.c_str(), Bytes.size() * sizeof(char), 1, FilePointer) == -1) {
                 throw InternalException(L"BaseTypeSerializatior: Cannot write to file.");
             }
         }
 
         void BaseTypeSerializatior::operator()(FILE *FilePointer, const XBytes &String) {
             operator()(FilePointer, static_cast<XIndexType>(String.length()));
-            if (fwrite(String.c_str(), String.size(), 1, FilePointer) == -1) {
+            if (fwrite(String.c_str(), String.size() * sizeof(char), 1, FilePointer) == -1) {
                 throw InternalException(L"BaseTypeSerializatior: Cannot write to file.");
             }
         }
