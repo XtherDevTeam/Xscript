@@ -7,12 +7,14 @@
 
 #include "Environment.hpp"
 #include "BytecodeInterpreter.hpp"
+#include "GarbageCollection.hpp"
 
 namespace XScript {
 
     class Executor {
     public:
         Environment VM;
+        GarbageCollection GC;
         BytecodeInterpreter Interpreter;
 
         Executor();

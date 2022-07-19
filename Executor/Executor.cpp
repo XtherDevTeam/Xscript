@@ -29,10 +29,11 @@ namespace XScript {
                     Class.second.Parent.PackageID = Package.first;
             }
         }
+
+        GC.Init();
     }
 
-    Executor::Executor() : Interpreter(VM) {
-
+    Executor::Executor() : Interpreter(VM), GC(VM) {
     }
 
     void Executor::Start() {

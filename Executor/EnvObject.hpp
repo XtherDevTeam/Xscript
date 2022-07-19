@@ -16,6 +16,8 @@ namespace XScript {
 
     class EnvObject {
     public:
+        XBoolean Marked;
+
         enum class ObjectKind : XInteger {
             ClassObject,
             ArrayObject,

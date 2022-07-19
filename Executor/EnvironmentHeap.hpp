@@ -11,11 +11,6 @@
 #include "EnvObject.hpp"
 
 namespace XScript {
-
-    /**
-     * When there are 256 elements in heap, start gc process.
-     */
-    constexpr XIndexType EnvHeapGCStartCondition = 256;
     /**
      * Allocate 1024 elements when heap is created.
      */

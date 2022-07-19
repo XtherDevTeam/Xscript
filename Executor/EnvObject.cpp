@@ -26,18 +26,19 @@ namespace XScript {
     EnvObject::ObjectValue::ObjectValue(NativeMethodInformation *nativeMethodPointerValue) : NativeMethodPointerValue(
             nativeMethodPointerValue) {}
 
-    EnvObject::EnvObject() : Kind(ObjectKind::Integer), Value(static_cast<XInteger>(0)) {
+    EnvObject::EnvObject() : Marked(false), Kind(ObjectKind::Integer), Value(static_cast<XInteger>(0)) {
 
     }
 
-    EnvObject::EnvObject(EnvObject::ObjectKind Kind, EnvObject::ObjectValue Value) : Kind(Kind), Value(Value) {
+    EnvObject::EnvObject(EnvObject::ObjectKind Kind, EnvObject::ObjectValue Value) : Marked(false), Kind(Kind),
+                                                                                     Value(Value) {
 
     }
 
     void EnvObject::DestroyObject() const {
         switch (Kind) {
             case ObjectKind::ClassObject:
-                /* TODO: Add classes to XScript2 */
+                FreeEnvClassObject(Value.ClassObjectPointer);
                 break;
             case ObjectKind::ArrayObject:
                 FreeEnvArrayObject(Value.ArrayObjectPointer);
