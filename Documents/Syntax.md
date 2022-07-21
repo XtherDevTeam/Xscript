@@ -213,6 +213,16 @@ Expression ::= LogicExpression
              | AssignmentExpression
 ```
 
+### TryCatchStatement
+
+Status: `Implmented`
+
+Syntax:
+
+```
+TryCatchStatement ::= "try" CodeBlock "catch" "as" Identifier CodeBlock
+```
+
 ### VariableStatement
 
 Status: `Implmented`
@@ -220,7 +230,7 @@ Status: `Implmented`
 Syntax:
 
 ```
-VariableStatementNodeGenerator ::= "var" Identifier
+VariableStatement ::= "var" Identifier
 ```
 
 ### VariableDefinitionStatement
@@ -310,7 +320,7 @@ Status: `Implmented`
 Syntax:
 
 ```
-FunctionDefinitionNodeGenerator ::= "function" Identifier Arguments CodeBlock
+FunctionDefinition ::= "function" Identifier Arguments CodeBlock
 ```
 
 ### MethodDescriptor

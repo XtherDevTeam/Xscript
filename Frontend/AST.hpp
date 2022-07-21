@@ -47,7 +47,6 @@ namespace XScript {
             VariableDescriptor,
             MethodDescriptor,
             Descriptors,
-            ArrayDimensionsCount,
 /* Variable definition statements */
             VariableDefinition,
             VariableDeclaration,
@@ -73,10 +72,10 @@ namespace XScript {
             CrossPackageAccessExpression,
             MemberDefineStatement,
             NativeClassDeclarationStatement,
+            TryCatchStatement,
         } Type;
         Lexer::Token Node;
         XArray<AST> Subtrees;
-        XIndexType TypeSpecifierArrayDimensionsCount;
 
         AST();
 
