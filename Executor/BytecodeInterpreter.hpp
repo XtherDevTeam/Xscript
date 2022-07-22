@@ -123,6 +123,12 @@ namespace XScript {
         void InstructionListRemoveIndex(BytecodeStructure::InstructionParam Param);
 
         void InstructionNativeClassNew(BytecodeStructure::InstructionParam Param);
+
+        void InstructionExceptionPush(BytecodeStructure::InstructionParam Param);
+
+        void InstructionExceptionPop(BytecodeStructure::InstructionParam Param);
+
+        void InstructionExceptionThrow(BytecodeStructure::InstructionParam Param);
     };
 
 } // XScript

@@ -239,6 +239,18 @@ namespace XScript {
                 Result += L"native_class_new";
                 ParamType = H;
                 break;
+            case InstructionEnum::exception_push:
+                Result += L"exception_push";
+                ParamType = H;
+                break;
+            case InstructionEnum::exception_pop:
+                Result += L"exception_pop";
+                ParamType = N;
+                break;
+            case InstructionEnum::exception_throw:
+                Result += L"exception_throw";
+                ParamType = N;
+                break;
         }
 
         Result = L"<XCommand Instruction=" + Result;

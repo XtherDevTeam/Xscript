@@ -10,6 +10,7 @@
 #include "EnvironmentHeap.hpp"
 #include "EnvPackageStructure.hpp"
 #include "../NativeLibrary/NativeLibrariesManager.hpp"
+#include "ExceptionTableItem.hpp"
 
 namespace XScript {
 
@@ -26,6 +27,7 @@ namespace XScript {
         XArray<XIndexType> LoadedPackageIDs;
         XMap<XIndexType, EnvPackageStructure> Packages;
 
+        XArray<ExceptionTableItem> RuntimeExceptionTable;
 
         void LoadFromFile(const XString &FilePath, const XString &PackageName, bool IsMainPackage);
     };

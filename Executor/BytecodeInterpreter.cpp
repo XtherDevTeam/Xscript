@@ -169,6 +169,15 @@ namespace XScript {
                 case BytecodeStructure::InstructionEnum::native_class_new:
                     InstructionNativeClassNew(CurrentInstruction.Param);
                     break;
+                case BytecodeStructure::InstructionEnum::exception_push:
+                    InstructionExceptionPush(CurrentInstruction.Param);
+                    break;
+                case BytecodeStructure::InstructionEnum::exception_pop:
+                    InstructionExceptionPop(CurrentInstruction.Param);
+                    break;
+                case BytecodeStructure::InstructionEnum::exception_throw:
+                    InstructionExceptionThrow(CurrentInstruction.Param);
+                    break;
                 case BytecodeStructure::InstructionEnum::force_exit:
                     return;
                 case BytecodeStructure::InstructionEnum::fake_command_continue:
@@ -1813,5 +1822,52 @@ namespace XScript {
     void BytecodeInterpreter::InstructionNativeClassNew(BytecodeStructure::InstructionParam param) {
         GC.Start();
         ConstructNativeClass(param.HeapPointerValue);
+    }
+
+    void BytecodeInterpreter::InstructionExceptionPush(BytecodeStructure::InstructionParam Param) {
+        ExceptionTableItem Item;
+        Item.CatchBlockOffset = Param.HeapPointerValue;
+        Item.ExceptionRegisterCommandPosition = InterpreterEnvironment.ProgramCounter.NowIndex;
+        Item.StackItemCnt = InterpreterEnvironment.Stack.Elements.size();
+        InterpreterEnvironment.RuntimeExceptionTable.push_back(Item);
+    }
+
+    void BytecodeInterpreter::InstructionExceptionPop(BytecodeStructure::InstructionParam Param) {
+        InterpreterEnvironment.RuntimeExceptionTable.pop_back();
+    }
+
+    void BytecodeInterpreter::InstructionExceptionThrow(BytecodeStructure::InstructionParam Param) {
+        if (InterpreterEnvironment.RuntimeExceptionTable.empty()) {
+
+        } else {
+            ExceptionTableItem Ex = InterpreterEnvironment.RuntimeExceptionTable.back();
+            InterpreterEnvironment.RuntimeExceptionTable.pop_back();
+            EnvironmentStackItem threwValue = InterpreterEnvironment.Stack.PopValueFromStack();
+            XIndexType FrameIdx = 0;
+
+            // 回退棧幀
+            for (auto &Frame : InterpreterEnvironment.Stack.FramesInformation) {
+                if (Frame.From > Ex.StackItemCnt) {
+                    break;
+                }
+                FrameIdx++;
+            }
+            while (InterpreterEnvironment.Stack.FramesInformation.size() > FrameIdx) {
+                while (InterpreterEnvironment.Stack.FramesInformation.back().Length--)
+                    InterpreterEnvironment.Stack.Elements.pop_back();
+
+                InterpreterEnvironment.ProgramCounter = InterpreterEnvironment.Stack.FramesInformation.back().ReturnAddress;
+            }
+            while (Ex.StackItemCnt > InterpreterEnvironment.Stack.Elements.size()) {
+                InterpreterEnvironment.Stack.Elements.pop_back();
+            }
+
+            // 將Exception壓入棧
+            InterpreterEnvironment.Stack.PushValueToStack(threwValue);
+
+
+            // 定位catch
+            InterpreterEnvironment.ProgramCounter.NowIndex = Ex.ExceptionRegisterCommandPosition + Ex.CatchBlockOffset - 1;
+        }
     }
 } // XScript

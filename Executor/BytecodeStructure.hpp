@@ -82,6 +82,9 @@ namespace XScript {
             pc_restore_package_id,
             pc_set_current_package_id,
             native_class_new,
+            exception_push,
+            exception_pop,
+            exception_throw,
             /*未完成命令*/
             calculation_increment,
             calculation_decrement,
