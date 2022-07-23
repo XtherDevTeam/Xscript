@@ -49,9 +49,9 @@ int main(int argc, const char **argv) {
             std::wcout << L"Execution duration: " << Dur << L" ms" << std::endl;
         }
     } catch (InternalException &E) {
-        std::wcerr << E.what() << L"\n" << std::flush;
+        std::cerr << E.what() << "\n" << std::flush;
     } catch (BytecodeInterpretError &E) {
-        std::wcerr << E.what() << L"\n" << std::flush;
+        std::cerr << E.what() << "\n" << std::flush;
     }
     return 0;
 }

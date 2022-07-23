@@ -17,9 +17,10 @@ namespace XScript {
             }
             L.Scan();
             AST MemberExpr = MemberExpressionNodeGenerator(L).Parse();
-            if (MemberExpr.Type != AST::TreeType::MemberExpression or
+            if ((MemberExpr.Type != AST::TreeType::MemberExpression or
                 MemberExpr.Subtrees[0].Type != AST::TreeType::Identifier or
-                MemberExpr.Subtrees[1].Type != AST::TreeType::FunctionCallingExpression) {
+                MemberExpr.Subtrees[1].Type != AST::TreeType::FunctionCallingExpression) and
+                MemberExpr.Type != AST::TreeType::FunctionCallingExpression) {
                 MakeException(
                         L"NewExpressionNodeGenerator::Parse(): Expected a function calling expression with member expression.");
             }

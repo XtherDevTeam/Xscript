@@ -568,31 +568,44 @@ namespace XScript::Compiler {
         XArray<BytecodeStructure> Result;
         switch (Target.Type) {
             case AST::TreeType::FunctionCallingExpression: {
-                if (IsInParsing == nullptr) {
-                    throw CompilerError(Target.GetFirstNotNullToken().Line,
-                                        Target.GetFirstNotNullToken().Column,
-                                        L"ParseClassMethodInvoke: Cannot invoke constructor with class name directly.");
-                }
                 /* MemberExpression第一次没写任何代码，只是写了IsInParsing的指针 */
                 /* 第一个参数为函数外手动压入的this指针 */
                 for (auto &I: Target.Subtrees[1].Subtrees) {
                     MergeArray(Result, Generate(I));
                 }
 
-                /* let the executor get the function address first */
-                XIndexType Index = IsInParsing->IsMethodExist(
-                        IsInParsing->ClassName + L"$" + Target.Subtrees[0].Node.Value);
-                if (Index == -1) {
-                    throw CompilerError(Target.GetFirstNotNullToken().Line,
-                                        Target.GetFirstNotNullToken().Column,
-                                        L"ParseClassMethodInvoke: 操你妈个傻逼玩意，你他妈脑瘫啊？这个类他麻痹没有 " +
-                                        Target.Node.Value + L" 这个方法啊，傻逼？");
-                }
+                if (IsInParsing == nullptr) {
+                    MergeArray(Result,
+                               ParseClassMethodInvoke(Target.Subtrees[0], IsInParsing, ReservedStackItemForThisPointer));
 
-                Result.push_back((BytecodeStructure) {
-                        BytecodeStructure::InstructionEnum::stack_push_function,
-                        (BytecodeStructure::InstructionParam) Hash(IsInParsing->Methods[Index].second)
-                });
+                    XIndexType Index = IsInParsing->IsMethodExist(
+                            IsInParsing->ClassName + L"$constructor");
+                    if (Index == -1) {
+                        throw CompilerError(Target.GetFirstNotNullToken().Line,
+                                            Target.GetFirstNotNullToken().Column,
+                                            L"ParseClassMethodInvoke: Cannot find default constructor in this class");
+                    }
+
+                    Result.push_back((BytecodeStructure) {
+                            BytecodeStructure::InstructionEnum::stack_push_function,
+                            (BytecodeStructure::InstructionParam) Hash(IsInParsing->Methods[Index].second)
+                    });
+                } else {
+                    /* let the executor get the function address first */
+                    XIndexType Index = IsInParsing->IsMethodExist(
+                            IsInParsing->ClassName + L"$" + Target.Subtrees[0].Node.Value);
+                    if (Index == -1) {
+                        throw CompilerError(Target.GetFirstNotNullToken().Line,
+                                            Target.GetFirstNotNullToken().Column,
+                                            L"ParseClassMethodInvoke: 操你妈个傻逼玩意，你他妈脑瘫啊？这个类他麻痹没有 " +
+                                                    Target.Subtrees[0].Node.Value + L" 这个方法啊，傻逼？");
+                    }
+
+                    Result.push_back((BytecodeStructure) {
+                            BytecodeStructure::InstructionEnum::stack_push_function,
+                            (BytecodeStructure::InstructionParam) Hash(IsInParsing->Methods[Index].second)
+                    });
+                }
 
                 /* 参数数量带this指针一个 */
                 Result.push_back((BytecodeStructure) {

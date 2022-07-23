@@ -11,13 +11,16 @@ class InternalException {
     }
 };
 
+class ConstructTest {
+    def constructor () {
+        def default in this;
+        this.default = String.fromBuffer("我滴任务完成啦！哈哈哈哈哈哈哈");
+        return this;
+    }
+};
+
 def main () {
-    try {
-        IO.println(String.fromBuffer("Trying to throw a exception..."));
-        throw new InternalException.ZeroDivision();
-    } catch as E {
-        IO.println(String.fromBuffer(E.__exception_name__));
-    };
-    IO.println(String.fromBuffer("你好，世界！"));
+    var test = new ConstructTest();
+    IO.println(test.default);
     return 0;
 }

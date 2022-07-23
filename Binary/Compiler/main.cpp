@@ -51,11 +51,11 @@ int main(int argc, const char **argv) {
         }
         XScript::OutputBinary(Environ, Arguments[L"out"]);
     } catch (ParserException &E) {
-        std::wcerr << E.what() << L"\n" << std::flush;
+        std::cerr << E.what() << "\n" << std::flush;
     } catch (InternalException &E) {
-        std::wcerr << E.what() << L"\n" << std::flush;
+        std::cerr << E.what() << "\n" << std::flush;
     } catch (CompilerError &E) {
-        std::wcerr << E.what() << L"\n" << std::flush;
+        std::cerr << E.what() << "\n" << std::flush;
     }
     return 0;
 }
