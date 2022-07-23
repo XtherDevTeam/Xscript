@@ -14,6 +14,7 @@ namespace XScript {
 
         XArray<BytecodeStructure> StatementCompiler::Generate(AST &Target) {
             switch (Target.Type) {
+                case AST::TreeType::NewExpression:
                 case AST::TreeType::Primary:
                 case AST::TreeType::Identifier:
                 case AST::TreeType::IndexExpression:
@@ -54,6 +55,12 @@ namespace XScript {
                 }
                 case AST::TreeType::IfElseStatement: {
                     return GenerateForIfElseStatement(Target);
+                }
+                case AST::TreeType::ThrowStatement: {
+                    return GenerateForThrowStatement(Target);
+                }
+                case AST::TreeType::TryCatchStatement: {
+                    return GenerateForTryCatchStatement(Target);
                 }
                 case AST::TreeType::WhileStatement: {
                     return GenerateForWhileStatement(Target);
@@ -293,6 +300,47 @@ namespace XScript {
             Result.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::class_new_member,
                                                   (BytecodeStructure::InstructionParam) {
                                                           (XHeapIndexType) Hash(Target.Subtrees[0].Node.Value)}});
+            return Result;
+        }
+
+        XArray<BytecodeStructure> StatementCompiler::GenerateForTryCatchStatement(AST &Target) {
+            XArray<BytecodeStructure> Result, TryBlock, CatchBlock, FinallyBlock;
+            MergeArray(TryBlock, GenerateForCodeBlock(Target.Subtrees[0]));
+            TryBlock.push_back((BytecodeStructure) {
+                    BytecodeStructure::InstructionEnum::exception_pop,
+                    (BytecodeStructure::InstructionParam) {(XHeapIndexType) {}}
+            });
+            Result.push_back((BytecodeStructure) {
+                    BytecodeStructure::InstructionEnum::exception_push,
+                    (BytecodeStructure::InstructionParam) {static_cast<XInteger>(TryBlock.size() + 1)}
+            });
+
+            Environment.PushLocal(Target.Subtrees[1].Node.Value,
+                                  (SymbolItem) {(Typename) {Typename::TypenameKind::Unknown}, false});
+            MergeArray(CatchBlock, GenerateForCodeBlock(Target.Subtrees[2]));
+            CatchBlock.push_back((BytecodeStructure) {
+                    BytecodeStructure::InstructionEnum::stack_pop,
+                    (BytecodeStructure::InstructionParam) {(XHeapIndexType) {}}
+            });
+            Environment.Locals.pop_back();
+            MergeArray(FinallyBlock, GenerateForCodeBlock(Target.Subtrees[3]));
+            TryBlock.push_back((BytecodeStructure) {
+                    BytecodeStructure::InstructionEnum::pc_jump,
+                    (BytecodeStructure::InstructionParam) {static_cast<XInteger>(CatchBlock.size() + 1)}
+            });
+            MergeArray(Result, TryBlock);
+            MergeArray(Result, CatchBlock);
+            MergeArray(Result, FinallyBlock);
+            return Result;
+        }
+
+        XArray<BytecodeStructure> StatementCompiler::GenerateForThrowStatement(AST &Target) {
+            XArray<BytecodeStructure> Result;
+            MergeArray(Result, ExpressionCompiler(Environment).Generate(Target.Subtrees[0]));
+            Result.push_back((BytecodeStructure) {
+                    BytecodeStructure::InstructionEnum::exception_throw,
+                    (BytecodeStructure::InstructionParam) {(XIndexType) {}}
+            });
             return Result;
         }
     } // XScript

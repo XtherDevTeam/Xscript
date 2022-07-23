@@ -37,6 +37,10 @@ namespace XScript {
             static XArray<BytecodeStructure> GenerateForContinueStatement(AST &Target);
 
             XArray<BytecodeStructure> GenerateForReturnStatement(AST &Target);
+
+            XArray <BytecodeStructure> GenerateForTryCatchStatement(AST &Target);
+
+            XArray <BytecodeStructure> GenerateForThrowStatement(AST &Target);
         };
 
     } // XScript

@@ -1825,8 +1825,8 @@ namespace XScript {
     }
 
     void BytecodeInterpreter::InstructionExceptionPush(BytecodeStructure::InstructionParam Param) {
-        ExceptionTableItem Item;
-        Item.CatchBlockOffset = Param.HeapPointerValue;
+        ExceptionTableItem Item{};
+        Item.CatchBlockOffset = Param.IntValue;
         Item.ExceptionRegisterCommandPosition = InterpreterEnvironment.ProgramCounter.NowIndex;
         Item.StackItemCnt = InterpreterEnvironment.Stack.Elements.size();
         InterpreterEnvironment.RuntimeExceptionTable.push_back(Item);
@@ -1846,7 +1846,7 @@ namespace XScript {
             XIndexType FrameIdx = 0;
 
             // 回退棧幀
-            for (auto &Frame : InterpreterEnvironment.Stack.FramesInformation) {
+            for (auto &Frame: InterpreterEnvironment.Stack.FramesInformation) {
                 if (Frame.From > Ex.StackItemCnt) {
                     break;
                 }
@@ -1867,7 +1867,8 @@ namespace XScript {
 
 
             // 定位catch
-            InterpreterEnvironment.ProgramCounter.NowIndex = Ex.ExceptionRegisterCommandPosition + Ex.CatchBlockOffset - 1;
+            InterpreterEnvironment.ProgramCounter.NowIndex =
+                    Ex.ExceptionRegisterCommandPosition + Ex.CatchBlockOffset; // 唔計算exception_push個行
         }
     }
 } // XScript

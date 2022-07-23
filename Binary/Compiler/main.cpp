@@ -50,6 +50,8 @@ int main(int argc, const char **argv) {
             XScript::CompileForFile(Environ, File);
         }
         XScript::OutputBinary(Environ, Arguments[L"out"]);
+    } catch (ParserException &E) {
+        std::wcerr << E.what() << L"\n" << std::flush;
     } catch (InternalException &E) {
         std::wcerr << E.what() << L"\n" << std::flush;
     } catch (CompilerError &E) {

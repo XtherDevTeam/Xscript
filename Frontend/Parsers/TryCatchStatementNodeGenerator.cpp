@@ -33,7 +33,14 @@ namespace XScript {
 
             AST CatchBlock = CodeBlockNodeGenerator(L).Parse();
 
-            return {AST::TreeType::TryCatchStatement, {TryBlock, Ident, CatchBlock}};
+            if (L.LastToken == (Lexer::Token) {Lexer::TokenKind::ReservedWords, L"finally", 0, 0}) {
+                L.Scan();
+                AST FinallyBlock = CodeBlockNodeGenerator(L).Parse();
+                return {AST::TreeType::TryCatchStatement, {TryBlock, Ident, CatchBlock, FinallyBlock}};
+            } else {
+                return {AST::TreeType::TryCatchStatement,
+                        {TryBlock, Ident, CatchBlock, (AST) {AST::TreeType::CodeBlockStatement, (XArray<AST>) {}}}};
+            }
         }
     } // XScript
 } // Generator

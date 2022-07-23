@@ -73,6 +73,7 @@ namespace XScript {
             MemberDefineStatement,
             NativeClassDeclarationStatement,
             TryCatchStatement,
+            ThrowStatement,
         } Type;
         Lexer::Token Node;
         XArray<AST> Subtrees;

@@ -13,6 +13,8 @@
 #include "ContinueStatementNodeGenerator.hpp"
 #include "ReturnStatementNodeGenerator.hpp"
 #include "MemberDefineStatementNodeGenerator.hpp"
+#include "TryCatchStatementNodeGenerator.hpp"
+#include "ThrowStatementNodeGenerator.hpp"
 
 namespace XScript {
     namespace Generator {
@@ -27,6 +29,14 @@ namespace XScript {
                 return Result;
 
             Result = MemberDefineStatementNodeGenerator(L).Parse();
+            if (!Result.IsNotMatchNode())
+                return Result;
+
+            Result = ThrowStatementNodeGenerator(L).Parse();
+            if (!Result.IsNotMatchNode())
+                return Result;
+
+            Result = TryCatchStatementNodeGenerator(L).Parse();
             if (!Result.IsNotMatchNode())
                 return Result;
 
