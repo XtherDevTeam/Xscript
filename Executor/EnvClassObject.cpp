@@ -8,7 +8,7 @@
 
 namespace XScript {
     bool EnvClassObject::IsInstanceOf(ClassDescriptor Idx) const {
-        return Idx == Parent;
+        return Idx == Parent || Idx == Self;
     }
 
     XHeapIndexType EnvClassObject::GetMember(XIndexType Name) {
@@ -19,7 +19,7 @@ namespace XScript {
         }
     }
 
-    EnvClassObject::EnvClassObject() : Parent(0, 0) {
+    EnvClassObject::EnvClassObject() : Parent(0, 0), Self(0, 0) {
 
     }
 

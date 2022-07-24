@@ -14,6 +14,8 @@ namespace XScript {
     public:
         ClassDescriptor Parent;
 
+        ClassDescriptor Self;
+
         XMap<XIndexType, XHeapIndexType> Members;
 
         bool IsInstanceOf(ClassDescriptor Idx) const;

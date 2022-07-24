@@ -114,6 +114,7 @@ namespace XScript {
                     InstructionClassNewMember(CurrentInstruction.Param);
                     break;
                 case BytecodeStructure::InstructionEnum::class_instance_of:
+                    InstructionClassInstanceOf(CurrentInstruction.Param);
                     break;
                 case BytecodeStructure::InstructionEnum::list_new:
                     InstructionListNew(CurrentInstruction.Param);
@@ -1730,6 +1731,7 @@ namespace XScript {
             const auto &Template = InterpreterEnvironment.Packages[InterpreterEnvironment.ProgramCounter.Package].ClassTemplates[Param.HeapPointerValue];
             EnvClassObject *Object = NewEnvClassObject();
             Object->Parent = Template.Parent;
+            Object->Self = {InterpreterEnvironment.ProgramCounter.Package, Param.HeapPointerValue};
             // initialize parent
             if (Object->Parent.ClassID) {
                 auto ParentTemplate = InterpreterEnvironment.Packages[Object->Parent.PackageID].ClassTemplates[Object->Parent.ClassID];

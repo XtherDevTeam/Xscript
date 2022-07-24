@@ -275,7 +275,7 @@ namespace XScript::Compiler {
                     Result.push_back((BytecodeStructure) {
                             BytecodeStructure::InstructionEnum::class_instance_of,
                             (BytecodeStructure::InstructionParam) {
-                                    Environment.GetPackage(Hash(Target.Subtrees[1].Node.Value)).first}
+                                    Environment.MainPackage.GetClass(Target.Subtrees[1].Node.Value).first}
                     });
                 } else if (Target.Subtrees[1].Type == AST::TreeType::CrossPackageAccessExpression) {
                     auto Pkg = Environment.GetPackage(Hash(Target.Subtrees[1].Subtrees[0].Node.Value));
