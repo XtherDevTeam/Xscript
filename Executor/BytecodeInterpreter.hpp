@@ -120,6 +120,8 @@ namespace XScript {
 
         void InstructionClassNewMember(BytecodeStructure::InstructionParam Param);
 
+        void InstructionClassInstanceOf(BytecodeStructure::InstructionParam Param);
+
         void InstructionListRemoveIndex(BytecodeStructure::InstructionParam Param);
 
         void InstructionNativeClassNew(BytecodeStructure::InstructionParam Param);

@@ -166,6 +166,10 @@ namespace XScript {
                 Result += L"class_new_member";
                 ParamType = H;
                 break;
+            case InstructionEnum::class_instance_of:
+                Result += L"class_instance_of";
+                ParamType = N;
+                break;
             case InstructionEnum::list_new:
                 Result += L"list_new";
                 ParamType = H;

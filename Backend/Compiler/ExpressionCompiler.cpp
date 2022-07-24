@@ -269,6 +269,38 @@ namespace XScript::Compiler {
                 MergeArray(Result, ParseNewExpression(Target));
                 break;
             }
+            case AST::TreeType::InstanceOfExpression: {
+                MergeArray(Result, Generate(Target.Subtrees[0]));
+                if (Target.Subtrees[1].Type == AST::TreeType::Identifier) {
+                    Result.push_back((BytecodeStructure) {
+                            BytecodeStructure::InstructionEnum::class_instance_of,
+                            (BytecodeStructure::InstructionParam) {
+                                    Environment.GetPackage(Hash(Target.Subtrees[1].Node.Value)).first}
+                    });
+                } else if (Target.Subtrees[1].Type == AST::TreeType::CrossPackageAccessExpression) {
+                    auto Pkg = Environment.GetPackage(Hash(Target.Subtrees[1].Subtrees[0].Node.Value));
+                    Result.push_back((BytecodeStructure) {
+                            BytecodeStructure::InstructionEnum::pc_get_current_package_id,
+                            (BytecodeStructure::InstructionParam) {
+                                    (XIndexType) {}}
+                    });
+                    Result.push_back((BytecodeStructure) {
+                            BytecodeStructure::InstructionEnum::pc_set_current_package_id,
+                            (BytecodeStructure::InstructionParam) {Pkg.first}
+                    });
+                    Result.push_back((BytecodeStructure) {
+                            BytecodeStructure::InstructionEnum::class_instance_of,
+                            (BytecodeStructure::InstructionParam) {
+                                    (XIndexType) {Pkg.second.GetClass(Target.Subtrees[1].Subtrees[1].Node.Value).first}}
+                    });
+                    Result.push_back((BytecodeStructure) {
+                            BytecodeStructure::InstructionEnum::pc_restore_package_id,
+                            (BytecodeStructure::InstructionParam) {
+                                    (XIndexType) {}}
+                    });
+                }
+                break;
+            }
             default:
                 throw XScript::CompilerError(Target.GetFirstNotNullToken().Line,
                                              Target.GetFirstNotNullToken().Column,

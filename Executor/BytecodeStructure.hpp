@@ -60,6 +60,7 @@ namespace XScript {
             class_new,
             class_get_member,
             class_new_member,
+            class_instance_of,
             list_new,
             list_get_member,
             list_remove_index,

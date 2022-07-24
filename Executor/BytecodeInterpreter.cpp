@@ -113,6 +113,8 @@ namespace XScript {
                 case BytecodeStructure::InstructionEnum::class_new_member:
                     InstructionClassNewMember(CurrentInstruction.Param);
                     break;
+                case BytecodeStructure::InstructionEnum::class_instance_of:
+                    break;
                 case BytecodeStructure::InstructionEnum::list_new:
                     InstructionListNew(CurrentInstruction.Param);
                     break;
@@ -1876,5 +1878,16 @@ namespace XScript {
             InterpreterEnvironment.ProgramCounter.NowIndex =
                     Ex.ExceptionRegisterCommandPosition + Ex.CatchBlockOffset; // 唔計算exception_push個行
         }
+    }
+
+    void BytecodeInterpreter::InstructionClassInstanceOf(BytecodeStructure::InstructionParam Param) {
+        EnvClassObject *Target =
+                InterpreterEnvironment.Heap.HeapData[InterpreterEnvironment.Stack.PopValueFromStack().Value.HeapPointerVal].Value.ClassObjectPointer;
+        bool Res =
+                Target->IsInstanceOf({InterpreterEnvironment.ProgramCounter.Package, Param.HeapPointerValue});
+        InterpreterEnvironment.Stack.PushValueToStack((EnvironmentStackItem) {
+                EnvironmentStackItem::ItemKind::Boolean,
+                (EnvironmentStackItem::ItemValue) {Res}
+        });
     }
 } // XScript
