@@ -3,6 +3,7 @@
 //
 
 #include "BinaryMoveExpressionNodeGenerator.hpp"
+#include "InstanceOfExpressionNodeGenerator.hpp"
 
 namespace XScript::Generator {
     BinaryMoveExpressionNodeGenerator::BinaryMoveExpressionNodeGenerator(Lexer &L) : BaseGenerator(L) {
@@ -10,7 +11,7 @@ namespace XScript::Generator {
     }
 
     AST BinaryMoveExpressionNodeGenerator::Parse() {
-        AST Left = AdditionExpressionNodeGenerator(L).Parse();
+        AST Left = InstanceOfExpressionNodeGenerator(L).Parse();
         if (Left.IsNotMatchNode()) {
             Rollback();
             return {};

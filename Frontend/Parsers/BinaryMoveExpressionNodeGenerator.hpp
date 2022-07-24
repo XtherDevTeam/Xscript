@@ -6,7 +6,6 @@
 #define XSCRIPT2_BINARYMOVEEXPRESSIONNODEGENERATOR_HPP
 
 #include "BaseGenerator.hpp"
-#include "AdditionExpressionNodeGenerator.hpp"
 
 namespace XScript::Generator {
 

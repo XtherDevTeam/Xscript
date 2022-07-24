@@ -1837,12 +1837,18 @@ namespace XScript {
     }
 
     void BytecodeInterpreter::InstructionExceptionThrow(BytecodeStructure::InstructionParam Param) {
-        if (InterpreterEnvironment.RuntimeExceptionTable.empty()) {
+        ExceptionTableItem Ex = InterpreterEnvironment.RuntimeExceptionTable.back();
+        InterpreterEnvironment.RuntimeExceptionTable.pop_back();
+        EnvironmentStackItem threwValue = InterpreterEnvironment.Stack.PopValueFromStack();
 
+        if (InterpreterEnvironment.RuntimeExceptionTable.empty()) {
+            throw BytecodeInterpretError(L"Uncaught user exception at ProgramCounter:" +
+                                         std::to_wstring((XIndexType) InterpreterEnvironment.ProgramCounter.Pointer) +
+                                         L"(Command " +
+                                         std::to_wstring(InterpreterEnvironment.ProgramCounter.NowIndex) +
+                                         L" )"
+            );
         } else {
-            ExceptionTableItem Ex = InterpreterEnvironment.RuntimeExceptionTable.back();
-            InterpreterEnvironment.RuntimeExceptionTable.pop_back();
-            EnvironmentStackItem threwValue = InterpreterEnvironment.Stack.PopValueFromStack();
             XIndexType FrameIdx = 0;
 
             // 回退棧幀

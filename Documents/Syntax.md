@@ -137,6 +137,17 @@ MultiplicationExpression ::= MultiplicationExpression ( TokenPlus | TokenMinus )
                            | MultiplicationExpression
 ```
 
+### InstanceOfExpression
+
+Status: `Implemented`
+
+Syntax:
+
+```
+InstanceOfExpression ::= AdditionExpression "instanceOf" Identifier
+                       | AdditionExpression
+```
+
 ### BinaryMoveExpression
 
 Status: `Implmented`
@@ -144,8 +155,8 @@ Status: `Implmented`
 Syntax:
 
 ```
-BinaryMoveExpression ::= AdditionExpression ( TokenBinaryLeftMove | TokenBinaryRightMove ) BinaryMoveExpression
-                       | AdditionExpression
+BinaryMoveExpression ::= InstanceOfExpression ( TokenBinaryLeftMove | TokenBinaryRightMove ) BinaryMoveExpression
+                       | InstanceOfExpression
 ```
 
 ### ComparingExpression
