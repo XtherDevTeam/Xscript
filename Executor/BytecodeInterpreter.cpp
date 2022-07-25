@@ -12,7 +12,6 @@ namespace XScript {
         while (InterpreterEnvironment.ProgramCounter.NowIndex !=
                InterpreterEnvironment.ProgramCounter.Pointer->size()) {
             auto &CurrentInstruction = (*InterpreterEnvironment.ProgramCounter.Pointer)[InterpreterEnvironment.ProgramCounter.NowIndex];
-
             switch (CurrentInstruction.Instruction) {
                 case BytecodeStructure::InstructionEnum::calculation_add:
                     InstructionCalculationAdd(CurrentInstruction.Param);
@@ -262,11 +261,14 @@ namespace XScript {
                         auto &ClassObject = *InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal].Value.ClassObjectPointer;
                         auto &Method = InterpreterEnvironment.Heap.HeapData[ClassObject.GetMember(
                                 Hash(L"__instruction_add__"))];
-                        if (Method.Kind == EnvObject::ObjectKind::FunctionPointer) {
+                        if (Method.Kind == EnvObject::ObjectKind::FunctionPointer ||
+                            Method.Kind == EnvObject::ObjectKind::NativeMethodPointer) {
                             InterpreterEnvironment.Stack.PushValueToStack(Left); // this
                             InterpreterEnvironment.Stack.PushValueToStack(Right); // rhs
                             InterpreterEnvironment.Stack.PushValueToStack(
-                                    {EnvironmentStackItem::ItemKind::FunctionPointer,
+                                    {Method.Kind == EnvObject::ObjectKind::FunctionPointer
+                                     ? EnvironmentStackItem::ItemKind::FunctionPointer
+                                     : EnvironmentStackItem::ItemKind::NativeMethodPointer,
                                      (EnvironmentStackItem::ItemValue) {Method.Value.FunctionPointerValue}});
                             InstructionFuncInvoke((BytecodeStructure::InstructionParam) {static_cast<XIndexType>(2)});
                         } else {
@@ -378,11 +380,14 @@ namespace XScript {
                         auto &ClassObject = *InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal].Value.ClassObjectPointer;
                         auto &Method = InterpreterEnvironment.Heap.HeapData[ClassObject.GetMember(
                                 Hash(L"__instruction_sub__"))];
-                        if (Method.Kind == EnvObject::ObjectKind::FunctionPointer) {
+                        if (Method.Kind == EnvObject::ObjectKind::FunctionPointer ||
+                            Method.Kind == EnvObject::ObjectKind::NativeMethodPointer) {
                             InterpreterEnvironment.Stack.PushValueToStack(Left); // this
                             InterpreterEnvironment.Stack.PushValueToStack(Right); // rhs
                             InterpreterEnvironment.Stack.PushValueToStack(
-                                    {EnvironmentStackItem::ItemKind::FunctionPointer,
+                                    {Method.Kind == EnvObject::ObjectKind::FunctionPointer
+                                     ? EnvironmentStackItem::ItemKind::FunctionPointer
+                                     : EnvironmentStackItem::ItemKind::NativeMethodPointer,
                                      (EnvironmentStackItem::ItemValue) {Method.Value.FunctionPointerValue}});
                             InstructionFuncInvoke((BytecodeStructure::InstructionParam) {static_cast<XIndexType>(2)});
                         } else {
@@ -476,11 +481,14 @@ namespace XScript {
                         auto &ClassObject = *InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal].Value.ClassObjectPointer;
                         auto &Method = InterpreterEnvironment.Heap.HeapData[ClassObject.GetMember(
                                 Hash(L"__instruction_mul__"))];
-                        if (Method.Kind == EnvObject::ObjectKind::FunctionPointer) {
+                        if (Method.Kind == EnvObject::ObjectKind::FunctionPointer ||
+                            Method.Kind == EnvObject::ObjectKind::NativeMethodPointer) {
                             InterpreterEnvironment.Stack.PushValueToStack(Left); // this
                             InterpreterEnvironment.Stack.PushValueToStack(Right); // rhs
                             InterpreterEnvironment.Stack.PushValueToStack(
-                                    {EnvironmentStackItem::ItemKind::FunctionPointer,
+                                    {Method.Kind == EnvObject::ObjectKind::FunctionPointer
+                                     ? EnvironmentStackItem::ItemKind::FunctionPointer
+                                     : EnvironmentStackItem::ItemKind::NativeMethodPointer,
                                      (EnvironmentStackItem::ItemValue) {Method.Value.FunctionPointerValue}});
                             InstructionFuncInvoke((BytecodeStructure::InstructionParam) {static_cast<XIndexType>(2)});
                         } else {
@@ -575,11 +583,14 @@ namespace XScript {
                         auto &ClassObject = *InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal].Value.ClassObjectPointer;
                         auto &Method = InterpreterEnvironment.Heap.HeapData[ClassObject.GetMember(
                                 Hash(L"__instruction_div__"))];
-                        if (Method.Kind == EnvObject::ObjectKind::FunctionPointer) {
+                        if (Method.Kind == EnvObject::ObjectKind::FunctionPointer ||
+                            Method.Kind == EnvObject::ObjectKind::NativeMethodPointer) {
                             InterpreterEnvironment.Stack.PushValueToStack(Left); // this
                             InterpreterEnvironment.Stack.PushValueToStack(Right); // rhs
                             InterpreterEnvironment.Stack.PushValueToStack(
-                                    {EnvironmentStackItem::ItemKind::FunctionPointer,
+                                    {Method.Kind == EnvObject::ObjectKind::FunctionPointer
+                                     ? EnvironmentStackItem::ItemKind::FunctionPointer
+                                     : EnvironmentStackItem::ItemKind::NativeMethodPointer,
                                      (EnvironmentStackItem::ItemValue) {Method.Value.FunctionPointerValue}});
                             InstructionFuncInvoke((BytecodeStructure::InstructionParam) {static_cast<XIndexType>(2)});
                         } else {
@@ -657,11 +668,14 @@ namespace XScript {
                         auto &ClassObject = *InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal].Value.ClassObjectPointer;
                         auto &Method = InterpreterEnvironment.Heap.HeapData[ClassObject.GetMember(
                                 Hash(L"__instruction_logic_and__"))];
-                        if (Method.Kind == EnvObject::ObjectKind::FunctionPointer) {
+                        if (Method.Kind == EnvObject::ObjectKind::FunctionPointer ||
+                            Method.Kind == EnvObject::ObjectKind::NativeMethodPointer) {
                             InterpreterEnvironment.Stack.PushValueToStack(Left); // this
                             InterpreterEnvironment.Stack.PushValueToStack(Right); // rhs
                             InterpreterEnvironment.Stack.PushValueToStack(
-                                    {EnvironmentStackItem::ItemKind::FunctionPointer,
+                                    {Method.Kind == EnvObject::ObjectKind::FunctionPointer
+                                     ? EnvironmentStackItem::ItemKind::FunctionPointer
+                                     : EnvironmentStackItem::ItemKind::NativeMethodPointer,
                                      (EnvironmentStackItem::ItemValue) {Method.Value.FunctionPointerValue}});
                             InstructionFuncInvoke((BytecodeStructure::InstructionParam) {static_cast<XIndexType>(2)});
                         } else {
@@ -742,11 +756,14 @@ namespace XScript {
                         auto &ClassObject = *InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal].Value.ClassObjectPointer;
                         auto &Method = InterpreterEnvironment.Heap.HeapData[ClassObject.GetMember(
                                 Hash(L"__instruction_logic_or__"))];
-                        if (Method.Kind == EnvObject::ObjectKind::FunctionPointer) {
+                        if (Method.Kind == EnvObject::ObjectKind::FunctionPointer ||
+                            Method.Kind == EnvObject::ObjectKind::NativeMethodPointer) {
                             InterpreterEnvironment.Stack.PushValueToStack(Left); // this
                             InterpreterEnvironment.Stack.PushValueToStack(Right); // rhs
                             InterpreterEnvironment.Stack.PushValueToStack(
-                                    {EnvironmentStackItem::ItemKind::FunctionPointer,
+                                    {Method.Kind == EnvObject::ObjectKind::FunctionPointer
+                                     ? EnvironmentStackItem::ItemKind::FunctionPointer
+                                     : EnvironmentStackItem::ItemKind::NativeMethodPointer,
                                      (EnvironmentStackItem::ItemValue) {Method.Value.FunctionPointerValue}});
                             InstructionFuncInvoke((BytecodeStructure::InstructionParam) {static_cast<XIndexType>(2)});
                         } else {
@@ -902,11 +919,14 @@ namespace XScript {
                         auto &ClassObject = *InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal].Value.ClassObjectPointer;
                         auto &Method = InterpreterEnvironment.Heap.HeapData[ClassObject.GetMember(
                                 Hash(L"__instruction_logic_great_equal__"))];
-                        if (Method.Kind == EnvObject::ObjectKind::FunctionPointer) {
+                        if (Method.Kind == EnvObject::ObjectKind::FunctionPointer ||
+                            Method.Kind == EnvObject::ObjectKind::NativeMethodPointer) {
                             InterpreterEnvironment.Stack.PushValueToStack(Left); // this
                             InterpreterEnvironment.Stack.PushValueToStack(Right); // rhs
                             InterpreterEnvironment.Stack.PushValueToStack(
-                                    {EnvironmentStackItem::ItemKind::FunctionPointer,
+                                    {Method.Kind == EnvObject::ObjectKind::FunctionPointer
+                                     ? EnvironmentStackItem::ItemKind::FunctionPointer
+                                     : EnvironmentStackItem::ItemKind::NativeMethodPointer,
                                      (EnvironmentStackItem::ItemValue) {Method.Value.FunctionPointerValue}});
                             InstructionFuncInvoke((BytecodeStructure::InstructionParam) {static_cast<XIndexType>(2)});
                         } else {
@@ -999,11 +1019,14 @@ namespace XScript {
                         auto &ClassObject = *InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal].Value.ClassObjectPointer;
                         auto &Method = InterpreterEnvironment.Heap.HeapData[ClassObject.GetMember(
                                 Hash(L"__instruction_logic_less_equal__"))];
-                        if (Method.Kind == EnvObject::ObjectKind::FunctionPointer) {
+                        if (Method.Kind == EnvObject::ObjectKind::FunctionPointer ||
+                            Method.Kind == EnvObject::ObjectKind::NativeMethodPointer) {
                             InterpreterEnvironment.Stack.PushValueToStack(Left); // this
                             InterpreterEnvironment.Stack.PushValueToStack(Right); // rhs
                             InterpreterEnvironment.Stack.PushValueToStack(
-                                    {EnvironmentStackItem::ItemKind::FunctionPointer,
+                                    {Method.Kind == EnvObject::ObjectKind::FunctionPointer
+                                     ? EnvironmentStackItem::ItemKind::FunctionPointer
+                                     : EnvironmentStackItem::ItemKind::NativeMethodPointer,
                                      (EnvironmentStackItem::ItemValue) {Method.Value.FunctionPointerValue}});
                             InstructionFuncInvoke((BytecodeStructure::InstructionParam) {static_cast<XIndexType>(2)});
                         } else {
@@ -1098,11 +1121,14 @@ namespace XScript {
                         auto &ClassObject = *InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal].Value.ClassObjectPointer;
                         auto &Method = InterpreterEnvironment.Heap.HeapData[ClassObject.GetMember(
                                 Hash(L"__instruction_logic_great__"))];
-                        if (Method.Kind == EnvObject::ObjectKind::FunctionPointer) {
+                        if (Method.Kind == EnvObject::ObjectKind::FunctionPointer ||
+                            Method.Kind == EnvObject::ObjectKind::NativeMethodPointer) {
                             InterpreterEnvironment.Stack.PushValueToStack(Left); // this
                             InterpreterEnvironment.Stack.PushValueToStack(Right); // rhs
                             InterpreterEnvironment.Stack.PushValueToStack(
-                                    {EnvironmentStackItem::ItemKind::FunctionPointer,
+                                    {Method.Kind == EnvObject::ObjectKind::FunctionPointer
+                                     ? EnvironmentStackItem::ItemKind::FunctionPointer
+                                     : EnvironmentStackItem::ItemKind::NativeMethodPointer,
                                      (EnvironmentStackItem::ItemValue) {Method.Value.FunctionPointerValue}});
                             InstructionFuncInvoke((BytecodeStructure::InstructionParam) {static_cast<XIndexType>(2)});
                         } else {
@@ -1197,11 +1223,14 @@ namespace XScript {
                         auto &ClassObject = *InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal].Value.ClassObjectPointer;
                         auto &Method = InterpreterEnvironment.Heap.HeapData[ClassObject.GetMember(
                                 Hash(L"__instruction_logic_less__"))];
-                        if (Method.Kind == EnvObject::ObjectKind::FunctionPointer) {
+                        if (Method.Kind == EnvObject::ObjectKind::FunctionPointer ||
+                            Method.Kind == EnvObject::ObjectKind::NativeMethodPointer) {
                             InterpreterEnvironment.Stack.PushValueToStack(Left); // this
                             InterpreterEnvironment.Stack.PushValueToStack(Right); // rhs
                             InterpreterEnvironment.Stack.PushValueToStack(
-                                    {EnvironmentStackItem::ItemKind::FunctionPointer,
+                                    {Method.Kind == EnvObject::ObjectKind::FunctionPointer
+                                     ? EnvironmentStackItem::ItemKind::FunctionPointer
+                                     : EnvironmentStackItem::ItemKind::NativeMethodPointer,
                                      (EnvironmentStackItem::ItemValue) {Method.Value.FunctionPointerValue}});
                             InstructionFuncInvoke((BytecodeStructure::InstructionParam) {static_cast<XIndexType>(2)});
                         } else {
@@ -1494,11 +1523,14 @@ namespace XScript {
                     auto &ClassObject = *InterpreterEnvironment.Heap.HeapData[ListItem.Value.HeapPointerVal].Value.ClassObjectPointer;
                     auto &Method = InterpreterEnvironment.Heap.HeapData[ClassObject.GetMember(
                             Hash(L"__instruction_indexOf__"))];
-                    if (Method.Kind == EnvObject::ObjectKind::FunctionPointer) {
+                    if (Method.Kind == EnvObject::ObjectKind::FunctionPointer ||
+                        Method.Kind == EnvObject::ObjectKind::NativeMethodPointer) {
                         InterpreterEnvironment.Stack.PushValueToStack(ListItem); // this
                         InterpreterEnvironment.Stack.PushValueToStack(Index); // rhs
                         InterpreterEnvironment.Stack.PushValueToStack(
-                                {EnvironmentStackItem::ItemKind::FunctionPointer,
+                                {Method.Kind == EnvObject::ObjectKind::FunctionPointer
+                                 ? EnvironmentStackItem::ItemKind::FunctionPointer
+                                 : EnvironmentStackItem::ItemKind::NativeMethodPointer,
                                  (EnvironmentStackItem::ItemValue) {Method.Value.FunctionPointerValue}});
                         ProgramCounterInformation Info = InterpreterEnvironment.ProgramCounter;
                         InstructionFuncInvoke((BytecodeStructure::InstructionParam) {static_cast<XIndexType>(2)});

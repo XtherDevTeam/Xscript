@@ -488,8 +488,13 @@ namespace XScript::Compiler {
                 break;
             }
             case AST::TreeType::IndexExpression: {
-                MergeArray(Result, ParseMemberExpression(Target.Subtrees[0], IsMemberExpression));
-                MergeArray(Result, Generate(Target.Subtrees[1]));
+                XArray<BytecodeStructure> Index = Generate(Target.Subtrees[1]);
+                XArray<BytecodeStructure> Node = ParseMemberExpression(Target.Subtrees[0], IsMemberExpression);
+                MergeArray(Result, Index);
+                MergeArray(Result, Node);
+                Result.push_back(
+                        (BytecodeStructure) {BytecodeStructure::InstructionEnum::list_get_member,
+                                             (BytecodeStructure::InstructionParam) {(XIndexType) 0}});
                 Result.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::object_store,
                                                       (BytecodeStructure::InstructionParam) {
                                                               (XHeapIndexType) 0}});

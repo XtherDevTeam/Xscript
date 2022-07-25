@@ -26,7 +26,8 @@ namespace XScript {
             std::wcout << std::to_wstring(Dest.find('\0')) << std::endl;
             if (!Dest.find('\0'))
                 break;
-            Dest.resize(Dest.find('\0'));
+            if (!Dest.back())
+                Dest.resize(Dest.find('\0'));
             Str += XScript::string2wstring(Dest);
             Dest = "";
             Dest.resize(1024);
