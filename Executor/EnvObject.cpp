@@ -46,9 +46,7 @@ namespace XScript {
             case ObjectKind::StringObject:
                 FreeEnvStringObject(Value.StringObjectPointer);
                 break;
-            case ObjectKind::Integer:
-            case ObjectKind::Decimal:
-            case ObjectKind::Boolean:
+            default:
                 break;
         }
     }
