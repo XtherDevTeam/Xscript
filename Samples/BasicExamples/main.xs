@@ -13,7 +13,7 @@ def main () {
     var Str = String.fromBuffer("こんにちは、 世界。 你好，世界。 Hello, world. Neihou, Saaigaai.");
     IO.println(Str);
     var n = 0;
-    while (n < 100000000000) {
+    while (n < 10000000000000) {
         var MemFucker = new MemFuck.constructor();
         n += 1;
     }

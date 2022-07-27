@@ -47,4 +47,27 @@ namespace XScript {
         }
     }
 
+    EnvironmentHeap::~EnvironmentHeap() {
+        std::set<void *> FreedAddresses;
+        for (XIndexType index = 0; index < AllocatedElementCount; index++) {
+            auto &I = HeapData[index];
+            if (I.Kind == EnvObject::ObjectKind::ClassObject || I.Kind == EnvObject::ObjectKind::StringObject ||
+                I.Kind == EnvObject::ObjectKind::ArrayObject) {
+                if (FreedAddresses.count(static_cast<void *>(I.Value.ClassObjectPointer))) {
+                    UsedElementSet.insert(index);
+                    I = {};
+                    continue;
+                } else {
+                    FreedAddresses.insert(static_cast<void *>(I.Value.ClassObjectPointer));
+                }
+            }
+            I.DestroyObject();
+            I = {};
+            UsedElementSet.insert(index);
+        }
+        puts("!!!=== Heap destructed ===!!!\n");
+        UsedElementSet.clear();
+        HeapData.clear();
+    }
+
 } // XScript

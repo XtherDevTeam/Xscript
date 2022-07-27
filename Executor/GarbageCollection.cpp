@@ -28,7 +28,11 @@ namespace XScript {
                     Queue.push(I.Value.HeapPointerVal);
             }
             // 标记
+            XHeapIndexType Top = 0;
+            XHeapIndexType AAllocCount = 0;
             while (!Queue.empty()) {
+                Top = std::max(Top, Queue.front());
+
                 auto &Element = Env.Heap.HeapData[Queue.front()];
                 Queue.pop();
                 if (Element.Marked)
@@ -48,11 +52,12 @@ namespace XScript {
                     default:
                         break;
                 }
+                AAllocCount++;
             }
 
             // 清除
             std::set<void *> FreedAddresses;
-            for (XIndexType index = 0; index < Env.Heap.AllocatedElementCount; index++) {
+            for (XIndexType index = std::max(Top, Env.Heap.AllocatedElementCount - 1); index + 1; index--) {
                 auto &I = Env.Heap.HeapData[index];
                 if (!I.Marked) {
                     if (I.Kind == EnvObject::ObjectKind::ClassObject || I.Kind == EnvObject::ObjectKind::StringObject ||
@@ -68,20 +73,20 @@ namespace XScript {
                     I.DestroyObject();
                     I = {};
                     Env.Heap.UsedElementSet.insert(index);
+                } else {
+                    Env.Heap.HeapData[index].Marked = !Env.Heap.HeapData[index].Marked;
                 }
             }
 
             // 执行完GC之后 查看堆尾部是否有未使用的元素，将其回收
-            for (XIndexType index = Env.Heap.AllocatedElementCount - 1; index != 0; index--) {
-                if (!Env.Heap.HeapData[index].Marked) {
-                    --Env.Heap.AllocatedElementCount;
-                }
-            }
-            Limit = Env.Heap.AllocatedElementCount + EnvHeapGCStartCondition;
+            Env.Heap.AllocatedElementCount = Top + 1;
+
+            Limit = Env.Heap.AllocatedElementCount > AAllocCount ? Env.Heap.AllocatedElementCount : AAllocCount +
+                                                                                                    EnvHeapGCStartCondition;
         }
     }
 
     bool GarbageCollection::Check() const {
-        return Env.Heap.AllocatedElementCount > Limit;
+        return Env.Heap.UsedElementSet.empty() && Env.Heap.AllocatedElementCount >= Limit;
     }
 } // XScript

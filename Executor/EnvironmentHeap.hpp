@@ -27,6 +27,8 @@ namespace XScript {
         XHeapIndexType PushElement(EnvObject Object);
 
         void PopElement(XHeapIndexType Object);
+
+        ~EnvironmentHeap();
     };
 
 } // XScript

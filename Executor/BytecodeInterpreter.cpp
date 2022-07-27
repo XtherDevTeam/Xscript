@@ -1551,6 +1551,8 @@ namespace XScript {
         EnvironmentStackItem LeftValue = InterpreterEnvironment.Stack.PopValueFromStack();
         EnvironmentStackItem RightValue = InterpreterEnvironment.Stack.PopValueFromStack();
 
+        InterpreterEnvironment.Heap.HeapData[LeftValue.Value.HeapPointerVal].DestroyObject();
+
         switch (RightValue.Kind) {
             case EnvironmentStackItem::ItemKind::Integer:
                 InterpreterEnvironment.Heap.HeapData[LeftValue.Value.HeapPointerVal] = (EnvObject) {
