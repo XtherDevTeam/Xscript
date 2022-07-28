@@ -63,7 +63,7 @@ namespace XScript {
         XIndexType PkgID = Hash(PackageName);
         if (IsMainPackage) {
             Packages[PkgID] = Reader::ExtendedTypeReader().ReadPackage(FilePointer);
-            if (!Packages[PkgID].FunctionPool.count(Hash(L"main")))
+            if (!Packages[PkgID].FunctionPool.count(builtin_hash_code_main))
                 throw InternalException(
                         L"Environment::LoadFromFile() : Cannot find __XScriptRuntimeEntry__() function for entry.");
 

@@ -260,7 +260,7 @@ namespace XScript {
                     case EnvObject::ObjectKind::ClassObject: {
                         auto &ClassObject = *InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal].Value.ClassObjectPointer;
                         auto &Method = InterpreterEnvironment.Heap.HeapData[ClassObject.GetMember(
-                                Hash(L"__instruction_add__"))];
+                                builtin_hash_code___instruction_add__)];
                         if (Method.Kind == EnvObject::ObjectKind::FunctionPointer ||
                             Method.Kind == EnvObject::ObjectKind::NativeMethodPointer) {
                             InterpreterEnvironment.Stack.PushValueToStack(Left); // this
@@ -379,7 +379,7 @@ namespace XScript {
                     case EnvObject::ObjectKind::ClassObject: {
                         auto &ClassObject = *InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal].Value.ClassObjectPointer;
                         auto &Method = InterpreterEnvironment.Heap.HeapData[ClassObject.GetMember(
-                                Hash(L"__instruction_sub__"))];
+                                builtin_hash_code___instruction_sub__)];
                         if (Method.Kind == EnvObject::ObjectKind::FunctionPointer ||
                             Method.Kind == EnvObject::ObjectKind::NativeMethodPointer) {
                             InterpreterEnvironment.Stack.PushValueToStack(Left); // this
@@ -480,7 +480,7 @@ namespace XScript {
                     case EnvObject::ObjectKind::ClassObject: {
                         auto &ClassObject = *InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal].Value.ClassObjectPointer;
                         auto &Method = InterpreterEnvironment.Heap.HeapData[ClassObject.GetMember(
-                                Hash(L"__instruction_mul__"))];
+                                builtin_hash_code___instruction_mul__)];
                         if (Method.Kind == EnvObject::ObjectKind::FunctionPointer ||
                             Method.Kind == EnvObject::ObjectKind::NativeMethodPointer) {
                             InterpreterEnvironment.Stack.PushValueToStack(Left); // this
@@ -582,7 +582,7 @@ namespace XScript {
                     case EnvObject::ObjectKind::ClassObject: {
                         auto &ClassObject = *InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal].Value.ClassObjectPointer;
                         auto &Method = InterpreterEnvironment.Heap.HeapData[ClassObject.GetMember(
-                                Hash(L"__instruction_div__"))];
+                                builtin_hash_code___instruction_div__)];
                         if (Method.Kind == EnvObject::ObjectKind::FunctionPointer ||
                             Method.Kind == EnvObject::ObjectKind::NativeMethodPointer) {
                             InterpreterEnvironment.Stack.PushValueToStack(Left); // this
@@ -667,7 +667,7 @@ namespace XScript {
                     case EnvObject::ObjectKind::ClassObject: {
                         auto &ClassObject = *InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal].Value.ClassObjectPointer;
                         auto &Method = InterpreterEnvironment.Heap.HeapData[ClassObject.GetMember(
-                                Hash(L"__instruction_logic_and__"))];
+                                builtin_hash_code___instruction_logic_and__)];
                         if (Method.Kind == EnvObject::ObjectKind::FunctionPointer ||
                             Method.Kind == EnvObject::ObjectKind::NativeMethodPointer) {
                             InterpreterEnvironment.Stack.PushValueToStack(Left); // this
@@ -755,7 +755,7 @@ namespace XScript {
                     case EnvObject::ObjectKind::ClassObject: {
                         auto &ClassObject = *InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal].Value.ClassObjectPointer;
                         auto &Method = InterpreterEnvironment.Heap.HeapData[ClassObject.GetMember(
-                                Hash(L"__instruction_logic_or__"))];
+                                builtin_hash_code___instruction_logic_or__)];
                         if (Method.Kind == EnvObject::ObjectKind::FunctionPointer ||
                             Method.Kind == EnvObject::ObjectKind::NativeMethodPointer) {
                             InterpreterEnvironment.Stack.PushValueToStack(Left); // this
@@ -918,7 +918,7 @@ namespace XScript {
                     case EnvObject::ObjectKind::ClassObject: {
                         auto &ClassObject = *InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal].Value.ClassObjectPointer;
                         auto &Method = InterpreterEnvironment.Heap.HeapData[ClassObject.GetMember(
-                                Hash(L"__instruction_logic_great_equal__"))];
+                                builtin_hash_code___instruction_logic_great_equal__)];
                         if (Method.Kind == EnvObject::ObjectKind::FunctionPointer ||
                             Method.Kind == EnvObject::ObjectKind::NativeMethodPointer) {
                             InterpreterEnvironment.Stack.PushValueToStack(Left); // this
@@ -1018,7 +1018,7 @@ namespace XScript {
                     case EnvObject::ObjectKind::ClassObject: {
                         auto &ClassObject = *InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal].Value.ClassObjectPointer;
                         auto &Method = InterpreterEnvironment.Heap.HeapData[ClassObject.GetMember(
-                                Hash(L"__instruction_logic_less_equal__"))];
+                                builtin_hash_code___instruction_logic_less_equal__)];
                         if (Method.Kind == EnvObject::ObjectKind::FunctionPointer ||
                             Method.Kind == EnvObject::ObjectKind::NativeMethodPointer) {
                             InterpreterEnvironment.Stack.PushValueToStack(Left); // this
@@ -1120,7 +1120,7 @@ namespace XScript {
                     case EnvObject::ObjectKind::ClassObject: {
                         auto &ClassObject = *InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal].Value.ClassObjectPointer;
                         auto &Method = InterpreterEnvironment.Heap.HeapData[ClassObject.GetMember(
-                                Hash(L"__instruction_logic_great__"))];
+                                builtin_hash_code___instruction_logic_great__)];
                         if (Method.Kind == EnvObject::ObjectKind::FunctionPointer ||
                             Method.Kind == EnvObject::ObjectKind::NativeMethodPointer) {
                             InterpreterEnvironment.Stack.PushValueToStack(Left); // this
@@ -1222,7 +1222,7 @@ namespace XScript {
                     case EnvObject::ObjectKind::ClassObject: {
                         auto &ClassObject = *InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal].Value.ClassObjectPointer;
                         auto &Method = InterpreterEnvironment.Heap.HeapData[ClassObject.GetMember(
-                                Hash(L"__instruction_logic_less__"))];
+                                builtin_hash_code___instruction_logic_less__)];
                         if (Method.Kind == EnvObject::ObjectKind::FunctionPointer ||
                             Method.Kind == EnvObject::ObjectKind::NativeMethodPointer) {
                             InterpreterEnvironment.Stack.PushValueToStack(Left); // this
@@ -1522,7 +1522,7 @@ namespace XScript {
                 case EnvObject::ObjectKind::ClassObject: {
                     auto &ClassObject = *InterpreterEnvironment.Heap.HeapData[ListItem.Value.HeapPointerVal].Value.ClassObjectPointer;
                     auto &Method = InterpreterEnvironment.Heap.HeapData[ClassObject.GetMember(
-                            Hash(L"__instruction_indexOf__"))];
+                            builtin_hash_code___instruction_indexOf__)];
                     if (Method.Kind == EnvObject::ObjectKind::FunctionPointer ||
                         Method.Kind == EnvObject::ObjectKind::NativeMethodPointer) {
                         InterpreterEnvironment.Stack.PushValueToStack(ListItem); // this
@@ -1774,7 +1774,7 @@ namespace XScript {
                 InstructionClassNew((BytecodeStructure::InstructionParam) {Object->Parent.ClassID});
                 InstructionPCRestorePackageID((BytecodeStructure::InstructionParam) {(XIndexType) {}});
 
-                Object->Members[Hash(L"super")] = InterpreterEnvironment.Stack.PopValueFromStack().Value.HeapPointerVal;
+                Object->Members[builtin_hash_code_super] = InterpreterEnvironment.Stack.PopValueFromStack().Value.HeapPointerVal;
             }
             // initialize itself
             for (auto &I: Template.Methods) {
@@ -1839,7 +1839,7 @@ namespace XScript {
         if (InterpreterEnvironment.NativeLibraries.IsLoaded(HashOfPath)) {
             EnvClassObject *Object = NewEnvClassObject();
 
-            Object->Members[Hash(L"__native_library_identifier__")] = InterpreterEnvironment.Heap.PushElement(
+            Object->Members[builtin_hash_code___native_library_identifier__] = InterpreterEnvironment.Heap.PushElement(
                     {EnvObject::ObjectKind::Index, (EnvObject::ObjectValue) {HashOfPath}});
 
             /* Because the address of each element in LoadedLibraries are static after initialized, we can use pointer to this address without any worried. */

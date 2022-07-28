@@ -12,9 +12,9 @@ namespace XScript {
     }
 
     XHeapIndexType EnvClassObject::GetMember(XIndexType Name) {
-        if (Members.count(Name)) {
-            return Members[Name];
-        } else {
+        try {
+            return Members.at(Name);
+        } catch(...) {
             throw InternalException(L"EnvClassObject::GetMember(): " + std::to_wstring(Name) + L" doesn't exist.");
         }
     }

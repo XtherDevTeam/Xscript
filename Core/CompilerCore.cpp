@@ -75,7 +75,7 @@ namespace XScript {
 
             XScriptRuntimeEntryFunction.BytecodeArray.push_back(
                     (BytecodeStructure) {BytecodeStructure::InstructionEnum::stack_push_function,
-                                         (BytecodeStructure::InstructionParam) {Hash(L"main")}});
+                                         (BytecodeStructure::InstructionParam) {builtin_hash_code_main}});
 
             XScriptRuntimeEntryFunction.BytecodeArray.push_back((BytecodeStructure) {
                     BytecodeStructure::InstructionEnum::func_invoke,

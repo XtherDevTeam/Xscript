@@ -41,15 +41,20 @@ int main(int argc, const char **argv) {
     try {
         ParseArguments(argc, argv);
         XScript::Compiler::CompilerEnvironment Environ{};
-        Environ.PathsToSearch = SplitStrings(Arguments[L"PATH"], L';');
-        Environ.CompilerFlags = SplitStrings(Arguments[L"flags"], L';');
-        if (!Arguments.count(L"in") || !Arguments.count(L"out")) {
-            throw InternalException(L"Could not find input filename or output filename in given params.");
+        if (Arguments.count(L"hash-calc")) {
+            XString Str = Arguments.at(L"str");
+            std::cout << Hash(Str) << std::endl;
+        } else {
+            Environ.PathsToSearch = SplitStrings(Arguments[L"PATH"], L';');
+            Environ.CompilerFlags = SplitStrings(Arguments[L"flags"], L';');
+            if (!Arguments.count(L"in") || !Arguments.count(L"out")) {
+                throw InternalException(L"Could not find input filename or output filename in given params.");
+            }
+            for (auto &File: SplitStrings(Arguments[L"in"], L';')) {
+                XScript::CompileForFile(Environ, File);
+            }
+            XScript::OutputBinary(Environ, Arguments[L"out"]);
         }
-        for (auto &File: SplitStrings(Arguments[L"in"], L';')) {
-            XScript::CompileForFile(Environ, File);
-        }
-        XScript::OutputBinary(Environ, Arguments[L"out"]);
     } catch (ParserException &E) {
         std::cerr << E.what() << "\n" << std::flush;
     } catch (InternalException &E) {
