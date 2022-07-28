@@ -65,7 +65,6 @@ namespace XScript {
             I = {};
             UsedElementSet.insert(index);
         }
-        puts("!!!=== Heap destructed ===!!!\n");
         UsedElementSet.clear();
         HeapData.clear();
     }

@@ -1,21 +1,20 @@
 native_class IO in "libio.xnc.so";
 native_class String in "libstring.xnc.so";
+native_class Array in "libarray.xnc.so";
 
-class MemFuck {
-    def constructor () {
-        def A in this;
-        this.A = String.fromBuffer("aaa");
-        return this;
-    }
-};
+var Arr = Array.create();
+var Arr2 = Array.create();
 
 def main () {
-    var Str = String.fromBuffer("こんにちは、 世界。 你好，世界。 Hello, world. Neihou, Saaigaai.");
-    IO.println(Str);
-    var n = 0;
-    while (n < 10000000000000) {
-        var MemFucker = new MemFuck.constructor();
-        n += 1;
+    Arr.resize(100);
+    Arr2.resize(100);
+    Arr[0] = IO.readInt();
+    Arr[1] = IO.readInt();
+    for (var i = 2;i < 100;i += 1) {
+        Arr[i] = Arr[i-1] + Arr[i-2];
+    }
+    for (var i = 0;i < 100;i += 1) {
+        IO.println(String.fromInt(Arr[i]));
     }
     return 0;
 }
