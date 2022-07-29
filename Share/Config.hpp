@@ -14,10 +14,10 @@
 namespace XScript {
     using XBytes = std::string;
     using XString = std::wstring;
-    using XInteger = long int;
+    using XInteger = int64_t;
     using XDecimal = float;
     using XBoolean = bool;
-    using XIndexType = unsigned long long;
+    using XIndexType = uint64_t;
     using XCharacter = wchar_t;
 
     template<typename T> using XArray = std::vector<T>;
