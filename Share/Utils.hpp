@@ -45,6 +45,7 @@ namespace XScript {
     XArray<XString> SplitStrings(const XString &Str, XCharacter Delim);
 } // XScript
 
+#if defined(__linux__) or defined(_WIN32)
 #define builtin_hash_code_main 7670424507768520307
 #define builtin_hash_code___instruction_add__ 7874026003045742965
 #define builtin_hash_code___instruction_sub__ 11838334185600141604
@@ -60,6 +61,22 @@ namespace XScript {
 #define builtin_hash_code_super 6513641090864109706
 #define builtin_hash_code___native_library_identifier__ 14012857459599550780
 #define builtin_hash_code___XScriptRuntimeEntry__ 2591539125669357027
-
+#elif defined(__APPLE__)
+#define builtin_hash_code_main 17299091360650233103
+#define builtin_hash_code___instruction_add__ 10464478314076775309
+#define builtin_hash_code___instruction_sub__ 1222037404924959291
+#define builtin_hash_code___instruction_mul__ 15504539509551616032
+#define builtin_hash_code___instruction_div__ 3783435002672145191
+#define builtin_hash_code___instruction_logic_and__ 17172099155340832562
+#define builtin_hash_code___instruction_logic_or__ 8726144604230437156
+#define builtin_hash_code___instruction_logic_great_equal__ 16337795713401796158
+#define builtin_hash_code___instruction_logic_less_equal__ 2230942099143076960
+#define builtin_hash_code___instruction_logic_great__ 17026838180953254426
+#define builtin_hash_code___instruction_logic_less__ 1790909244707514774
+#define builtin_hash_code___instruction_indexOf__ 8279956869312200099
+#define builtin_hash_code_super 12255509608937990104
+#define builtin_hash_code___native_library_identifier__ 17994388048575125041
+#define builtin_hash_code___XScriptRuntimeEntry__ 1154313383859417322
+#endif
 
 #endif //XSCRIPT2_UTILS_HPP

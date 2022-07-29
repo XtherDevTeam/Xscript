@@ -5,6 +5,7 @@
 #include "ExpressionCompiler.hpp"
 #include "../../Share/Exceptions/InternalException.hpp"
 #include "../../Share/Exceptions/CompilerError.hpp"
+#include "StatementCompiler.hpp"
 
 namespace XScript::Compiler {
     ExpressionCompiler::ExpressionCompiler(CompilerEnvironment &Environment) : BaseCompiler(Environment) {
@@ -66,6 +67,45 @@ namespace XScript::Compiler {
                                                       (BytecodeStructure::InstructionParam) {
                                                               (XIndexType) Target.Subtrees.size()}});
 
+                break;
+            }
+            case AST::TreeType::UnnamedFunctionDefinition: {
+                XArray<XString> Params;
+
+                XArray<BytecodeStructure> Structure;
+
+                /**
+                 * initialize params
+                 */
+                for (auto &I: Target.Subtrees[0].Subtrees) {
+                    Params.push_back(I.Node.Value);
+                }
+
+                CompilingTimeFunction Func{
+                        XArray<CompilingTimeFunction::Descriptor>{CompilingTimeFunction::Descriptor::Public}, Params,
+                        {}};
+
+                auto FuncIndex = Environment.MainPackage.PushUnnamedFunction(Func);
+
+                /**
+                 * Push function pointer to stack
+                 */
+
+                Environment.MainPackage.PackageInitializeCodes.push_back((BytecodeStructure) {
+                        BytecodeStructure::InstructionEnum::stack_push_function,
+                        (BytecodeStructure::InstructionParam) {Hash(Environment.MainPackage.Functions[FuncIndex].first)}
+                });
+
+                auto Backup = Environment.Locals;
+                for (auto &I: Target.Subtrees[0].Subtrees) {
+                    Environment.PushLocal(I.Node.Value, {(Typename) {Typename::TypenameKind::Unknown}, {}});
+                }
+
+                Structure = StatementCompiler(Environment).GenerateForCodeBlock(Target.Subtrees[1]);
+
+                Environment.Locals = Backup;
+
+                Environment.MainPackage.Functions[FuncIndex].second.BytecodeArray = Structure;
                 break;
             }
 

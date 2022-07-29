@@ -19,7 +19,7 @@ namespace XScript {
     static XArray<XString> LexerReservedWords{
             L"if", L"else", L"switch", L"for", L"while", L"public", L"private", L"const",
             L"override", L"var", L"break", L"continue", L"extends", L"def", L"return", L"class", L"package", L"import",
-            L"@", L"new", L"in", L"native_class", L"try", L"catch", L"finally", L"as", L"throw", L"instanceOf",
+            L"@", L"new", L"in", L"native_class", L"try", L"catch", L"finally", L"as", L"throw", L"instanceOf", L"func"
     };
 
     /**

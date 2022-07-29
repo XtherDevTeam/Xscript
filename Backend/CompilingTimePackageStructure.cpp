@@ -61,5 +61,10 @@ namespace XScript {
             PushFunction(Classes[ClassIndex].first + L"$" + MethodName, Func);
         }
 
+        XIndexType CompilingTimePackageStructure::PushUnnamedFunction(const CompilingTimeFunction &Function) {
+            XString Name = L"__@unnamed_function_" + std::to_wstring(UnnamedFunctionCount++);
+            return PushFunction(Name, Function);
+        }
+
     } // XScript
 } // Compiler

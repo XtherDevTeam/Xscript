@@ -23,6 +23,12 @@ Status: `Implmented`
 
 Syntax: `ListLiteral ::= "[" [ { Expression "," } Expression ] "]"`
 
+### UnnamedFunctionDefinition
+
+Status: `Implmented`
+
+Syntax: `UnnamedFunctionDefinition ::= "func" "("  [ { Expression "," } Expression ] ")" CodeBlock`
+
 ### Arguments
 
 Status: `Implmented`
@@ -89,8 +95,8 @@ Status: `Implmented`
 Syntax:
 
 ```
-NegativeExpression ::= TokenMinus ( MemberExpression | Primary )
-                     | ( MemberExpression | Primary )
+NegativeExpression ::= TokenMinus ( MemberExpression | UnnamedFunctionDefinition | Primary )
+                     | ( MemberExpression | UnnamedFunctionDefinition | Primary )
 ```
 
 ### IncrementExpression

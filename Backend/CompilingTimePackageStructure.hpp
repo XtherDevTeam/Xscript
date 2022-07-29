@@ -24,7 +24,11 @@ namespace XScript::Compiler {
 
         XArray<BytecodeStructure> PackageInitializeCodes;
 
+        XIndexType UnnamedFunctionCount{};
+
         XIndexType PushFunction(const XString &FunctionName, const CompilingTimeFunction &Function);
+
+        XIndexType PushUnnamedFunction(const CompilingTimeFunction &Function);
 
         XIndexType PushClass(const XString &Name, const CompilingTimeClass &Item);
 
@@ -37,7 +41,6 @@ namespace XScript::Compiler {
         std::pair<XIndexType, SymbolItem &> GetStatic(const XString &Name);
 
         void AddMethodToClass(XIndexType ClassIndex, const XString &MethodName, const CompilingTimeFunction &Func);
-
     };
 
 } // Compiler
