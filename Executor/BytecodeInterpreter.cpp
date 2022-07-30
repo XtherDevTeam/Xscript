@@ -11,7 +11,7 @@ namespace XScript {
     void BytecodeInterpreter::MainLoop() {
         IsBusy = true;
         InterpreterEnvironment->Threads[ThreadID].IsBusy = true;
-        while ( !InterpreterEnvironment->Threads[ThreadID].Stack.FramesInformation.empty() and
+        while ( InterpreterEnvironment->Threads[ThreadID].PC.Pointer and
                 InterpreterEnvironment->Threads[ThreadID].PC.NowIndex != InterpreterEnvironment->Threads[ThreadID].PC.Pointer->size()) {
             auto &CurrentInstruction = (*InterpreterEnvironment->Threads[ThreadID].PC.Pointer)[InterpreterEnvironment->Threads[ThreadID].PC.NowIndex];
             switch (CurrentInstruction.Instruction) {
@@ -184,7 +184,7 @@ namespace XScript {
                     break;
                 case BytecodeStructure::InstructionEnum::force_exit:
                     IsBusy = false;
-                    InterpreterEnvironment->Threads[ThreadID] = {};
+                    InterpreterEnvironment->Threads[ThreadID].IsBusy = false;
                     return;
                 case BytecodeStructure::InstructionEnum::fake_command_continue:
                 case BytecodeStructure::InstructionEnum::fake_command_break:
@@ -193,7 +193,7 @@ namespace XScript {
             InterpreterEnvironment->Threads[ThreadID].PC.NowIndex++;
         }
         IsBusy = false;
-        InterpreterEnvironment->Threads[ThreadID] = {};
+        InterpreterEnvironment->Threads[ThreadID].IsBusy = false;
     }
 
     void BytecodeInterpreter::InstructionCalculationAdd(BytecodeStructure::InstructionParam Param) {
