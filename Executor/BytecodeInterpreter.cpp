@@ -5,7 +5,7 @@
 #include "BytecodeInterpreter.hpp"
 
 namespace XScript {
-    BytecodeInterpreter::BytecodeInterpreter(void* Pool, Environment *interpreterEnvironment, GarbageCollection *GC) :
+    BytecodeInterpreter::BytecodeInterpreter(void *Pool, Environment *interpreterEnvironment, GarbageCollection *GC) :
             IsBusy(false), ThreadID(0), Pool(Pool), InterpreterEnvironment(interpreterEnvironment), GC(GC) {}
 
     void BytecodeInterpreter::MainLoop() {
@@ -14,6 +14,7 @@ namespace XScript {
         while (InterpreterEnvironment->Threads[ThreadID].PC.NowIndex !=
                InterpreterEnvironment->Threads[ThreadID].PC.Pointer->size()) {
             auto &CurrentInstruction = (*InterpreterEnvironment->Threads[ThreadID].PC.Pointer)[InterpreterEnvironment->Threads[ThreadID].PC.NowIndex];
+            puts(wstring2string(CurrentInstruction.ToString()).c_str());
             switch (CurrentInstruction.Instruction) {
                 case BytecodeStructure::InstructionEnum::calculation_add:
                     InstructionCalculationAdd(CurrentInstruction.Param);
@@ -910,8 +911,9 @@ namespace XScript {
                     case EnvironmentStackItem::ItemKind::Null:
                         throw BytecodeInterpretError(L"Cannot compare integers with a null value.");
                 }
-                InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Boolean,
-                                                               (EnvironmentStackItem::ItemValue) {Result}});
+                InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(
+                        {EnvironmentStackItem::ItemKind::Boolean,
+                         (EnvironmentStackItem::ItemValue) {Result}});
                 break;
             case EnvironmentStackItem::ItemKind::Decimal:
                 switch (Right.Kind) {
@@ -931,8 +933,9 @@ namespace XScript {
                     case EnvironmentStackItem::ItemKind::Null:
                         throw BytecodeInterpretError(L"Cannot add integers with a null value.");
                 }
-                InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Boolean,
-                                                               (EnvironmentStackItem::ItemValue) {Result}});
+                InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(
+                        {EnvironmentStackItem::ItemKind::Boolean,
+                         (EnvironmentStackItem::ItemValue) {Result}});
                 break;
             case EnvironmentStackItem::ItemKind::Boolean:
                 switch (Right.Kind) {
@@ -952,8 +955,9 @@ namespace XScript {
                     case EnvironmentStackItem::ItemKind::Null:
                         throw BytecodeInterpretError(L"Cannot compare with a null value.");
                 }
-                InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Boolean,
-                                                               (EnvironmentStackItem::ItemValue) {Result}});
+                InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(
+                        {EnvironmentStackItem::ItemKind::Boolean,
+                         (EnvironmentStackItem::ItemValue) {Result}});
                 break;
             case EnvironmentStackItem::ItemKind::NativeMethodPointer:
             case EnvironmentStackItem::ItemKind::FunctionPointer:
@@ -1015,8 +1019,9 @@ namespace XScript {
                     case EnvironmentStackItem::ItemKind::Null:
                         throw BytecodeInterpretError(L"Cannot compare integers with a null value.");
                 }
-                InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Boolean,
-                                                               (EnvironmentStackItem::ItemValue) {Result}});
+                InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(
+                        {EnvironmentStackItem::ItemKind::Boolean,
+                         (EnvironmentStackItem::ItemValue) {Result}});
                 break;
             case EnvironmentStackItem::ItemKind::Decimal:
                 switch (Right.Kind) {
@@ -1036,8 +1041,9 @@ namespace XScript {
                     case EnvironmentStackItem::ItemKind::Null:
                         throw BytecodeInterpretError(L"Cannot add integers with a null value.");
                 }
-                InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Boolean,
-                                                               (EnvironmentStackItem::ItemValue) {Result}});
+                InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(
+                        {EnvironmentStackItem::ItemKind::Boolean,
+                         (EnvironmentStackItem::ItemValue) {Result}});
                 break;
             case EnvironmentStackItem::ItemKind::Boolean:
                 switch (Right.Kind) {
@@ -1057,8 +1063,9 @@ namespace XScript {
                     case EnvironmentStackItem::ItemKind::Null:
                         throw BytecodeInterpretError(L"Cannot compare with a null value.");
                 }
-                InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Boolean,
-                                                               (EnvironmentStackItem::ItemValue) {Result}});
+                InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(
+                        {EnvironmentStackItem::ItemKind::Boolean,
+                         (EnvironmentStackItem::ItemValue) {Result}});
                 break;
             case EnvironmentStackItem::ItemKind::HeapPointer:
                 switch (InterpreterEnvironment->Heap.HeapData[Left.Value.HeapPointerVal].Kind) {
@@ -1120,8 +1127,9 @@ namespace XScript {
                     case EnvironmentStackItem::ItemKind::Null:
                         throw BytecodeInterpretError(L"Cannot compare integers with a null value.");
                 }
-                InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Boolean,
-                                                               (EnvironmentStackItem::ItemValue) {Result}});
+                InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(
+                        {EnvironmentStackItem::ItemKind::Boolean,
+                         (EnvironmentStackItem::ItemValue) {Result}});
                 break;
             case EnvironmentStackItem::ItemKind::Decimal:
                 switch (Right.Kind) {
@@ -1140,8 +1148,9 @@ namespace XScript {
                     case EnvironmentStackItem::ItemKind::Null:
                         throw BytecodeInterpretError(L"Cannot add integers with a null value.");
                 }
-                InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Boolean,
-                                                               (EnvironmentStackItem::ItemValue) {Result}});
+                InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(
+                        {EnvironmentStackItem::ItemKind::Boolean,
+                         (EnvironmentStackItem::ItemValue) {Result}});
                 break;
             case EnvironmentStackItem::ItemKind::Boolean:
                 switch (Right.Kind) {
@@ -1160,8 +1169,9 @@ namespace XScript {
                     case EnvironmentStackItem::ItemKind::Null:
                         throw BytecodeInterpretError(L"Cannot compare with a null value.");
                 }
-                InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Boolean,
-                                                               (EnvironmentStackItem::ItemValue) {Result}});
+                InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(
+                        {EnvironmentStackItem::ItemKind::Boolean,
+                         (EnvironmentStackItem::ItemValue) {Result}});
                 break;
             case EnvironmentStackItem::ItemKind::HeapPointer:
                 switch (InterpreterEnvironment->Heap.HeapData[Left.Value.HeapPointerVal].Kind) {
@@ -1222,8 +1232,9 @@ namespace XScript {
                     case EnvironmentStackItem::ItemKind::Null:
                         throw BytecodeInterpretError(L"Cannot compare integers with a null value.");
                 }
-                InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Boolean,
-                                                               (EnvironmentStackItem::ItemValue) {Result}});
+                InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(
+                        {EnvironmentStackItem::ItemKind::Boolean,
+                         (EnvironmentStackItem::ItemValue) {Result}});
                 break;
             case EnvironmentStackItem::ItemKind::Decimal:
                 switch (Right.Kind) {
@@ -1242,8 +1253,9 @@ namespace XScript {
                     case EnvironmentStackItem::ItemKind::Null:
                         throw BytecodeInterpretError(L"Cannot add integers with a null value.");
                 }
-                InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Boolean,
-                                                               (EnvironmentStackItem::ItemValue) {Result}});
+                InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(
+                        {EnvironmentStackItem::ItemKind::Boolean,
+                         (EnvironmentStackItem::ItemValue) {Result}});
                 break;
             case EnvironmentStackItem::ItemKind::Boolean:
                 switch (Right.Kind) {
@@ -1262,8 +1274,9 @@ namespace XScript {
                     case EnvironmentStackItem::ItemKind::Null:
                         throw BytecodeInterpretError(L"Cannot compare with a null value.");
                 }
-                InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Boolean,
-                                                               (EnvironmentStackItem::ItemValue) {Result}});
+                InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(
+                        {EnvironmentStackItem::ItemKind::Boolean,
+                         (EnvironmentStackItem::ItemValue) {Result}});
                 break;
             case EnvironmentStackItem::ItemKind::HeapPointer:
                 switch (InterpreterEnvironment->Heap.HeapData[Left.Value.HeapPointerVal].Kind) {
@@ -1377,25 +1390,27 @@ namespace XScript {
 
     void BytecodeInterpreter::InstructionStackPushInteger(BytecodeStructure::InstructionParam Param) {
         InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Integer,
-                                                       (EnvironmentStackItem::ItemValue) {Param.IntValue}
-                                                      });
+                                                                          (EnvironmentStackItem::ItemValue) {
+                                                                                  Param.IntValue}
+                                                                         });
     }
 
     void BytecodeInterpreter::InstructionStackPushDecimal(BytecodeStructure::InstructionParam Param) {
         InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Decimal,
-                                                       (EnvironmentStackItem::ItemValue) {
-                                                               Param.DeciValue}});
+                                                                          (EnvironmentStackItem::ItemValue) {
+                                                                                  Param.DeciValue}});
     }
 
     void BytecodeInterpreter::InstructionStackPushBoolean(BytecodeStructure::InstructionParam Param) {
         InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Boolean,
-                                                       (EnvironmentStackItem::ItemValue) {
-                                                               Param.BoolValue}});
+                                                                          (EnvironmentStackItem::ItemValue) {
+                                                                                  Param.BoolValue}});
     }
 
     void BytecodeInterpreter::InstructionStackPushEmpty(BytecodeStructure::InstructionParam Param) {
         InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Null,
-                                                       (EnvironmentStackItem::ItemValue) {(XIndexType) 0}});
+                                                                          (EnvironmentStackItem::ItemValue) {
+                                                                                  (XIndexType) 0}});
     }
 
     void BytecodeInterpreter::InstructionStackPop(BytecodeStructure::InstructionParam Param) {
@@ -1403,14 +1418,16 @@ namespace XScript {
     }
 
     void BytecodeInterpreter::InstructionStackDuplicate(BytecodeStructure::InstructionParam Param) {
-        InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(InterpreterEnvironment->Threads[ThreadID].Stack.GetValueFromStack(
-                Param.HeapPointerValue));
+        InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(
+                InterpreterEnvironment->Threads[ThreadID].Stack.GetValueFromStack(
+                        Param.HeapPointerValue));
     }
 
     void BytecodeInterpreter::InstructionStackGetTop(BytecodeStructure::InstructionParam Param) {
         InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(
-                InterpreterEnvironment->Threads[ThreadID].Stack.Elements[InterpreterEnvironment->Threads[ThreadID].Stack.Elements.size() - 1 -
-                                                      Param.HeapPointerValue]);
+                InterpreterEnvironment->Threads[ThreadID].Stack.Elements[
+                        InterpreterEnvironment->Threads[ThreadID].Stack.Elements.size() - 1 -
+                        Param.HeapPointerValue]);
     }
 
     void BytecodeInterpreter::InstructionStackStore(BytecodeStructure::InstructionParam Param) {
@@ -1420,8 +1437,9 @@ namespace XScript {
 
     void BytecodeInterpreter::InstructionStaticStore(BytecodeStructure::InstructionParam Param) {
         EnvironmentStackItem Element = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
-        InterpreterEnvironment->Packages[InterpreterEnvironment->Threads[ThreadID].PC.Package].SetStatic(Param.HeapPointerValue,
-                                                                                                 Element);
+        InterpreterEnvironment->Packages[InterpreterEnvironment->Threads[ThreadID].PC.Package].SetStatic(
+                Param.HeapPointerValue,
+                Element);
     }
 
     void BytecodeInterpreter::InstructionConstantsLoad(BytecodeStructure::InstructionParam Param) {
@@ -1833,7 +1851,7 @@ namespace XScript {
                 Object->Members.insert({I.first, Idx});
             }
             XHeapIndexType ClassPointer = InterpreterEnvironment->Heap.PushElement({EnvObject::ObjectKind::ClassObject,
-                                                                                   (EnvObject::ObjectValue) {Object}});
+                                                                                    (EnvObject::ObjectValue) {Object}});
             InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(
                     (EnvironmentStackItem) {EnvironmentStackItem::ItemKind::HeapPointer,
                                             (EnvironmentStackItem::ItemValue) {ClassPointer}});
@@ -1929,7 +1947,8 @@ namespace XScript {
 
         if (InterpreterEnvironment->RuntimeExceptionTable.empty()) {
             throw BytecodeInterpretError(L"Uncaught user exception at ProgramCounter:" +
-                                         std::to_wstring((XIndexType) InterpreterEnvironment->Threads[ThreadID].PC.Pointer) +
+                                         std::to_wstring(
+                                                 (XIndexType) InterpreterEnvironment->Threads[ThreadID].PC.Pointer) +
                                          L"(Command " +
                                          std::to_wstring(InterpreterEnvironment->Threads[ThreadID].PC.NowIndex) +
                                          L" )"
@@ -1975,7 +1994,8 @@ namespace XScript {
         });
     }
 
-    BytecodeInterpreter::BytecodeInterpreter() : IsBusy(false), ThreadID(0), InterpreterEnvironment(nullptr), GC(nullptr) {
+    BytecodeInterpreter::BytecodeInterpreter() : IsBusy(false), ThreadID(0), InterpreterEnvironment(nullptr),
+                                                 GC(nullptr) {
 
     }
 } // XScript

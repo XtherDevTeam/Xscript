@@ -91,7 +91,7 @@ namespace XScript::Compiler {
                  * Push function pointer to stack
                  */
 
-                Environment.MainPackage.PackageInitializeCodes.push_back((BytecodeStructure) {
+                Result.push_back((BytecodeStructure) {
                         BytecodeStructure::InstructionEnum::stack_push_function,
                         (BytecodeStructure::InstructionParam) {Hash(Environment.MainPackage.Functions[FuncIndex].first)}
                 });
@@ -653,7 +653,8 @@ namespace XScript::Compiler {
 
                 if (IsInParsing == nullptr) {
                     MergeArray(Result,
-                               ParseClassMethodInvoke(Target.Subtrees[0], IsInParsing, ReservedStackItemForThisPointer));
+                               ParseClassMethodInvoke(Target.Subtrees[0], IsInParsing,
+                                                      ReservedStackItemForThisPointer));
 
                     XIndexType Index = IsInParsing->IsMethodExist(
                             IsInParsing->ClassName + L"$constructor");
@@ -675,7 +676,7 @@ namespace XScript::Compiler {
                         throw CompilerError(Target.GetFirstNotNullToken().Line,
                                             Target.GetFirstNotNullToken().Column,
                                             L"ParseClassMethodInvoke: 操你妈个傻逼玩意，你他妈脑瘫啊？这个类他麻痹没有 " +
-                                                    Target.Subtrees[0].Node.Value + L" 这个方法啊，傻逼？");
+                                            Target.Subtrees[0].Node.Value + L" 这个方法啊，傻逼？");
                     }
 
                     Result.push_back((BytecodeStructure) {

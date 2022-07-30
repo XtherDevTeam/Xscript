@@ -42,6 +42,8 @@ namespace XScript {
                  0,
                  VM.Threads[0].PC});
 
+        VM.Threads[0].PC = (ProgramCounterInformation) {VM.Packages[VM.LoadedPackageIDs.back()].PackageInitializeCodes,
+                                                        VM.LoadedPackageIDs.back()};
         Interpreters[0].InstructionStackPushFunction(
                 (BytecodeStructure::InstructionParam) {builtin_hash_code___XScriptRuntimeEntry__});
         Interpreters[0].InstructionFuncInvoke((BytecodeStructure::InstructionParam) {(XHeapIndexType) {0}});

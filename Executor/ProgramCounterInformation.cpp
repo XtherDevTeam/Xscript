@@ -12,11 +12,11 @@ namespace XScript {
     }
 
     ProgramCounterInformation::ProgramCounterInformation(XArray<BytecodeStructure> &NewCounter, XInteger From)
-            : Pointer(&NewCounter), NowIndex(From) {
+            : Pointer(&NewCounter), NowIndex(From), Package(0) {
 
     }
 
-    ProgramCounterInformation::ProgramCounterInformation() : Pointer(nullptr), NowIndex(0) {
+    ProgramCounterInformation::ProgramCounterInformation() : Pointer(nullptr), NowIndex(0), Package(0) {
 
     }
 } // XScript
