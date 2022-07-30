@@ -72,6 +72,7 @@ namespace XScript {
              * generate bytecodes
              */
             auto Backup = Environment.Locals;
+            Environment.Locals = {};
             for (auto &I: Target.Subtrees[1].Subtrees) {
                 Environment.PushLocal(I.Node.Value, {(Typename) {Typename::TypenameKind::Unknown}, {}});
             }

@@ -97,6 +97,7 @@ namespace XScript::Compiler {
                 });
 
                 auto Backup = Environment.Locals;
+                Environment.Locals = {};
                 for (auto &I: Target.Subtrees[0].Subtrees) {
                     Environment.PushLocal(I.Node.Value, {(Typename) {Typename::TypenameKind::Unknown}, {}});
                 }
