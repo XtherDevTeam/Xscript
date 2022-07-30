@@ -23,9 +23,13 @@ namespace XScript {
                         Queue.push(J.Value.HeapPointerVal);
                 }
             }
-            for (auto &I: Env.Stack.Elements) {
-                if (I.Kind == EnvironmentStackItem::ItemKind::HeapPointer)
-                    Queue.push(I.Value.HeapPointerVal);
+            for (XIndexType TID = 0; TID < MaxThreadCount; TID++) {
+                if (!Env.Threads[TID].IsBusy)
+                    continue;
+                for (auto &I: Env.Threads[TID].Stack.Elements) {
+                    if (I.Kind == EnvironmentStackItem::ItemKind::HeapPointer)
+                        Queue.push(I.Value.HeapPointerVal);
+                }
             }
             // 标记
             XHeapIndexType Top = 0;

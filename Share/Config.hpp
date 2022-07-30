@@ -24,6 +24,18 @@ namespace XScript {
     template<typename T, typename T1> using XMap = std::map<T, T1>;
 
     using XHeapIndexType = XIndexType;
+
+    constexpr XIndexType MaxThreadCount = 32;
+
+    /**
+     * Allocate 1024 elements when heap is created.
+     */
+    constexpr XIndexType EnvHeapDataAllocateSize = 1048576;
+
+    /**
+     * When there are 256 elements in heap, start gc process.
+     */
+    constexpr XIndexType EnvHeapGCStartCondition = 256;
 } // XScript
 
 #endif //XSCRIPT2_CONFIG_HPP

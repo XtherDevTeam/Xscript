@@ -13,10 +13,15 @@ namespace XScript {
 
     class BytecodeInterpreter {
     public:
-        Environment &InterpreterEnvironment;
-        GarbageCollection &GC;
+        bool IsBusy;
+        XIndexType ThreadID;
+        void *Pool;
+        Environment *InterpreterEnvironment;
+        GarbageCollection *GC;
 
-        explicit BytecodeInterpreter(Environment &interpreterEnvironment, GarbageCollection &GC);
+        explicit BytecodeInterpreter(void* Pool, Environment *interpreterEnvironment, GarbageCollection *GC);
+
+        BytecodeInterpreter();
 
         void MainLoop();
 
@@ -36,7 +41,7 @@ namespace XScript {
 
         void InstructionLogicOr(BytecodeStructure::InstructionParam Param);
 
-        void InstructionLogicEqual(BytecodeStructure::InstructionParam Param);
+        void InstructionLogicEqual(BytecodeStructure::InstructionParam Param) const;
 
         void InstructionLogicNotEqual(BytecodeStructure::InstructionParam Param);
 

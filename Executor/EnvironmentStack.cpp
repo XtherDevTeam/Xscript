@@ -9,5 +9,5 @@ namespace XScript {
         FramesInformation.push_back(FrameInfo);
     }
 
-    EnvironmentStack::EnvironmentStack() = default;
+    EnvironmentStack::EnvironmentStack() : FramesInformation(), Elements() {}
 } // XScript

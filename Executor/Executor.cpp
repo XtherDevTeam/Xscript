@@ -12,15 +12,14 @@ namespace XScript {
 
     void Executor::Init() {
         for (auto &PackageID: VM.LoadedPackageIDs) {
-            VM.ProgramCounter = (ProgramCounterInformation) {VM.Packages[PackageID].PackageInitializeCodes,
+            VM.Threads[0].PC = (ProgramCounterInformation) {VM.Packages[PackageID].PackageInitializeCodes,
                                                              PackageID};
-            VM.Stack.FramesInformation.push_back(
+            VM.Threads[0].Stack.FramesInformation.push_back(
                     {EnvironmentStackFramesInformation::FrameKind::FunctionStackFrame,
                      0,
                      0,
-                     VM.ProgramCounter});
-            Interpreter.MainLoop();
-            VM.Stack.FramesInformation.pop_back();
+                     VM.Threads[0].PC});
+            Interpreters[0].MainLoop();
         }
         /* correct the packageID of classes */
         for (auto &Package: VM.Packages) {
@@ -31,24 +30,24 @@ namespace XScript {
         }
     }
 
-    Executor::Executor() : Interpreter(VM, GC), GC(VM) {
+    Executor::Executor() : Interpreters(VM, GC), GC(VM) {
     }
 
     void Executor::Start() {
         // 设置启动地址
         // 不用设置ProgramCounter的Package, 最后Init的一定是主包
-        VM.Stack.FramesInformation.push_back(
+        VM.Threads[0].Stack.FramesInformation.push_back(
                 {EnvironmentStackFramesInformation::FrameKind::FunctionStackFrame,
                  0,
                  0,
-                 VM.ProgramCounter});
+                 VM.Threads[0].PC});
 
-        Interpreter.InstructionStackPushFunction(
+        Interpreters[0].InstructionStackPushFunction(
                 (BytecodeStructure::InstructionParam) {builtin_hash_code___XScriptRuntimeEntry__});
-        Interpreter.InstructionFuncInvoke((BytecodeStructure::InstructionParam) {(XHeapIndexType) {0}});
-        VM.ProgramCounter.NowIndex++;
-        Interpreter.MainLoop();
-        Interpreter.InterpreterEnvironment.NativeLibraries.FreeLibraries();
+        Interpreters[0].InstructionFuncInvoke((BytecodeStructure::InstructionParam) {(XHeapIndexType) {0}});
+        VM.Threads[0].PC.NowIndex++;
+        Interpreters[0].MainLoop();
+        Interpreters[0].InterpreterEnvironment->NativeLibraries.FreeLibraries();
     }
 
     XIndexType Executor::StartWithRuntimeDuration() {

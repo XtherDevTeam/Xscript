@@ -8,11 +8,6 @@
 #include "Environment.hpp"
 
 namespace XScript {
-    /**
-     * When there are 256 elements in heap, start gc process.
-     */
-    constexpr XIndexType EnvHeapGCStartCondition = 256;
-
     class GarbageCollection {
         XIndexType Limit = 0 + EnvHeapGCStartCondition;
         Environment &Env;

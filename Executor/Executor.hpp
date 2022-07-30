@@ -8,6 +8,7 @@
 #include "Environment.hpp"
 #include "BytecodeInterpreter.hpp"
 #include "GarbageCollection.hpp"
+#include "BytecodeInterpreterPool.hpp"
 
 namespace XScript {
 
@@ -15,7 +16,7 @@ namespace XScript {
     public:
         Environment VM;
         GarbageCollection GC;
-        BytecodeInterpreter Interpreter;
+        BytecodeInterpreterPool Interpreters;
 
         Executor();
 

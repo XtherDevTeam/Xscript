@@ -11,11 +11,6 @@
 #include "EnvObject.hpp"
 
 namespace XScript {
-    /**
-     * Allocate 1024 elements when heap is created.
-     */
-    constexpr XIndexType EnvHeapDataAllocateSize = 1048576;
-
     class EnvironmentHeap {
     public:
         XIndexType AllocatedElementCount{};

@@ -11,15 +11,15 @@
 #include "EnvPackageStructure.hpp"
 #include "../NativeLibrary/NativeLibrariesManager.hpp"
 #include "ExceptionTableItem.hpp"
+#include "EnvironmentThreadPool.hpp"
 
 namespace XScript {
 
     /* XScript 2 Executor Environment */
     class Environment {
     public:
-        EnvironmentStack Stack;
+        EnvironmentThreadPool Threads;
         EnvironmentHeap Heap;
-        ProgramCounterInformation ProgramCounter;
 
         NativeLibrariesManager NativeLibraries;
 

@@ -10,8 +10,7 @@
 
 namespace XScript {
     struct ParamToMethod {
-        void *VMPointer; // Need to be converted to Environment* by library
-        void *VMGC;
+        void *InterpreterPointer;
         XIndexType ParamsCount;
     };
 

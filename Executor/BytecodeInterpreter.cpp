@@ -5,13 +5,15 @@
 #include "BytecodeInterpreter.hpp"
 
 namespace XScript {
-    BytecodeInterpreter::BytecodeInterpreter(Environment &interpreterEnvironment, GarbageCollection &GC) :
-            InterpreterEnvironment(interpreterEnvironment), GC(GC) {}
+    BytecodeInterpreter::BytecodeInterpreter(void* Pool, Environment *interpreterEnvironment, GarbageCollection *GC) :
+            IsBusy(false), ThreadID(0), Pool(Pool), InterpreterEnvironment(interpreterEnvironment), GC(GC) {}
 
     void BytecodeInterpreter::MainLoop() {
-        while (InterpreterEnvironment.ProgramCounter.NowIndex !=
-               InterpreterEnvironment.ProgramCounter.Pointer->size()) {
-            auto &CurrentInstruction = (*InterpreterEnvironment.ProgramCounter.Pointer)[InterpreterEnvironment.ProgramCounter.NowIndex];
+        IsBusy = true;
+        InterpreterEnvironment->Threads[ThreadID].IsBusy = true;
+        while (InterpreterEnvironment->Threads[ThreadID].PC.NowIndex !=
+               InterpreterEnvironment->Threads[ThreadID].PC.Pointer->size()) {
+            auto &CurrentInstruction = (*InterpreterEnvironment->Threads[ThreadID].PC.Pointer)[InterpreterEnvironment->Threads[ThreadID].PC.NowIndex];
             switch (CurrentInstruction.Instruction) {
                 case BytecodeStructure::InstructionEnum::calculation_add:
                     InstructionCalculationAdd(CurrentInstruction.Param);
@@ -181,18 +183,22 @@ namespace XScript {
                     InstructionExceptionThrow(CurrentInstruction.Param);
                     break;
                 case BytecodeStructure::InstructionEnum::force_exit:
+                    IsBusy = false;
+                    InterpreterEnvironment->Threads[ThreadID] = {};
                     return;
                 case BytecodeStructure::InstructionEnum::fake_command_continue:
                 case BytecodeStructure::InstructionEnum::fake_command_break:
                     break;
             }
-            InterpreterEnvironment.ProgramCounter.NowIndex++;
+            InterpreterEnvironment->Threads[ThreadID].PC.NowIndex++;
         }
+        IsBusy = false;
+        InterpreterEnvironment->Threads[ThreadID] = {};
     }
 
     void BytecodeInterpreter::InstructionCalculationAdd(BytecodeStructure::InstructionParam Param) {
-        auto Right = InterpreterEnvironment.Stack.PopValueFromStack();
-        auto Left = InterpreterEnvironment.Stack.PopValueFromStack();
+        auto Right = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
+        auto Left = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
         switch (Left.Kind) {
             case EnvironmentStackItem::ItemKind::Integer:
                 switch (Right.Kind) {
@@ -206,13 +212,14 @@ namespace XScript {
                     case EnvironmentStackItem::ItemKind::Boolean:
                         Left.Value.IntVal += static_cast<XInteger>(Right.Value.BoolVal);
                         break;
+                    case EnvironmentStackItem::ItemKind::NativeMethodPointer:
                     case EnvironmentStackItem::ItemKind::FunctionPointer:
                     case EnvironmentStackItem::ItemKind::HeapPointer:
                         throw BytecodeInterpretError(L"Cannot add integers with a object.");
                     case EnvironmentStackItem::ItemKind::Null:
                         throw BytecodeInterpretError(L"Cannot add integers with a null value.");
                 }
-                InterpreterEnvironment.Stack.PushValueToStack(Left);
+                InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(Left);
                 break;
             case EnvironmentStackItem::ItemKind::Decimal:
                 switch (Right.Kind) {
@@ -225,13 +232,14 @@ namespace XScript {
                     case EnvironmentStackItem::ItemKind::Boolean:
                         Left.Value.DeciVal += static_cast<XDecimal>(Right.Value.BoolVal);
                         break;
+                    case EnvironmentStackItem::ItemKind::NativeMethodPointer:
                     case EnvironmentStackItem::ItemKind::FunctionPointer:
                     case EnvironmentStackItem::ItemKind::HeapPointer:
                         throw BytecodeInterpretError(L"Cannot add integers with a object.");
                     case EnvironmentStackItem::ItemKind::Null:
                         throw BytecodeInterpretError(L"Cannot add integers with a null value.");
                 }
-                InterpreterEnvironment.Stack.PushValueToStack(Left);
+                InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(Left);
                 break;
             case EnvironmentStackItem::ItemKind::Boolean:
                 switch (Right.Kind) {
@@ -247,25 +255,26 @@ namespace XScript {
                     case EnvironmentStackItem::ItemKind::Boolean:
                         Left.Value.BoolVal += Right.Value.BoolVal;
                         break;
+                    case EnvironmentStackItem::ItemKind::NativeMethodPointer:
                     case EnvironmentStackItem::ItemKind::FunctionPointer:
                     case EnvironmentStackItem::ItemKind::HeapPointer:
                         throw BytecodeInterpretError(L"Cannot add integers with a object.");
                     case EnvironmentStackItem::ItemKind::Null:
                         throw BytecodeInterpretError(L"Cannot add integers with a null value.");
                 }
-                InterpreterEnvironment.Stack.PushValueToStack(Left);
+                InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(Left);
                 break;
             case EnvironmentStackItem::ItemKind::HeapPointer:
-                switch (InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal].Kind) {
+                switch (InterpreterEnvironment->Heap.HeapData[Left.Value.HeapPointerVal].Kind) {
                     case EnvObject::ObjectKind::ClassObject: {
-                        auto &ClassObject = *InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal].Value.ClassObjectPointer;
-                        auto &Method = InterpreterEnvironment.Heap.HeapData[ClassObject.GetMember(
+                        auto &ClassObject = *InterpreterEnvironment->Heap.HeapData[Left.Value.HeapPointerVal].Value.ClassObjectPointer;
+                        auto &Method = InterpreterEnvironment->Heap.HeapData[ClassObject.GetMember(
                                 builtin_hash_code___instruction_add__)];
                         if (Method.Kind == EnvObject::ObjectKind::FunctionPointer ||
                             Method.Kind == EnvObject::ObjectKind::NativeMethodPointer) {
-                            InterpreterEnvironment.Stack.PushValueToStack(Left); // this
-                            InterpreterEnvironment.Stack.PushValueToStack(Right); // rhs
-                            InterpreterEnvironment.Stack.PushValueToStack(
+                            InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(Left); // this
+                            InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(Right); // rhs
+                            InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(
                                     {Method.Kind == EnvObject::ObjectKind::FunctionPointer
                                      ? EnvironmentStackItem::ItemKind::FunctionPointer
                                      : EnvironmentStackItem::ItemKind::NativeMethodPointer,
@@ -281,15 +290,15 @@ namespace XScript {
                     }
                     case EnvObject::ObjectKind::StringObject: {
                         if (Right.Kind == EnvironmentStackItem::ItemKind::HeapPointer and
-                            InterpreterEnvironment.Heap.HeapData[Right.Value.HeapPointerVal].Kind ==
+                            InterpreterEnvironment->Heap.HeapData[Right.Value.HeapPointerVal].Kind ==
                             EnvObject::ObjectKind::StringObject) {
-                            auto ObjPointer = InterpreterEnvironment.Heap.PushElement(
+                            auto ObjPointer = InterpreterEnvironment->Heap.PushElement(
                                     {EnvObject::ObjectKind::StringObject,
                                      (EnvObject::ObjectValue) {MergeEnvStringObject(
-                                             InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal].Value.StringObjectPointer,
-                                             InterpreterEnvironment.Heap.HeapData[Right.Value.HeapPointerVal].Value.StringObjectPointer)}});
+                                             InterpreterEnvironment->Heap.HeapData[Left.Value.HeapPointerVal].Value.StringObjectPointer,
+                                             InterpreterEnvironment->Heap.HeapData[Right.Value.HeapPointerVal].Value.StringObjectPointer)}});
 
-                            InterpreterEnvironment.Stack.PushValueToStack(
+                            InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(
                                     (EnvironmentStackItem) {EnvironmentStackItem::ItemKind::HeapPointer,
                                                             (EnvironmentStackItem::ItemValue) {ObjPointer}});
                         } else {
@@ -301,6 +310,7 @@ namespace XScript {
                         throw BytecodeInterpretError(L"Cannot operate an basic-type heap item.");
                 }
                 break;
+            case EnvironmentStackItem::ItemKind::NativeMethodPointer:
             case EnvironmentStackItem::ItemKind::FunctionPointer:
                 break;
             case EnvironmentStackItem::ItemKind::Null:
@@ -309,8 +319,8 @@ namespace XScript {
     }
 
     void BytecodeInterpreter::InstructionCalculationSub(BytecodeStructure::InstructionParam Param) {
-        auto Right = InterpreterEnvironment.Stack.PopValueFromStack();
-        auto Left = InterpreterEnvironment.Stack.PopValueFromStack();
+        auto Right = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
+        auto Left = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
         switch (Left.Kind) {
             case EnvironmentStackItem::ItemKind::Integer:
                 switch (Right.Kind) {
@@ -324,13 +334,14 @@ namespace XScript {
                     case EnvironmentStackItem::ItemKind::Boolean:
                         Left.Value.IntVal -= static_cast<XInteger>(Right.Value.BoolVal);
                         break;
+                    case EnvironmentStackItem::ItemKind::NativeMethodPointer:
                     case EnvironmentStackItem::ItemKind::FunctionPointer:
                     case EnvironmentStackItem::ItemKind::HeapPointer:
                         throw BytecodeInterpretError(L"Cannot add integers with a object.");
                     case EnvironmentStackItem::ItemKind::Null:
                         throw BytecodeInterpretError(L"Cannot add integers with a null value.");
                 }
-                InterpreterEnvironment.Stack.PushValueToStack(Left);
+                InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(Left);
                 break;
             case EnvironmentStackItem::ItemKind::Decimal:
                 switch (Right.Kind) {
@@ -343,13 +354,14 @@ namespace XScript {
                     case EnvironmentStackItem::ItemKind::Boolean:
                         Left.Value.DeciVal -= static_cast<XDecimal>(Right.Value.BoolVal);
                         break;
+                    case EnvironmentStackItem::ItemKind::NativeMethodPointer:
                     case EnvironmentStackItem::ItemKind::FunctionPointer:
                     case EnvironmentStackItem::ItemKind::HeapPointer:
                         throw BytecodeInterpretError(L"Cannot add integers with a object.");
                     case EnvironmentStackItem::ItemKind::Null:
                         throw BytecodeInterpretError(L"Cannot add integers with a null value.");
                 }
-                InterpreterEnvironment.Stack.PushValueToStack(Left);
+                InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(Left);
                 break;
             case EnvironmentStackItem::ItemKind::Boolean:
                 switch (Right.Kind) {
@@ -365,26 +377,29 @@ namespace XScript {
                     case EnvironmentStackItem::ItemKind::Boolean:
                         Left.Value.BoolVal -= Right.Value.BoolVal;
                         break;
+                    case EnvironmentStackItem::ItemKind::NativeMethodPointer:
+                    case EnvironmentStackItem::ItemKind::FunctionPointer:
                     case EnvironmentStackItem::ItemKind::HeapPointer:
                         throw BytecodeInterpretError(L"Cannot add integers with a object.");
                     case EnvironmentStackItem::ItemKind::Null:
                         throw BytecodeInterpretError(L"Cannot add integers with a null value.");
                 }
-                InterpreterEnvironment.Stack.PushValueToStack(Left);
+                InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(Left);
                 break;
+            case EnvironmentStackItem::ItemKind::NativeMethodPointer:
             case EnvironmentStackItem::ItemKind::FunctionPointer:
                 break;
             case EnvironmentStackItem::ItemKind::HeapPointer:
-                switch (InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal].Kind) {
+                switch (InterpreterEnvironment->Heap.HeapData[Left.Value.HeapPointerVal].Kind) {
                     case EnvObject::ObjectKind::ClassObject: {
-                        auto &ClassObject = *InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal].Value.ClassObjectPointer;
-                        auto &Method = InterpreterEnvironment.Heap.HeapData[ClassObject.GetMember(
+                        auto &ClassObject = *InterpreterEnvironment->Heap.HeapData[Left.Value.HeapPointerVal].Value.ClassObjectPointer;
+                        auto &Method = InterpreterEnvironment->Heap.HeapData[ClassObject.GetMember(
                                 builtin_hash_code___instruction_sub__)];
                         if (Method.Kind == EnvObject::ObjectKind::FunctionPointer ||
                             Method.Kind == EnvObject::ObjectKind::NativeMethodPointer) {
-                            InterpreterEnvironment.Stack.PushValueToStack(Left); // this
-                            InterpreterEnvironment.Stack.PushValueToStack(Right); // rhs
-                            InterpreterEnvironment.Stack.PushValueToStack(
+                            InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(Left); // this
+                            InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(Right); // rhs
+                            InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(
                                     {Method.Kind == EnvObject::ObjectKind::FunctionPointer
                                      ? EnvironmentStackItem::ItemKind::FunctionPointer
                                      : EnvironmentStackItem::ItemKind::NativeMethodPointer,
@@ -409,8 +424,8 @@ namespace XScript {
     }
 
     void BytecodeInterpreter::InstructionCalculationMul(BytecodeStructure::InstructionParam Param) {
-        auto Right = InterpreterEnvironment.Stack.PopValueFromStack();
-        auto Left = InterpreterEnvironment.Stack.PopValueFromStack();
+        auto Right = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
+        auto Left = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
         switch (Left.Kind) {
             case EnvironmentStackItem::ItemKind::Integer:
                 switch (Right.Kind) {
@@ -424,13 +439,14 @@ namespace XScript {
                     case EnvironmentStackItem::ItemKind::Boolean:
                         Left.Value.IntVal *= static_cast<XInteger>(Right.Value.BoolVal);
                         break;
+                    case EnvironmentStackItem::ItemKind::NativeMethodPointer:
                     case EnvironmentStackItem::ItemKind::FunctionPointer:
                     case EnvironmentStackItem::ItemKind::HeapPointer:
                         throw BytecodeInterpretError(L"Cannot add integers with a object.");
                     case EnvironmentStackItem::ItemKind::Null:
                         throw BytecodeInterpretError(L"Cannot add integers with a null value.");
                 }
-                InterpreterEnvironment.Stack.PushValueToStack(Left);
+                InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(Left);
                 break;
             case EnvironmentStackItem::ItemKind::Decimal:
                 switch (Right.Kind) {
@@ -443,13 +459,14 @@ namespace XScript {
                     case EnvironmentStackItem::ItemKind::Boolean:
                         Left.Value.DeciVal *= static_cast<XDecimal>(Right.Value.BoolVal);
                         break;
+                    case EnvironmentStackItem::ItemKind::NativeMethodPointer:
                     case EnvironmentStackItem::ItemKind::FunctionPointer:
                     case EnvironmentStackItem::ItemKind::HeapPointer:
                         throw BytecodeInterpretError(L"Cannot add integers with a object.");
                     case EnvironmentStackItem::ItemKind::Null:
                         throw BytecodeInterpretError(L"Cannot add integers with a null value.");
                 }
-                InterpreterEnvironment.Stack.PushValueToStack(Left);
+                InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(Left);
                 break;
             case EnvironmentStackItem::ItemKind::Boolean:
                 switch (Right.Kind) {
@@ -465,27 +482,29 @@ namespace XScript {
                     case EnvironmentStackItem::ItemKind::Boolean:
                         Left.Value.BoolVal *= Right.Value.BoolVal;
                         break;
+                    case EnvironmentStackItem::ItemKind::NativeMethodPointer:
                     case EnvironmentStackItem::ItemKind::FunctionPointer:
                     case EnvironmentStackItem::ItemKind::HeapPointer:
                         throw BytecodeInterpretError(L"Cannot add integers with a object.");
                     case EnvironmentStackItem::ItemKind::Null:
                         throw BytecodeInterpretError(L"Cannot add integers with a null value.");
                 }
-                InterpreterEnvironment.Stack.PushValueToStack(Left);
+                InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(Left);
                 break;
+            case EnvironmentStackItem::ItemKind::NativeMethodPointer:
             case EnvironmentStackItem::ItemKind::FunctionPointer:
                 break;
             case EnvironmentStackItem::ItemKind::HeapPointer:
-                switch (InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal].Kind) {
+                switch (InterpreterEnvironment->Heap.HeapData[Left.Value.HeapPointerVal].Kind) {
                     case EnvObject::ObjectKind::ClassObject: {
-                        auto &ClassObject = *InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal].Value.ClassObjectPointer;
-                        auto &Method = InterpreterEnvironment.Heap.HeapData[ClassObject.GetMember(
+                        auto &ClassObject = *InterpreterEnvironment->Heap.HeapData[Left.Value.HeapPointerVal].Value.ClassObjectPointer;
+                        auto &Method = InterpreterEnvironment->Heap.HeapData[ClassObject.GetMember(
                                 builtin_hash_code___instruction_mul__)];
                         if (Method.Kind == EnvObject::ObjectKind::FunctionPointer ||
                             Method.Kind == EnvObject::ObjectKind::NativeMethodPointer) {
-                            InterpreterEnvironment.Stack.PushValueToStack(Left); // this
-                            InterpreterEnvironment.Stack.PushValueToStack(Right); // rhs
-                            InterpreterEnvironment.Stack.PushValueToStack(
+                            InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(Left); // this
+                            InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(Right); // rhs
+                            InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(
                                     {Method.Kind == EnvObject::ObjectKind::FunctionPointer
                                      ? EnvironmentStackItem::ItemKind::FunctionPointer
                                      : EnvironmentStackItem::ItemKind::NativeMethodPointer,
@@ -498,7 +517,6 @@ namespace XScript {
                     }
                     case EnvObject::ObjectKind::ArrayObject:
                         throw BytecodeInterpretError(L"Unsupported array operation.");
-                        break;
                     case EnvObject::ObjectKind::StringObject:
                         throw BytecodeInterpretError(L"Unsupported string operation.");
                     default:
@@ -511,8 +529,8 @@ namespace XScript {
     }
 
     void BytecodeInterpreter::InstructionCalculationDiv(BytecodeStructure::InstructionParam Param) {
-        auto Right = InterpreterEnvironment.Stack.PopValueFromStack();
-        auto Left = InterpreterEnvironment.Stack.PopValueFromStack();
+        auto Right = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
+        auto Left = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
         switch (Left.Kind) {
             case EnvironmentStackItem::ItemKind::Integer:
                 switch (Right.Kind) {
@@ -526,13 +544,14 @@ namespace XScript {
                     case EnvironmentStackItem::ItemKind::Boolean:
                         Left.Value.IntVal /= static_cast<XInteger>(Right.Value.BoolVal);
                         break;
+                    case EnvironmentStackItem::ItemKind::NativeMethodPointer:
                     case EnvironmentStackItem::ItemKind::FunctionPointer:
                     case EnvironmentStackItem::ItemKind::HeapPointer:
                         throw BytecodeInterpretError(L"Cannot add integers with a object.");
                     case EnvironmentStackItem::ItemKind::Null:
                         throw BytecodeInterpretError(L"Cannot add integers with a null value.");
                 }
-                InterpreterEnvironment.Stack.PushValueToStack(Left);
+                InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(Left);
                 break;
             case EnvironmentStackItem::ItemKind::Decimal:
                 switch (Right.Kind) {
@@ -545,13 +564,14 @@ namespace XScript {
                     case EnvironmentStackItem::ItemKind::Boolean:
                         Left.Value.DeciVal /= static_cast<XDecimal>(Right.Value.BoolVal);
                         break;
+                    case EnvironmentStackItem::ItemKind::NativeMethodPointer:
                     case EnvironmentStackItem::ItemKind::FunctionPointer:
                     case EnvironmentStackItem::ItemKind::HeapPointer:
                         throw BytecodeInterpretError(L"Cannot add integers with a object.");
                     case EnvironmentStackItem::ItemKind::Null:
                         throw BytecodeInterpretError(L"Cannot add integers with a null value.");
                 }
-                InterpreterEnvironment.Stack.PushValueToStack(Left);
+                InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(Left);
                 break;
             case EnvironmentStackItem::ItemKind::Boolean:
                 switch (Right.Kind) {
@@ -567,27 +587,29 @@ namespace XScript {
                     case EnvironmentStackItem::ItemKind::Boolean:
                         Left.Value.BoolVal *= Right.Value.BoolVal;
                         break;
+                    case EnvironmentStackItem::ItemKind::NativeMethodPointer:
                     case EnvironmentStackItem::ItemKind::FunctionPointer:
                     case EnvironmentStackItem::ItemKind::HeapPointer:
                         throw BytecodeInterpretError(L"Cannot add integers with a object.");
                     case EnvironmentStackItem::ItemKind::Null:
                         throw BytecodeInterpretError(L"Cannot add integers with a null value.");
                 }
-                InterpreterEnvironment.Stack.PushValueToStack(Left);
+                InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(Left);
                 break;
+            case EnvironmentStackItem::ItemKind::NativeMethodPointer:
             case EnvironmentStackItem::ItemKind::FunctionPointer:
                 break;
             case EnvironmentStackItem::ItemKind::HeapPointer:
-                switch (InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal].Kind) {
+                switch (InterpreterEnvironment->Heap.HeapData[Left.Value.HeapPointerVal].Kind) {
                     case EnvObject::ObjectKind::ClassObject: {
-                        auto &ClassObject = *InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal].Value.ClassObjectPointer;
-                        auto &Method = InterpreterEnvironment.Heap.HeapData[ClassObject.GetMember(
+                        auto &ClassObject = *InterpreterEnvironment->Heap.HeapData[Left.Value.HeapPointerVal].Value.ClassObjectPointer;
+                        auto &Method = InterpreterEnvironment->Heap.HeapData[ClassObject.GetMember(
                                 builtin_hash_code___instruction_div__)];
                         if (Method.Kind == EnvObject::ObjectKind::FunctionPointer ||
                             Method.Kind == EnvObject::ObjectKind::NativeMethodPointer) {
-                            InterpreterEnvironment.Stack.PushValueToStack(Left); // this
-                            InterpreterEnvironment.Stack.PushValueToStack(Right); // rhs
-                            InterpreterEnvironment.Stack.PushValueToStack(
+                            InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(Left); // this
+                            InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(Right); // rhs
+                            InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(
                                     {Method.Kind == EnvObject::ObjectKind::FunctionPointer
                                      ? EnvironmentStackItem::ItemKind::FunctionPointer
                                      : EnvironmentStackItem::ItemKind::NativeMethodPointer,
@@ -613,19 +635,19 @@ namespace XScript {
     }
 
     void BytecodeInterpreter::InstructionCalculationMod(BytecodeStructure::InstructionParam Param) {
-        auto Right = InterpreterEnvironment.Stack.PopValueFromStack();
-        auto Left = InterpreterEnvironment.Stack.PopValueFromStack();
+        auto Right = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
+        auto Left = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
         if (Left.Kind != EnvironmentStackItem::ItemKind::Integer or
             Right.Kind != EnvironmentStackItem::ItemKind::Integer) {
             throw BytecodeInterpretError(L"Command calculation_mod only can be used between 2 integers.");
         }
         Left.Value.IntVal %= Right.Value.IntVal;
-        InterpreterEnvironment.Stack.PushValueToStack(Left);
+        InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(Left);
     }
 
     void BytecodeInterpreter::InstructionLogicAnd(BytecodeStructure::InstructionParam Param) {
 /* Get operands and covert type to boolean */
-        auto Right = InterpreterEnvironment.Stack.PopValueFromStack();
+        auto Right = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
         switch (Right.Kind) {
             case EnvironmentStackItem::ItemKind::Integer:
                 Right.Value.BoolVal = Right.Value.IntVal;
@@ -639,6 +661,10 @@ namespace XScript {
                 Right.Value.BoolVal = static_cast<XBoolean>(Right.Value.FuncPointerVal);
                 Right.Kind = EnvironmentStackItem::ItemKind::Boolean;
                 break;
+            case EnvironmentStackItem::ItemKind::NativeMethodPointer:
+                Right.Value.BoolVal = static_cast<XBoolean>(Right.Value.NativeMethodPointerVal);
+                Right.Kind = EnvironmentStackItem::ItemKind::Boolean;
+                break;
             case EnvironmentStackItem::ItemKind::HeapPointer:
                 break;
             case EnvironmentStackItem::ItemKind::Null:
@@ -648,7 +674,7 @@ namespace XScript {
             case EnvironmentStackItem::ItemKind::Boolean:
                 break;
         }
-        auto Left = InterpreterEnvironment.Stack.PopValueFromStack();
+        auto Left = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
         switch (Left.Kind) {
             case EnvironmentStackItem::ItemKind::Integer:
                 Left.Value.BoolVal = Left.Value.IntVal;
@@ -662,17 +688,21 @@ namespace XScript {
                 Left.Value.BoolVal = static_cast<XBoolean>(Left.Value.FuncPointerVal);
                 Left.Kind = EnvironmentStackItem::ItemKind::Boolean;
                 break;
+            case EnvironmentStackItem::ItemKind::NativeMethodPointer:
+                Left.Value.BoolVal = static_cast<XBoolean>(Left.Value.NativeMethodPointerVal);
+                Left.Kind = EnvironmentStackItem::ItemKind::Boolean;
+                break;
             case EnvironmentStackItem::ItemKind::HeapPointer:
-                switch (InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal].Kind) {
+                switch (InterpreterEnvironment->Heap.HeapData[Left.Value.HeapPointerVal].Kind) {
                     case EnvObject::ObjectKind::ClassObject: {
-                        auto &ClassObject = *InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal].Value.ClassObjectPointer;
-                        auto &Method = InterpreterEnvironment.Heap.HeapData[ClassObject.GetMember(
+                        auto &ClassObject = *InterpreterEnvironment->Heap.HeapData[Left.Value.HeapPointerVal].Value.ClassObjectPointer;
+                        auto &Method = InterpreterEnvironment->Heap.HeapData[ClassObject.GetMember(
                                 builtin_hash_code___instruction_logic_and__)];
                         if (Method.Kind == EnvObject::ObjectKind::FunctionPointer ||
                             Method.Kind == EnvObject::ObjectKind::NativeMethodPointer) {
-                            InterpreterEnvironment.Stack.PushValueToStack(Left); // this
-                            InterpreterEnvironment.Stack.PushValueToStack(Right); // rhs
-                            InterpreterEnvironment.Stack.PushValueToStack(
+                            InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(Left); // this
+                            InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(Right); // rhs
+                            InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(
                                     {Method.Kind == EnvObject::ObjectKind::FunctionPointer
                                      ? EnvironmentStackItem::ItemKind::FunctionPointer
                                      : EnvironmentStackItem::ItemKind::NativeMethodPointer,
@@ -703,7 +733,7 @@ namespace XScript {
         if (Right.Kind == EnvironmentStackItem::ItemKind::Boolean and
             Left.Kind == EnvironmentStackItem::ItemKind::Boolean) {
             Left.Value.BoolVal = Left.Value.BoolVal and Right.Value.BoolVal;
-            InterpreterEnvironment.Stack.PushValueToStack(Left);
+            InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(Left);
         } else {
             throw BytecodeInterpretError(
                     L"calculation_mod: Cannot auto-covert types of operands to boolean.");
@@ -712,7 +742,7 @@ namespace XScript {
 
     void BytecodeInterpreter::InstructionLogicOr(BytecodeStructure::InstructionParam Param) {
 /* Get operands and covert type to boolean */
-        auto Right = InterpreterEnvironment.Stack.PopValueFromStack();
+        auto Right = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
         switch (Right.Kind) {
             case EnvironmentStackItem::ItemKind::Integer:
                 Right.Value.BoolVal = Right.Value.IntVal;
@@ -726,6 +756,10 @@ namespace XScript {
                 Right.Value.BoolVal = static_cast<XBoolean>(Right.Value.FuncPointerVal);
                 Right.Kind = EnvironmentStackItem::ItemKind::Boolean;
                 break;
+            case EnvironmentStackItem::ItemKind::NativeMethodPointer:
+                Right.Value.BoolVal = static_cast<XBoolean>(Right.Value.NativeMethodPointerVal);
+                Right.Kind = EnvironmentStackItem::ItemKind::Boolean;
+                break;
             case EnvironmentStackItem::ItemKind::HeapPointer:
                 break;
             case EnvironmentStackItem::ItemKind::Null:
@@ -736,7 +770,7 @@ namespace XScript {
                 /* don't need to covert boolean value to boolean value */
                 break;
         }
-        auto Left = InterpreterEnvironment.Stack.PopValueFromStack();
+        auto Left = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
         switch (Left.Kind) {
             case EnvironmentStackItem::ItemKind::Integer:
                 Left.Value.BoolVal = Left.Value.IntVal;
@@ -746,21 +780,25 @@ namespace XScript {
                 Left.Value.BoolVal = static_cast<XBoolean>(Left.Value.DeciVal);
                 Left.Kind = EnvironmentStackItem::ItemKind::Boolean;
                 break;
+            case EnvironmentStackItem::ItemKind::NativeMethodPointer:
+                Left.Value.BoolVal = static_cast<XBoolean>(Left.Value.NativeMethodPointerVal);
+                Left.Kind = EnvironmentStackItem::ItemKind::Boolean;
+                break;
             case EnvironmentStackItem::ItemKind::FunctionPointer:
                 Left.Value.BoolVal = static_cast<XBoolean>(Left.Value.FuncPointerVal);
                 Left.Kind = EnvironmentStackItem::ItemKind::Boolean;
                 break;
             case EnvironmentStackItem::ItemKind::HeapPointer:
-                switch (InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal].Kind) {
+                switch (InterpreterEnvironment->Heap.HeapData[Left.Value.HeapPointerVal].Kind) {
                     case EnvObject::ObjectKind::ClassObject: {
-                        auto &ClassObject = *InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal].Value.ClassObjectPointer;
-                        auto &Method = InterpreterEnvironment.Heap.HeapData[ClassObject.GetMember(
+                        auto &ClassObject = *InterpreterEnvironment->Heap.HeapData[Left.Value.HeapPointerVal].Value.ClassObjectPointer;
+                        auto &Method = InterpreterEnvironment->Heap.HeapData[ClassObject.GetMember(
                                 builtin_hash_code___instruction_logic_or__)];
                         if (Method.Kind == EnvObject::ObjectKind::FunctionPointer ||
                             Method.Kind == EnvObject::ObjectKind::NativeMethodPointer) {
-                            InterpreterEnvironment.Stack.PushValueToStack(Left); // this
-                            InterpreterEnvironment.Stack.PushValueToStack(Right); // rhs
-                            InterpreterEnvironment.Stack.PushValueToStack(
+                            InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(Left); // this
+                            InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(Right); // rhs
+                            InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(
                                     {Method.Kind == EnvObject::ObjectKind::FunctionPointer
                                      ? EnvironmentStackItem::ItemKind::FunctionPointer
                                      : EnvironmentStackItem::ItemKind::NativeMethodPointer,
@@ -791,16 +829,16 @@ namespace XScript {
         if (Right.Kind == EnvironmentStackItem::ItemKind::Boolean and
             Left.Kind == EnvironmentStackItem::ItemKind::Boolean) {
             Left.Value.BoolVal = Left.Value.BoolVal or Right.Value.BoolVal;
-            InterpreterEnvironment.Stack.PushValueToStack(Left);
+            InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(Left);
         } else {
             throw BytecodeInterpretError(
                     L"calculation_or: Cannot auto-covert types of operands to boolean.");
         }
     }
 
-    void BytecodeInterpreter::InstructionLogicEqual(BytecodeStructure::InstructionParam Param) {
-        auto Right = InterpreterEnvironment.Stack.PopValueFromStack();
-        auto Left = InterpreterEnvironment.Stack.PopValueFromStack();
+    void BytecodeInterpreter::InstructionLogicEqual(BytecodeStructure::InstructionParam Param) const {
+        auto Right = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
+        auto Left = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
         bool Result = false;
 
         if (Left.Kind == Right.Kind) {
@@ -810,21 +848,22 @@ namespace XScript {
                 case EnvironmentStackItem::ItemKind::Boolean:
                 case EnvironmentStackItem::ItemKind::Null:
                 case EnvironmentStackItem::ItemKind::FunctionPointer:
+                case EnvironmentStackItem::ItemKind::NativeMethodPointer:
                     Result = Left.Value.FuncPointerVal == Right.Value.FuncPointerVal;
                     break;
                 case EnvironmentStackItem::ItemKind::HeapPointer:
-                    Result = InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal] ==
-                             InterpreterEnvironment.Heap.HeapData[Right.Value.HeapPointerVal];
+                    Result = InterpreterEnvironment->Heap.HeapData[Left.Value.HeapPointerVal] ==
+                             InterpreterEnvironment->Heap.HeapData[Right.Value.HeapPointerVal];
                     break;
             }
         }
-        InterpreterEnvironment.Stack.PushValueToStack(
+        InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(
                 {EnvironmentStackItem::ItemKind::Boolean, (EnvironmentStackItem::ItemValue) {Result}});
     }
 
     void BytecodeInterpreter::InstructionLogicNotEqual(BytecodeStructure::InstructionParam Param) {
-        auto Right = InterpreterEnvironment.Stack.PopValueFromStack();
-        auto Left = InterpreterEnvironment.Stack.PopValueFromStack();
+        auto Right = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
+        auto Left = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
         bool Result = false;
 
         if (Left.Kind == Right.Kind) {
@@ -833,22 +872,23 @@ namespace XScript {
                 case EnvironmentStackItem::ItemKind::Decimal:
                 case EnvironmentStackItem::ItemKind::Boolean:
                 case EnvironmentStackItem::ItemKind::Null:
+                case EnvironmentStackItem::ItemKind::NativeMethodPointer:
                 case EnvironmentStackItem::ItemKind::FunctionPointer:
                     Result = Left.Value.FuncPointerVal != Right.Value.FuncPointerVal;
                     break;
                 case EnvironmentStackItem::ItemKind::HeapPointer:
-                    Result = InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal] !=
-                             InterpreterEnvironment.Heap.HeapData[Right.Value.HeapPointerVal];
+                    Result = InterpreterEnvironment->Heap.HeapData[Left.Value.HeapPointerVal] !=
+                             InterpreterEnvironment->Heap.HeapData[Right.Value.HeapPointerVal];
                     break;
             }
         }
-        InterpreterEnvironment.Stack.PushValueToStack(
+        InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(
                 {EnvironmentStackItem::ItemKind::Boolean, (EnvironmentStackItem::ItemValue) {Result}});
     }
 
     void BytecodeInterpreter::InstructionLogicGreatEqual(BytecodeStructure::InstructionParam Param) {
-        auto Right = InterpreterEnvironment.Stack.PopValueFromStack();
-        auto Left = InterpreterEnvironment.Stack.PopValueFromStack();
+        auto Right = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
+        auto Left = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
         bool Result = false;
 
         switch (Left.Kind) {
@@ -863,13 +903,14 @@ namespace XScript {
                     case EnvironmentStackItem::ItemKind::Boolean:
                         Result = Left.Value.IntVal >= static_cast<XInteger>(Right.Value.BoolVal);
                         break;
+                    case EnvironmentStackItem::ItemKind::NativeMethodPointer:
                     case EnvironmentStackItem::ItemKind::FunctionPointer:
                     case EnvironmentStackItem::ItemKind::HeapPointer:
                         throw BytecodeInterpretError(L"Cannot compare integers with a object.");
                     case EnvironmentStackItem::ItemKind::Null:
                         throw BytecodeInterpretError(L"Cannot compare integers with a null value.");
                 }
-                InterpreterEnvironment.Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Boolean,
+                InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Boolean,
                                                                (EnvironmentStackItem::ItemValue) {Result}});
                 break;
             case EnvironmentStackItem::ItemKind::Decimal:
@@ -883,13 +924,14 @@ namespace XScript {
                     case EnvironmentStackItem::ItemKind::Boolean:
                         Result = Left.Value.DeciVal >= static_cast<XDecimal>(Right.Value.BoolVal);
                         break;
+                    case EnvironmentStackItem::ItemKind::NativeMethodPointer:
                     case EnvironmentStackItem::ItemKind::FunctionPointer:
                     case EnvironmentStackItem::ItemKind::HeapPointer:
                         throw BytecodeInterpretError(L"Cannot add integers with a object.");
                     case EnvironmentStackItem::ItemKind::Null:
                         throw BytecodeInterpretError(L"Cannot add integers with a null value.");
                 }
-                InterpreterEnvironment.Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Boolean,
+                InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Boolean,
                                                                (EnvironmentStackItem::ItemValue) {Result}});
                 break;
             case EnvironmentStackItem::ItemKind::Boolean:
@@ -903,27 +945,29 @@ namespace XScript {
                     case EnvironmentStackItem::ItemKind::Boolean:
                         Result = Left.Value.BoolVal >= Right.Value.BoolVal;
                         break;
+                    case EnvironmentStackItem::ItemKind::NativeMethodPointer:
                     case EnvironmentStackItem::ItemKind::FunctionPointer:
                     case EnvironmentStackItem::ItemKind::HeapPointer:
                         throw BytecodeInterpretError(L"Cannot compare integers with a object.");
                     case EnvironmentStackItem::ItemKind::Null:
                         throw BytecodeInterpretError(L"Cannot compare with a null value.");
                 }
-                InterpreterEnvironment.Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Boolean,
+                InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Boolean,
                                                                (EnvironmentStackItem::ItemValue) {Result}});
                 break;
+            case EnvironmentStackItem::ItemKind::NativeMethodPointer:
             case EnvironmentStackItem::ItemKind::FunctionPointer:
             case EnvironmentStackItem::ItemKind::HeapPointer:
-                switch (InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal].Kind) {
+                switch (InterpreterEnvironment->Heap.HeapData[Left.Value.HeapPointerVal].Kind) {
                     case EnvObject::ObjectKind::ClassObject: {
-                        auto &ClassObject = *InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal].Value.ClassObjectPointer;
-                        auto &Method = InterpreterEnvironment.Heap.HeapData[ClassObject.GetMember(
+                        auto &ClassObject = *InterpreterEnvironment->Heap.HeapData[Left.Value.HeapPointerVal].Value.ClassObjectPointer;
+                        auto &Method = InterpreterEnvironment->Heap.HeapData[ClassObject.GetMember(
                                 builtin_hash_code___instruction_logic_great_equal__)];
                         if (Method.Kind == EnvObject::ObjectKind::FunctionPointer ||
                             Method.Kind == EnvObject::ObjectKind::NativeMethodPointer) {
-                            InterpreterEnvironment.Stack.PushValueToStack(Left); // this
-                            InterpreterEnvironment.Stack.PushValueToStack(Right); // rhs
-                            InterpreterEnvironment.Stack.PushValueToStack(
+                            InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(Left); // this
+                            InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(Right); // rhs
+                            InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(
                                     {Method.Kind == EnvObject::ObjectKind::FunctionPointer
                                      ? EnvironmentStackItem::ItemKind::FunctionPointer
                                      : EnvironmentStackItem::ItemKind::NativeMethodPointer,
@@ -948,8 +992,8 @@ namespace XScript {
     }
 
     void BytecodeInterpreter::InstructionLogicLessEqual(BytecodeStructure::InstructionParam Param) {
-        auto Right = InterpreterEnvironment.Stack.PopValueFromStack();
-        auto Left = InterpreterEnvironment.Stack.PopValueFromStack();
+        auto Right = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
+        auto Left = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
         bool Result = false;
 
         switch (Left.Kind) {
@@ -964,13 +1008,14 @@ namespace XScript {
                     case EnvironmentStackItem::ItemKind::Boolean:
                         Result = Left.Value.IntVal <= static_cast<XInteger>(Right.Value.BoolVal);
                         break;
+                    case EnvironmentStackItem::ItemKind::NativeMethodPointer:
                     case EnvironmentStackItem::ItemKind::FunctionPointer:
                     case EnvironmentStackItem::ItemKind::HeapPointer:
                         throw BytecodeInterpretError(L"Cannot compare integers with a object.");
                     case EnvironmentStackItem::ItemKind::Null:
                         throw BytecodeInterpretError(L"Cannot compare integers with a null value.");
                 }
-                InterpreterEnvironment.Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Boolean,
+                InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Boolean,
                                                                (EnvironmentStackItem::ItemValue) {Result}});
                 break;
             case EnvironmentStackItem::ItemKind::Decimal:
@@ -984,13 +1029,14 @@ namespace XScript {
                     case EnvironmentStackItem::ItemKind::Boolean:
                         Result = Left.Value.DeciVal <= static_cast<XDecimal>(Right.Value.BoolVal);
                         break;
+                    case EnvironmentStackItem::ItemKind::NativeMethodPointer:
                     case EnvironmentStackItem::ItemKind::FunctionPointer:
                     case EnvironmentStackItem::ItemKind::HeapPointer:
                         throw BytecodeInterpretError(L"Cannot add integers with a object.");
                     case EnvironmentStackItem::ItemKind::Null:
                         throw BytecodeInterpretError(L"Cannot add integers with a null value.");
                 }
-                InterpreterEnvironment.Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Boolean,
+                InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Boolean,
                                                                (EnvironmentStackItem::ItemValue) {Result}});
                 break;
             case EnvironmentStackItem::ItemKind::Boolean:
@@ -1004,26 +1050,27 @@ namespace XScript {
                     case EnvironmentStackItem::ItemKind::Boolean:
                         Result = Left.Value.BoolVal <= Right.Value.BoolVal;
                         break;
+                    case EnvironmentStackItem::ItemKind::NativeMethodPointer:
                     case EnvironmentStackItem::ItemKind::FunctionPointer:
                     case EnvironmentStackItem::ItemKind::HeapPointer:
                         throw BytecodeInterpretError(L"Cannot compare integers with a object.");
                     case EnvironmentStackItem::ItemKind::Null:
                         throw BytecodeInterpretError(L"Cannot compare with a null value.");
                 }
-                InterpreterEnvironment.Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Boolean,
+                InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Boolean,
                                                                (EnvironmentStackItem::ItemValue) {Result}});
                 break;
             case EnvironmentStackItem::ItemKind::HeapPointer:
-                switch (InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal].Kind) {
+                switch (InterpreterEnvironment->Heap.HeapData[Left.Value.HeapPointerVal].Kind) {
                     case EnvObject::ObjectKind::ClassObject: {
-                        auto &ClassObject = *InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal].Value.ClassObjectPointer;
-                        auto &Method = InterpreterEnvironment.Heap.HeapData[ClassObject.GetMember(
+                        auto &ClassObject = *InterpreterEnvironment->Heap.HeapData[Left.Value.HeapPointerVal].Value.ClassObjectPointer;
+                        auto &Method = InterpreterEnvironment->Heap.HeapData[ClassObject.GetMember(
                                 builtin_hash_code___instruction_logic_less_equal__)];
                         if (Method.Kind == EnvObject::ObjectKind::FunctionPointer ||
                             Method.Kind == EnvObject::ObjectKind::NativeMethodPointer) {
-                            InterpreterEnvironment.Stack.PushValueToStack(Left); // this
-                            InterpreterEnvironment.Stack.PushValueToStack(Right); // rhs
-                            InterpreterEnvironment.Stack.PushValueToStack(
+                            InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(Left); // this
+                            InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(Right); // rhs
+                            InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(
                                     {Method.Kind == EnvObject::ObjectKind::FunctionPointer
                                      ? EnvironmentStackItem::ItemKind::FunctionPointer
                                      : EnvironmentStackItem::ItemKind::NativeMethodPointer,
@@ -1044,14 +1091,15 @@ namespace XScript {
                 break;
             case EnvironmentStackItem::ItemKind::Null:
                 throw BytecodeInterpretError(L"Cannot add elements with a null value.");
+            case EnvironmentStackItem::ItemKind::NativeMethodPointer:
             case EnvironmentStackItem::ItemKind::FunctionPointer:
                 break;
         }
     }
 
     void BytecodeInterpreter::InstructionLogicGreat(BytecodeStructure::InstructionParam Param) {
-        auto Right = InterpreterEnvironment.Stack.PopValueFromStack();
-        auto Left = InterpreterEnvironment.Stack.PopValueFromStack();
+        auto Right = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
+        auto Left = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
         bool Result = false;
 
         switch (Left.Kind) {
@@ -1072,7 +1120,7 @@ namespace XScript {
                     case EnvironmentStackItem::ItemKind::Null:
                         throw BytecodeInterpretError(L"Cannot compare integers with a null value.");
                 }
-                InterpreterEnvironment.Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Boolean,
+                InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Boolean,
                                                                (EnvironmentStackItem::ItemValue) {Result}});
                 break;
             case EnvironmentStackItem::ItemKind::Decimal:
@@ -1092,7 +1140,7 @@ namespace XScript {
                     case EnvironmentStackItem::ItemKind::Null:
                         throw BytecodeInterpretError(L"Cannot add integers with a null value.");
                 }
-                InterpreterEnvironment.Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Boolean,
+                InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Boolean,
                                                                (EnvironmentStackItem::ItemValue) {Result}});
                 break;
             case EnvironmentStackItem::ItemKind::Boolean:
@@ -1112,20 +1160,20 @@ namespace XScript {
                     case EnvironmentStackItem::ItemKind::Null:
                         throw BytecodeInterpretError(L"Cannot compare with a null value.");
                 }
-                InterpreterEnvironment.Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Boolean,
+                InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Boolean,
                                                                (EnvironmentStackItem::ItemValue) {Result}});
                 break;
             case EnvironmentStackItem::ItemKind::HeapPointer:
-                switch (InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal].Kind) {
+                switch (InterpreterEnvironment->Heap.HeapData[Left.Value.HeapPointerVal].Kind) {
                     case EnvObject::ObjectKind::ClassObject: {
-                        auto &ClassObject = *InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal].Value.ClassObjectPointer;
-                        auto &Method = InterpreterEnvironment.Heap.HeapData[ClassObject.GetMember(
+                        auto &ClassObject = *InterpreterEnvironment->Heap.HeapData[Left.Value.HeapPointerVal].Value.ClassObjectPointer;
+                        auto &Method = InterpreterEnvironment->Heap.HeapData[ClassObject.GetMember(
                                 builtin_hash_code___instruction_logic_great__)];
                         if (Method.Kind == EnvObject::ObjectKind::FunctionPointer ||
                             Method.Kind == EnvObject::ObjectKind::NativeMethodPointer) {
-                            InterpreterEnvironment.Stack.PushValueToStack(Left); // this
-                            InterpreterEnvironment.Stack.PushValueToStack(Right); // rhs
-                            InterpreterEnvironment.Stack.PushValueToStack(
+                            InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(Left); // this
+                            InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(Right); // rhs
+                            InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(
                                     {Method.Kind == EnvObject::ObjectKind::FunctionPointer
                                      ? EnvironmentStackItem::ItemKind::FunctionPointer
                                      : EnvironmentStackItem::ItemKind::NativeMethodPointer,
@@ -1152,8 +1200,8 @@ namespace XScript {
     }
 
     void BytecodeInterpreter::InstructionLogicLess(BytecodeStructure::InstructionParam Param) {
-        auto Right = InterpreterEnvironment.Stack.PopValueFromStack();
-        auto Left = InterpreterEnvironment.Stack.PopValueFromStack();
+        auto Right = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
+        auto Left = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
         bool Result = false;
 
         switch (Left.Kind) {
@@ -1174,7 +1222,7 @@ namespace XScript {
                     case EnvironmentStackItem::ItemKind::Null:
                         throw BytecodeInterpretError(L"Cannot compare integers with a null value.");
                 }
-                InterpreterEnvironment.Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Boolean,
+                InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Boolean,
                                                                (EnvironmentStackItem::ItemValue) {Result}});
                 break;
             case EnvironmentStackItem::ItemKind::Decimal:
@@ -1194,7 +1242,7 @@ namespace XScript {
                     case EnvironmentStackItem::ItemKind::Null:
                         throw BytecodeInterpretError(L"Cannot add integers with a null value.");
                 }
-                InterpreterEnvironment.Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Boolean,
+                InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Boolean,
                                                                (EnvironmentStackItem::ItemValue) {Result}});
                 break;
             case EnvironmentStackItem::ItemKind::Boolean:
@@ -1214,20 +1262,20 @@ namespace XScript {
                     case EnvironmentStackItem::ItemKind::Null:
                         throw BytecodeInterpretError(L"Cannot compare with a null value.");
                 }
-                InterpreterEnvironment.Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Boolean,
+                InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Boolean,
                                                                (EnvironmentStackItem::ItemValue) {Result}});
                 break;
             case EnvironmentStackItem::ItemKind::HeapPointer:
-                switch (InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal].Kind) {
+                switch (InterpreterEnvironment->Heap.HeapData[Left.Value.HeapPointerVal].Kind) {
                     case EnvObject::ObjectKind::ClassObject: {
-                        auto &ClassObject = *InterpreterEnvironment.Heap.HeapData[Left.Value.HeapPointerVal].Value.ClassObjectPointer;
-                        auto &Method = InterpreterEnvironment.Heap.HeapData[ClassObject.GetMember(
+                        auto &ClassObject = *InterpreterEnvironment->Heap.HeapData[Left.Value.HeapPointerVal].Value.ClassObjectPointer;
+                        auto &Method = InterpreterEnvironment->Heap.HeapData[ClassObject.GetMember(
                                 builtin_hash_code___instruction_logic_less__)];
                         if (Method.Kind == EnvObject::ObjectKind::FunctionPointer ||
                             Method.Kind == EnvObject::ObjectKind::NativeMethodPointer) {
-                            InterpreterEnvironment.Stack.PushValueToStack(Left); // this
-                            InterpreterEnvironment.Stack.PushValueToStack(Right); // rhs
-                            InterpreterEnvironment.Stack.PushValueToStack(
+                            InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(Left); // this
+                            InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(Right); // rhs
+                            InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(
                                     {Method.Kind == EnvObject::ObjectKind::FunctionPointer
                                      ? EnvironmentStackItem::ItemKind::FunctionPointer
                                      : EnvironmentStackItem::ItemKind::NativeMethodPointer,
@@ -1253,8 +1301,8 @@ namespace XScript {
 
     void BytecodeInterpreter::InstructionBinaryAnd(BytecodeStructure::InstructionParam Param) {
         /* get two operands from the stack */
-        auto Right = InterpreterEnvironment.Stack.PopValueFromStack();
-        auto Left = InterpreterEnvironment.Stack.PopValueFromStack();
+        auto Right = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
+        auto Left = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
 
         if (Right.Kind != EnvironmentStackItem::ItemKind::HeapPointer and
             Right.Kind != EnvironmentStackItem::ItemKind::Null and
@@ -1264,13 +1312,13 @@ namespace XScript {
         } else {
             throw BytecodeInterpretError(L"binary_and: unexpected operands");
         }
-        InterpreterEnvironment.Stack.PushValueToStack(Left);
+        InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(Left);
     }
 
     void BytecodeInterpreter::InstructionBinaryOr(BytecodeStructure::InstructionParam Param) {
         /* get two operands from the stack */
-        auto Right = InterpreterEnvironment.Stack.PopValueFromStack();
-        auto Left = InterpreterEnvironment.Stack.PopValueFromStack();
+        auto Right = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
+        auto Left = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
 
         if (Right.Kind != EnvironmentStackItem::ItemKind::HeapPointer and
             Right.Kind != EnvironmentStackItem::ItemKind::Null and
@@ -1280,13 +1328,13 @@ namespace XScript {
         } else {
             throw BytecodeInterpretError(L"binary_or: unexpected operands");
         }
-        InterpreterEnvironment.Stack.PushValueToStack(Left);
+        InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(Left);
     }
 
     void BytecodeInterpreter::InstructionBinaryXOR(BytecodeStructure::InstructionParam Param) {
         /* get two operands from the stack */
-        auto Right = InterpreterEnvironment.Stack.PopValueFromStack();
-        auto Left = InterpreterEnvironment.Stack.PopValueFromStack();
+        auto Right = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
+        auto Left = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
 
         if (Right.Kind != EnvironmentStackItem::ItemKind::HeapPointer and
             Right.Kind != EnvironmentStackItem::ItemKind::Null and
@@ -1296,12 +1344,12 @@ namespace XScript {
         } else {
             throw BytecodeInterpretError(L"binary_and: unexpected operands");
         }
-        InterpreterEnvironment.Stack.PushValueToStack(Left);
+        InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(Left);
     }
 
     void BytecodeInterpreter::InstructionBinaryNot(BytecodeStructure::InstructionParam Param) {
         /* get operand from the stack */
-        auto Left = InterpreterEnvironment.Stack.PopValueFromStack();
+        auto Left = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
 
         if (Left.Kind != EnvironmentStackItem::ItemKind::HeapPointer and
             Left.Kind != EnvironmentStackItem::ItemKind::Null) {
@@ -1309,82 +1357,82 @@ namespace XScript {
         } else {
             throw BytecodeInterpretError(L"binary_and: unexpected operands");
         }
-        InterpreterEnvironment.Stack.PushValueToStack(Left);
+        InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(Left);
     }
 
     void BytecodeInterpreter::InstructionBinaryLM(BytecodeStructure::InstructionParam Param) {
-        auto Right = InterpreterEnvironment.Stack.PopValueFromStack();
-        auto Left = InterpreterEnvironment.Stack.PopValueFromStack();
+        auto Right = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
+        auto Left = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
 
         Left.Value.IntVal = Left.Value.IntVal << Right.Value.HeapPointerVal;
-        InterpreterEnvironment.Stack.PushValueToStack(Left);
+        InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(Left);
     }
 
     void BytecodeInterpreter::InstructionBinaryRM(BytecodeStructure::InstructionParam Param) {
-        auto Right = InterpreterEnvironment.Stack.PopValueFromStack();
-        auto Left = InterpreterEnvironment.Stack.PopValueFromStack();
+        auto Right = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
+        auto Left = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
 
         Left.Value.IntVal = Left.Value.IntVal >> Right.Value.HeapPointerVal;
     }
 
     void BytecodeInterpreter::InstructionStackPushInteger(BytecodeStructure::InstructionParam Param) {
-        InterpreterEnvironment.Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Integer,
+        InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Integer,
                                                        (EnvironmentStackItem::ItemValue) {Param.IntValue}
                                                       });
     }
 
     void BytecodeInterpreter::InstructionStackPushDecimal(BytecodeStructure::InstructionParam Param) {
-        InterpreterEnvironment.Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Decimal,
+        InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Decimal,
                                                        (EnvironmentStackItem::ItemValue) {
                                                                Param.DeciValue}});
     }
 
     void BytecodeInterpreter::InstructionStackPushBoolean(BytecodeStructure::InstructionParam Param) {
-        InterpreterEnvironment.Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Boolean,
+        InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Boolean,
                                                        (EnvironmentStackItem::ItemValue) {
                                                                Param.BoolValue}});
     }
 
     void BytecodeInterpreter::InstructionStackPushEmpty(BytecodeStructure::InstructionParam Param) {
-        InterpreterEnvironment.Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Null,
+        InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Null,
                                                        (EnvironmentStackItem::ItemValue) {(XIndexType) 0}});
     }
 
     void BytecodeInterpreter::InstructionStackPop(BytecodeStructure::InstructionParam Param) {
-        InterpreterEnvironment.Stack.PopValueFromStack();
+        InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
     }
 
     void BytecodeInterpreter::InstructionStackDuplicate(BytecodeStructure::InstructionParam Param) {
-        InterpreterEnvironment.Stack.PushValueToStack(InterpreterEnvironment.Stack.GetValueFromStack(
+        InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(InterpreterEnvironment->Threads[ThreadID].Stack.GetValueFromStack(
                 Param.HeapPointerValue));
     }
 
     void BytecodeInterpreter::InstructionStackGetTop(BytecodeStructure::InstructionParam Param) {
-        InterpreterEnvironment.Stack.PushValueToStack(
-                InterpreterEnvironment.Stack.Elements[InterpreterEnvironment.Stack.Elements.size() - 1 -
+        InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(
+                InterpreterEnvironment->Threads[ThreadID].Stack.Elements[InterpreterEnvironment->Threads[ThreadID].Stack.Elements.size() - 1 -
                                                       Param.HeapPointerValue]);
     }
 
     void BytecodeInterpreter::InstructionStackStore(BytecodeStructure::InstructionParam Param) {
-        EnvironmentStackItem Element = InterpreterEnvironment.Stack.PopValueFromStack();
-        InterpreterEnvironment.Stack.StoreValueToIndex(Param.HeapPointerValue, Element);
+        EnvironmentStackItem Element = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
+        InterpreterEnvironment->Threads[ThreadID].Stack.StoreValueToIndex(Param.HeapPointerValue, Element);
     }
 
     void BytecodeInterpreter::InstructionStaticStore(BytecodeStructure::InstructionParam Param) {
-        EnvironmentStackItem Element = InterpreterEnvironment.Stack.PopValueFromStack();
-        InterpreterEnvironment.Packages[InterpreterEnvironment.ProgramCounter.Package].SetStatic(Param.HeapPointerValue,
+        EnvironmentStackItem Element = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
+        InterpreterEnvironment->Packages[InterpreterEnvironment->Threads[ThreadID].PC.Package].SetStatic(Param.HeapPointerValue,
                                                                                                  Element);
     }
 
     void BytecodeInterpreter::InstructionConstantsLoad(BytecodeStructure::InstructionParam Param) {
-        GC.Start();
-        auto &Element = InterpreterEnvironment.Packages[InterpreterEnvironment.ProgramCounter.Package].Constants[Param.HeapPointerValue];
+        GC->Start();
+        auto &Element = InterpreterEnvironment->Packages[InterpreterEnvironment->Threads[ThreadID].PC.Package].Constants[Param.HeapPointerValue];
         switch (Element.Kind) {
             case EnvConstantPool::EnvConstant::ItemKind::StringVal:
-                InterpreterEnvironment.Stack.PushValueToStack(
+                InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(
                         (EnvironmentStackItem) {EnvironmentStackItem::ItemKind::HeapPointer,
                                                 (EnvironmentStackItem::ItemValue) {
-                                                        InterpreterEnvironment.Heap.PushElement(
+                                                        InterpreterEnvironment->Heap.PushElement(
                                                                 (EnvObject) {EnvObject::ObjectKind::StringObject,
                                                                              (EnvObject::ObjectValue) {
                                                                                      CreateEnvStringObjectFromXString(
@@ -1396,7 +1444,7 @@ namespace XScript {
     }
 
     void BytecodeInterpreter::InstructionCalculationNegate(BytecodeStructure::InstructionParam Param) {
-        EnvironmentStackItem Element = InterpreterEnvironment.Stack.PopValueFromStack();
+        EnvironmentStackItem Element = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
         switch (Element.Kind) {
             case EnvironmentStackItem::ItemKind::Integer:
                 Element.Value.IntVal = -Element.Value.IntVal;
@@ -1412,19 +1460,19 @@ namespace XScript {
             case EnvironmentStackItem::ItemKind::Null:
                 throw BytecodeInterpretError(L"calculation_negate: Unexpected input.");
         }
-        InterpreterEnvironment.Stack.PushValueToStack(Element);
+        InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(Element);
     }
 
     void BytecodeInterpreter::InstructionListNew(BytecodeStructure::InstructionParam Param) {
-        GC.Start();
+        GC->Start();
         EnvironmentStackItem ListItem{};
         ListItem.Kind = EnvironmentStackItem::ItemKind::HeapPointer;
-        ListItem.Value.HeapPointerVal = InterpreterEnvironment.Heap.PushElement(
+        ListItem.Value.HeapPointerVal = InterpreterEnvironment->Heap.PushElement(
                 (EnvObject) {EnvObject::ObjectKind::ArrayObject,
                              (EnvObject::ObjectValue) {NewEnvArrayObject(
                                      Param.HeapPointerValue)}});
         for (XIndexType I = 0; I < Param.HeapPointerValue; I++) {
-            EnvironmentStackItem Item = InterpreterEnvironment.Stack.PopValueFromStack();
+            EnvironmentStackItem Item = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
             EnvObject Object;
             switch (Item.Kind) {
                 case EnvironmentStackItem::ItemKind::Integer:
@@ -1444,35 +1492,35 @@ namespace XScript {
                     Object.Value.FunctionPointerValue = Item.Value.FuncPointerVal;
                     break;
                 case EnvironmentStackItem::ItemKind::HeapPointer:
-                    Object = InterpreterEnvironment.Heap.HeapData[Item.Value.HeapPointerVal];
+                    Object = InterpreterEnvironment->Heap.HeapData[Item.Value.HeapPointerVal];
                     break;
                 case EnvironmentStackItem::ItemKind::Null:
                     Object.Kind = EnvObject::ObjectKind::Integer;
                     break;
             }
 
-            InterpreterEnvironment.Heap.HeapData[ListItem.Value.HeapPointerVal].Value.ArrayObjectPointer->Elements[
+            InterpreterEnvironment->Heap.HeapData[ListItem.Value.HeapPointerVal].Value.ArrayObjectPointer->Elements[
                     Param.HeapPointerValue - I] =
-                    InterpreterEnvironment.Heap.PushElement(Object);
+                    InterpreterEnvironment->Heap.PushElement(Object);
         }
-        InterpreterEnvironment.Stack.PushValueToStack(ListItem);
+        InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(ListItem);
     }
 
     void BytecodeInterpreter::InstructionListPop(BytecodeStructure::InstructionParam Param) {
-        EnvironmentStackItem ListItem = InterpreterEnvironment.Stack.PopValueFromStack();
+        EnvironmentStackItem ListItem = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
         if (ListItem.Kind == EnvironmentStackItem::ItemKind::HeapPointer and
-            InterpreterEnvironment.Heap.HeapData[ListItem.Value.HeapPointerVal].Kind ==
+            InterpreterEnvironment->Heap.HeapData[ListItem.Value.HeapPointerVal].Kind ==
             EnvObject::ObjectKind::ArrayObject) {
-            InterpreterEnvironment.Heap.HeapData[ListItem.Value.HeapPointerVal].Value.ArrayObjectPointer->Elements.pop_back();
+            InterpreterEnvironment->Heap.HeapData[ListItem.Value.HeapPointerVal].Value.ArrayObjectPointer->Elements.pop_back();
         }
     }
 
     void BytecodeInterpreter::InstructionListPush(BytecodeStructure::InstructionParam Param) {
-        EnvironmentStackItem ListItem = InterpreterEnvironment.Stack.PopValueFromStack();
+        EnvironmentStackItem ListItem = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
         if (ListItem.Kind == EnvironmentStackItem::ItemKind::HeapPointer and
-            InterpreterEnvironment.Heap.HeapData[ListItem.Value.HeapPointerVal].Kind ==
+            InterpreterEnvironment->Heap.HeapData[ListItem.Value.HeapPointerVal].Kind ==
             EnvObject::ObjectKind::ArrayObject) {
-            EnvironmentStackItem Item = InterpreterEnvironment.Stack.PopValueFromStack();
+            EnvironmentStackItem Item = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
             EnvObject Object{};
             switch (Item.Kind) {
                 case EnvironmentStackItem::ItemKind::Integer:
@@ -1493,48 +1541,48 @@ namespace XScript {
                             (EnvObject::ObjectValue) {Item.Value.FuncPointerVal}};
                     break;
                 case EnvironmentStackItem::ItemKind::HeapPointer:
-                    Object = InterpreterEnvironment.Heap.HeapData[Item.Value.HeapPointerVal];
+                    Object = InterpreterEnvironment->Heap.HeapData[Item.Value.HeapPointerVal];
                     break;
                 case EnvironmentStackItem::ItemKind::Null:
                     Object.Kind = EnvObject::ObjectKind::Integer;
                     break;
             }
 
-            InterpreterEnvironment.Heap.HeapData[ListItem.Value.HeapPointerVal].Value.ArrayObjectPointer->Elements.push_back(
-                    InterpreterEnvironment.Heap.PushElement(Object));
+            InterpreterEnvironment->Heap.HeapData[ListItem.Value.HeapPointerVal].Value.ArrayObjectPointer->Elements.push_back(
+                    InterpreterEnvironment->Heap.PushElement(Object));
         }
     }
 
     void BytecodeInterpreter::InstructionListGetMember(BytecodeStructure::InstructionParam Param) {
-        EnvironmentStackItem ListItem = InterpreterEnvironment.Stack.PopValueFromStack();
-        EnvironmentStackItem Index = InterpreterEnvironment.Stack.PopValueFromStack();
+        EnvironmentStackItem ListItem = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
+        EnvironmentStackItem Index = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
         if (ListItem.Kind == EnvironmentStackItem::ItemKind::HeapPointer) {
-            switch (InterpreterEnvironment.Heap.HeapData[ListItem.Value.HeapPointerVal].Kind) {
+            switch (InterpreterEnvironment->Heap.HeapData[ListItem.Value.HeapPointerVal].Kind) {
                 case EnvObject::ObjectKind::ArrayObject: {
                     /* 不做类型检查 */
                     EnvironmentStackItem Item{EnvironmentStackItem::ItemKind::HeapPointer,
                                               (EnvironmentStackItem::ItemValue) {
-                                                      InterpreterEnvironment.Heap.HeapData[ListItem.Value.HeapPointerVal].Value.ArrayObjectPointer->Elements[Index.Value.IntVal]}};
+                                                      InterpreterEnvironment->Heap.HeapData[ListItem.Value.HeapPointerVal].Value.ArrayObjectPointer->Elements[Index.Value.IntVal]}};
 
-                    InterpreterEnvironment.Stack.PushValueToStack(Item);
+                    InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(Item);
                     break;
                 }
                 case EnvObject::ObjectKind::ClassObject: {
-                    auto &ClassObject = *InterpreterEnvironment.Heap.HeapData[ListItem.Value.HeapPointerVal].Value.ClassObjectPointer;
-                    auto &Method = InterpreterEnvironment.Heap.HeapData[ClassObject.GetMember(
+                    auto &ClassObject = *InterpreterEnvironment->Heap.HeapData[ListItem.Value.HeapPointerVal].Value.ClassObjectPointer;
+                    auto &Method = InterpreterEnvironment->Heap.HeapData[ClassObject.GetMember(
                             builtin_hash_code___instruction_indexOf__)];
                     if (Method.Kind == EnvObject::ObjectKind::FunctionPointer ||
                         Method.Kind == EnvObject::ObjectKind::NativeMethodPointer) {
-                        InterpreterEnvironment.Stack.PushValueToStack(ListItem); // this
-                        InterpreterEnvironment.Stack.PushValueToStack(Index); // rhs
-                        InterpreterEnvironment.Stack.PushValueToStack(
+                        InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(ListItem); // this
+                        InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(Index); // rhs
+                        InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(
                                 {Method.Kind == EnvObject::ObjectKind::FunctionPointer
                                  ? EnvironmentStackItem::ItemKind::FunctionPointer
                                  : EnvironmentStackItem::ItemKind::NativeMethodPointer,
                                  (EnvironmentStackItem::ItemValue) {Method.Value.FunctionPointerValue}});
-                        ProgramCounterInformation Info = InterpreterEnvironment.ProgramCounter;
+                        ProgramCounterInformation Info = InterpreterEnvironment->Threads[ThreadID].PC;
                         InstructionFuncInvoke((BytecodeStructure::InstructionParam) {static_cast<XIndexType>(2)});
-                        InterpreterEnvironment.ProgramCounter = Info;
+                        InterpreterEnvironment->Threads[ThreadID].PC = Info;
                     } else {
                         throw BytecodeInterpretError(L"Member `__instruction_indexOf__` isn't a method");
                     }
@@ -1547,35 +1595,35 @@ namespace XScript {
     }
 
     void BytecodeInterpreter::InstructionObjectStore(BytecodeStructure::InstructionParam Param) {
-        GC.Start();
-        EnvironmentStackItem LeftValue = InterpreterEnvironment.Stack.PopValueFromStack();
-        EnvironmentStackItem RightValue = InterpreterEnvironment.Stack.PopValueFromStack();
+        GC->Start();
+        EnvironmentStackItem LeftValue = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
+        EnvironmentStackItem RightValue = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
 
-        InterpreterEnvironment.Heap.HeapData[LeftValue.Value.HeapPointerVal].DestroyObject();
+        InterpreterEnvironment->Heap.HeapData[LeftValue.Value.HeapPointerVal].DestroyObject();
 
         switch (RightValue.Kind) {
             case EnvironmentStackItem::ItemKind::Integer:
-                InterpreterEnvironment.Heap.HeapData[LeftValue.Value.HeapPointerVal] = (EnvObject) {
+                InterpreterEnvironment->Heap.HeapData[LeftValue.Value.HeapPointerVal] = (EnvObject) {
                         EnvObject::ObjectKind::Integer,
                         (EnvObject::ObjectValue) {RightValue.Value.IntVal}};
                 break;
             case EnvironmentStackItem::ItemKind::Decimal:
-                InterpreterEnvironment.Heap.HeapData[LeftValue.Value.HeapPointerVal] = (EnvObject) {
+                InterpreterEnvironment->Heap.HeapData[LeftValue.Value.HeapPointerVal] = (EnvObject) {
                         EnvObject::ObjectKind::Decimal,
                         (EnvObject::ObjectValue) {RightValue.Value.DeciVal}};
                 break;
             case EnvironmentStackItem::ItemKind::Boolean:
-                InterpreterEnvironment.Heap.HeapData[LeftValue.Value.HeapPointerVal] = (EnvObject) {
+                InterpreterEnvironment->Heap.HeapData[LeftValue.Value.HeapPointerVal] = (EnvObject) {
                         EnvObject::ObjectKind::Boolean,
                         (EnvObject::ObjectValue) {RightValue.Value.BoolVal}};
                 break;
             case EnvironmentStackItem::ItemKind::FunctionPointer:
-                InterpreterEnvironment.Heap.HeapData[LeftValue.Value.HeapPointerVal] = (EnvObject) {
+                InterpreterEnvironment->Heap.HeapData[LeftValue.Value.HeapPointerVal] = (EnvObject) {
                         EnvObject::ObjectKind::FunctionPointer,
                         (EnvObject::ObjectValue) {RightValue.Value.FuncPointerVal}};
                 break;
             case EnvironmentStackItem::ItemKind::HeapPointer:
-                InterpreterEnvironment.Heap.HeapData[LeftValue.Value.HeapPointerVal] = InterpreterEnvironment.Heap.HeapData[RightValue.Value.HeapPointerVal];
+                InterpreterEnvironment->Heap.HeapData[LeftValue.Value.HeapPointerVal] = InterpreterEnvironment->Heap.HeapData[RightValue.Value.HeapPointerVal];
                 break;
             case EnvironmentStackItem::ItemKind::Null:
                 throw BytecodeInterpretError(L"object_store: cannot assign null to a heap value");
@@ -1583,10 +1631,10 @@ namespace XScript {
     }
 
     void BytecodeInterpreter::InstructionObjectLvalue2Rvalue(BytecodeStructure::InstructionParam Param) {
-        EnvironmentStackItem Item = InterpreterEnvironment.Stack.PopValueFromStack();
+        EnvironmentStackItem Item = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
 
         if (Item.Kind == EnvironmentStackItem::ItemKind::HeapPointer) {
-            auto Object = InterpreterEnvironment.Heap.HeapData[Item.Value.HeapPointerVal];
+            auto Object = InterpreterEnvironment->Heap.HeapData[Item.Value.HeapPointerVal];
             switch (Object.Kind) {
                 case EnvObject::ObjectKind::ClassObject:
                 case EnvObject::ObjectKind::ArrayObject:
@@ -1619,14 +1667,14 @@ namespace XScript {
             }
 
             /* 如果为基础类型则转换为rvalue，否则保持原状 */
-            InterpreterEnvironment.Stack.PushValueToStack(Item);
+            InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(Item);
         } else {
-            InterpreterEnvironment.Stack.PushValueToStack(Item);
+            InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(Item);
         }
     }
 
     void BytecodeInterpreter::InstructionPCJumpIfTrue(BytecodeStructure::InstructionParam Param) {
-        EnvironmentStackItem Element = InterpreterEnvironment.Stack.PopValueFromStack();
+        EnvironmentStackItem Element = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
         bool Flag = false;
         switch (Element.Kind) {
             case EnvironmentStackItem::ItemKind::Integer:
@@ -1650,12 +1698,12 @@ namespace XScript {
         }
 
         if (Flag) {
-            InterpreterEnvironment.ProgramCounter.NowIndex += Param.IntValue - 1;
+            InterpreterEnvironment->Threads[ThreadID].PC.NowIndex += Param.IntValue - 1;
         }
     }
 
     void BytecodeInterpreter::InstructionPCJumpIfFalse(BytecodeStructure::InstructionParam Param) {
-        EnvironmentStackItem Element = InterpreterEnvironment.Stack.PopValueFromStack();
+        EnvironmentStackItem Element = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
         bool Flag = false;
         switch (Element.Kind) {
             case EnvironmentStackItem::ItemKind::Integer:
@@ -1679,40 +1727,40 @@ namespace XScript {
         }
 
         if (!Flag) {
-            InterpreterEnvironment.ProgramCounter.NowIndex += Param.IntValue - 1;
+            InterpreterEnvironment->Threads[ThreadID].PC.NowIndex += Param.IntValue - 1;
         }
     }
 
     void BytecodeInterpreter::InstructionPCJump(BytecodeStructure::InstructionParam Param) {
-        InterpreterEnvironment.ProgramCounter.NowIndex += Param.IntValue - 1;
+        InterpreterEnvironment->Threads[ThreadID].PC.NowIndex += Param.IntValue - 1;
     }
 
     void BytecodeInterpreter::InstructionFuncInvoke(BytecodeStructure::InstructionParam Param) {
         /* get function address */
-        EnvironmentStackItem Item = InterpreterEnvironment.Stack.PopValueFromStack();
+        EnvironmentStackItem Item = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
         /* invoke <params count> */
-        InterpreterEnvironment.Stack.FramesInformation.back().Length -= Param.HeapPointerValue;
-        InterpreterEnvironment.Stack.FramesInformation.push_back(
+        InterpreterEnvironment->Threads[ThreadID].Stack.FramesInformation.back().Length -= Param.HeapPointerValue;
+        InterpreterEnvironment->Threads[ThreadID].Stack.FramesInformation.push_back(
                 {EnvironmentStackFramesInformation::FrameKind::FunctionStackFrame,
-                 InterpreterEnvironment.Stack.FramesInformation.back().From +
-                 InterpreterEnvironment.Stack.FramesInformation.back().Length,
+                 InterpreterEnvironment->Threads[ThreadID].Stack.FramesInformation.back().From +
+                 InterpreterEnvironment->Threads[ThreadID].Stack.FramesInformation.back().Length,
                  Param.HeapPointerValue,
-                 InterpreterEnvironment.ProgramCounter
+                 InterpreterEnvironment->Threads[ThreadID].PC
                 });
         switch (Item.Kind) {
             case EnvironmentStackItem::ItemKind::FunctionPointer: {
-                InterpreterEnvironment.ProgramCounter = (ProgramCounterInformation) {
+                InterpreterEnvironment->Threads[ThreadID].PC = (ProgramCounterInformation) {
                         Item.Value.FuncPointerVal->BytecodeArray,
                         Item.Value.FuncPointerVal->PackageID};
 
                 // Fix bugs
-                InterpreterEnvironment.ProgramCounter.NowIndex -= 1;
+                InterpreterEnvironment->Threads[ThreadID].PC.NowIndex -= 1;
                 break;
             }
             case EnvironmentStackItem::ItemKind::NativeMethodPointer: {
                 /* 被调用者需要手动调整栈帧 */
                 Item.Value.NativeMethodPointerVal->Method(
-                        {(void *) &InterpreterEnvironment, (void *) &GC, Param.HeapPointerValue});
+                        {(void *) this});
                 break;
             }
             default: {
@@ -1722,71 +1770,71 @@ namespace XScript {
     }
 
     void BytecodeInterpreter::InstructionFuncReturn(BytecodeStructure::InstructionParam Param) {
-        GC.Start();
+        GC->Start();
         /**
          * 保存结果
          */
-        auto Element = InterpreterEnvironment.Stack.PopValueFromStack();
+        auto Element = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
 
         /**
          * 调整栈帧
          */
-        XIndexType S = InterpreterEnvironment.Stack.FramesInformation.back().Length;
+        XIndexType S = InterpreterEnvironment->Threads[ThreadID].Stack.FramesInformation.back().Length;
         while (S--) {
-            InterpreterEnvironment.Stack.PopValueFromStack();
+            InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
         }
-        InterpreterEnvironment.ProgramCounter = InterpreterEnvironment.Stack.FramesInformation.back().ReturnAddress;
-        InterpreterEnvironment.Stack.FramesInformation.pop_back();
+        InterpreterEnvironment->Threads[ThreadID].PC = InterpreterEnvironment->Threads[ThreadID].Stack.FramesInformation.back().ReturnAddress;
+        InterpreterEnvironment->Threads[ThreadID].Stack.FramesInformation.pop_back();
 
         /**
          * 压入结果
          */
-        InterpreterEnvironment.Stack.PushValueToStack(Element);
+        InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(Element);
 
         /* 不需要调整ProgramCounter, 进入Invoke下一条指令 */
     }
 
     void BytecodeInterpreter::InstructionStaticGet(BytecodeStructure::InstructionParam Param) {
-        InterpreterEnvironment.Stack.PushValueToStack(
-                InterpreterEnvironment.Packages[InterpreterEnvironment.ProgramCounter.Package].GetStatic(
+        InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(
+                InterpreterEnvironment->Packages[InterpreterEnvironment->Threads[ThreadID].PC.Package].GetStatic(
                         Param.HeapPointerValue));
     }
 
     void BytecodeInterpreter::InstructionStackPushFunction(BytecodeStructure::InstructionParam Param) {
-        InterpreterEnvironment.Stack.PushValueToStack(
+        InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(
                 (EnvironmentStackItem) {EnvironmentStackItem::ItemKind::FunctionPointer,
-                                        (EnvironmentStackItem::ItemValue) &InterpreterEnvironment.Packages[InterpreterEnvironment.ProgramCounter.Package].FunctionPool[Param.HeapPointerValue]});
+                                        (EnvironmentStackItem::ItemValue) &InterpreterEnvironment->Packages[InterpreterEnvironment->Threads[ThreadID].PC.Package].FunctionPool[Param.HeapPointerValue]});
     }
 
     void BytecodeInterpreter::InstructionClassNew(BytecodeStructure::InstructionParam Param) {
-        GC.Start();
-        if (InterpreterEnvironment.Packages[InterpreterEnvironment.ProgramCounter.Package].ClassTemplates.count(
+        GC->Start();
+        if (InterpreterEnvironment->Packages[InterpreterEnvironment->Threads[ThreadID].PC.Package].ClassTemplates.count(
                 Param.HeapPointerValue)) {
-            const auto &Template = InterpreterEnvironment.Packages[InterpreterEnvironment.ProgramCounter.Package].ClassTemplates[Param.HeapPointerValue];
+            const auto &Template = InterpreterEnvironment->Packages[InterpreterEnvironment->Threads[ThreadID].PC.Package].ClassTemplates[Param.HeapPointerValue];
             EnvClassObject *Object = NewEnvClassObject();
             Object->Parent = Template.Parent;
-            Object->Self = {InterpreterEnvironment.ProgramCounter.Package, Param.HeapPointerValue};
+            Object->Self = {InterpreterEnvironment->Threads[ThreadID].PC.Package, Param.HeapPointerValue};
             // initialize parent
             if (Object->Parent.ClassID) {
-                auto ParentTemplate = InterpreterEnvironment.Packages[Object->Parent.PackageID].ClassTemplates[Object->Parent.ClassID];
+                auto ParentTemplate = InterpreterEnvironment->Packages[Object->Parent.PackageID].ClassTemplates[Object->Parent.ClassID];
                 InstructionPCGetCurrentPackageID((BytecodeStructure::InstructionParam) {(XIndexType) {}});
                 InstructionPCSetCurrentPackageID((BytecodeStructure::InstructionParam) {Object->Parent.PackageID});
                 InstructionClassNew((BytecodeStructure::InstructionParam) {Object->Parent.ClassID});
                 InstructionPCRestorePackageID((BytecodeStructure::InstructionParam) {(XIndexType) {}});
 
-                Object->Members[builtin_hash_code_super] = InterpreterEnvironment.Stack.PopValueFromStack().Value.HeapPointerVal;
+                Object->Members[builtin_hash_code_super] = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack().Value.HeapPointerVal;
             }
             // initialize itself
             for (auto &I: Template.Methods) {
                 EnvObject MethodPointer{EnvObject::ObjectKind::FunctionPointer,
                                         (EnvObject::ObjectValue) {
-                                                &InterpreterEnvironment.Packages[InterpreterEnvironment.ProgramCounter.Package].FunctionPool[I.second]}};
-                XHeapIndexType Idx = InterpreterEnvironment.Heap.PushElement(MethodPointer);
+                                                &InterpreterEnvironment->Packages[InterpreterEnvironment->Threads[ThreadID].PC.Package].FunctionPool[I.second]}};
+                XHeapIndexType Idx = InterpreterEnvironment->Heap.PushElement(MethodPointer);
                 Object->Members.insert({I.first, Idx});
             }
-            XHeapIndexType ClassPointer = InterpreterEnvironment.Heap.PushElement({EnvObject::ObjectKind::ClassObject,
+            XHeapIndexType ClassPointer = InterpreterEnvironment->Heap.PushElement({EnvObject::ObjectKind::ClassObject,
                                                                                    (EnvObject::ObjectValue) {Object}});
-            InterpreterEnvironment.Stack.PushValueToStack(
+            InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(
                     (EnvironmentStackItem) {EnvironmentStackItem::ItemKind::HeapPointer,
                                             (EnvironmentStackItem::ItemValue) {ClassPointer}});
             return;
@@ -1796,22 +1844,22 @@ namespace XScript {
     }
 
     void BytecodeInterpreter::InstructionClassGetMember(BytecodeStructure::InstructionParam Param) {
-        EnvironmentStackItem Item = InterpreterEnvironment.Stack.PopValueFromStack();
+        EnvironmentStackItem Item = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
         auto *ClassPointer =
-                InterpreterEnvironment.Heap.HeapData[Item.Value.HeapPointerVal].Value.ClassObjectPointer;
-        InterpreterEnvironment.Stack.PushValueToStack(
+                InterpreterEnvironment->Heap.HeapData[Item.Value.HeapPointerVal].Value.ClassObjectPointer;
+        InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(
                 (EnvironmentStackItem) {EnvironmentStackItem::ItemKind::HeapPointer,
                                         (EnvironmentStackItem::ItemValue) {
                                                 ClassPointer->GetMember(Param.HeapPointerValue)}});
     }
 
     void BytecodeInterpreter::InstructionClassNewMember(BytecodeStructure::InstructionParam Param) {
-        GC.Start();
-        EnvironmentStackItem Item = InterpreterEnvironment.Stack.PopValueFromStack();
+        GC->Start();
+        EnvironmentStackItem Item = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
         auto *ClassPointer =
-                InterpreterEnvironment.Heap.HeapData[Item.Value.HeapPointerVal].Value.ClassObjectPointer;
+                InterpreterEnvironment->Heap.HeapData[Item.Value.HeapPointerVal].Value.ClassObjectPointer;
         EnvObject Object{EnvObject::ObjectKind::Integer, (EnvObject::ObjectValue) {(XInteger) {0}}};
-        ClassPointer->Members[Param.HeapPointerValue] = InterpreterEnvironment.Heap.PushElement(Object);
+        ClassPointer->Members[Param.HeapPointerValue] = InterpreterEnvironment->Heap.PushElement(Object);
     }
 
     void BytecodeInterpreter::InstructionListRemoveIndex(BytecodeStructure::InstructionParam Param) {
@@ -1819,38 +1867,38 @@ namespace XScript {
     }
 
     void BytecodeInterpreter::InstructionPCGetCurrentPackageID(BytecodeStructure::InstructionParam Param) {
-        InterpreterEnvironment.Stack.PushValueToStack(
+        InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(
                 (EnvironmentStackItem) {EnvironmentStackItem::ItemKind::Null,
-                                        (EnvironmentStackItem::ItemValue) InterpreterEnvironment.ProgramCounter.Package});
+                                        (EnvironmentStackItem::ItemValue) InterpreterEnvironment->Threads[ThreadID].PC.Package});
     }
 
     void BytecodeInterpreter::InstructionPCSetCurrentPackageID(BytecodeStructure::InstructionParam Param) {
-        InterpreterEnvironment.ProgramCounter.Package = Param.HeapPointerValue;
+        InterpreterEnvironment->Threads[ThreadID].PC.Package = Param.HeapPointerValue;
     }
 
     void BytecodeInterpreter::InstructionPCRestorePackageID(BytecodeStructure::InstructionParam Param) {
-        EnvironmentStackItem Item = InterpreterEnvironment.Stack.PopValueFromStack();
-        EnvironmentStackItem PkgID = InterpreterEnvironment.Stack.PopValueFromStack();
-        InterpreterEnvironment.Stack.PushValueToStack(Item);
-        InterpreterEnvironment.ProgramCounter.Package = PkgID.Value.HeapPointerVal;
+        EnvironmentStackItem Item = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
+        EnvironmentStackItem PkgID = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
+        InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(Item);
+        InterpreterEnvironment->Threads[ThreadID].PC.Package = PkgID.Value.HeapPointerVal;
     }
 
     void BytecodeInterpreter::ConstructNativeClass(XIndexType HashOfPath) {
-        if (InterpreterEnvironment.NativeLibraries.IsLoaded(HashOfPath)) {
+        if (InterpreterEnvironment->NativeLibraries.IsLoaded(HashOfPath)) {
             EnvClassObject *Object = NewEnvClassObject();
 
-            Object->Members[builtin_hash_code___native_library_identifier__] = InterpreterEnvironment.Heap.PushElement(
+            Object->Members[builtin_hash_code___native_library_identifier__] = InterpreterEnvironment->Heap.PushElement(
                     {EnvObject::ObjectKind::Index, (EnvObject::ObjectValue) {HashOfPath}});
 
             /* Because the address of each element in LoadedLibraries are static after initialized, we can use pointer to this address without any worried. */
-            for (auto &I: InterpreterEnvironment.NativeLibraries[HashOfPath].Information.Methods) {
-                Object->Members[I.first] = InterpreterEnvironment.Heap.PushElement(
+            for (auto &I: InterpreterEnvironment->NativeLibraries[HashOfPath].Information.Methods) {
+                Object->Members[I.first] = InterpreterEnvironment->Heap.PushElement(
                         {EnvObject::ObjectKind::NativeMethodPointer, (EnvObject::ObjectValue) {&I.second}});
             }
-            InterpreterEnvironment.Stack.PushValueToStack(
+            InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(
                     (EnvironmentStackItem) {EnvironmentStackItem::ItemKind::HeapPointer,
                                             (EnvironmentStackItem::ItemValue) {
-                                                    InterpreterEnvironment.Heap.PushElement(
+                                                    InterpreterEnvironment->Heap.PushElement(
                                                             {EnvObject::ObjectKind::ClassObject,
                                                              (EnvObject::ObjectValue) {Object}})
                                             }});
@@ -1858,72 +1906,76 @@ namespace XScript {
     }
 
     void BytecodeInterpreter::InstructionNativeClassNew(BytecodeStructure::InstructionParam param) {
-        GC.Start();
+        GC->Start();
         ConstructNativeClass(param.HeapPointerValue);
     }
 
     void BytecodeInterpreter::InstructionExceptionPush(BytecodeStructure::InstructionParam Param) {
         ExceptionTableItem Item{};
         Item.CatchBlockOffset = Param.IntValue;
-        Item.ExceptionRegisterCommandPosition = InterpreterEnvironment.ProgramCounter.NowIndex;
-        Item.StackItemCnt = InterpreterEnvironment.Stack.Elements.size();
-        InterpreterEnvironment.RuntimeExceptionTable.push_back(Item);
+        Item.ExceptionRegisterCommandPosition = InterpreterEnvironment->Threads[ThreadID].PC.NowIndex;
+        Item.StackItemCnt = InterpreterEnvironment->Threads[ThreadID].Stack.Elements.size();
+        InterpreterEnvironment->RuntimeExceptionTable.push_back(Item);
     }
 
     void BytecodeInterpreter::InstructionExceptionPop(BytecodeStructure::InstructionParam Param) {
-        InterpreterEnvironment.RuntimeExceptionTable.pop_back();
+        InterpreterEnvironment->RuntimeExceptionTable.pop_back();
     }
 
     void BytecodeInterpreter::InstructionExceptionThrow(BytecodeStructure::InstructionParam Param) {
-        ExceptionTableItem Ex = InterpreterEnvironment.RuntimeExceptionTable.back();
-        InterpreterEnvironment.RuntimeExceptionTable.pop_back();
-        EnvironmentStackItem threwValue = InterpreterEnvironment.Stack.PopValueFromStack();
+        ExceptionTableItem Ex = InterpreterEnvironment->RuntimeExceptionTable.back();
+        InterpreterEnvironment->RuntimeExceptionTable.pop_back();
+        EnvironmentStackItem threwValue = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
 
-        if (InterpreterEnvironment.RuntimeExceptionTable.empty()) {
+        if (InterpreterEnvironment->RuntimeExceptionTable.empty()) {
             throw BytecodeInterpretError(L"Uncaught user exception at ProgramCounter:" +
-                                         std::to_wstring((XIndexType) InterpreterEnvironment.ProgramCounter.Pointer) +
+                                         std::to_wstring((XIndexType) InterpreterEnvironment->Threads[ThreadID].PC.Pointer) +
                                          L"(Command " +
-                                         std::to_wstring(InterpreterEnvironment.ProgramCounter.NowIndex) +
+                                         std::to_wstring(InterpreterEnvironment->Threads[ThreadID].PC.NowIndex) +
                                          L" )"
             );
         } else {
             XIndexType FrameIdx = 0;
 
             // 回退棧幀
-            for (auto &Frame: InterpreterEnvironment.Stack.FramesInformation) {
+            for (auto &Frame: InterpreterEnvironment->Threads[ThreadID].Stack.FramesInformation) {
                 if (Frame.From > Ex.StackItemCnt) {
                     break;
                 }
                 FrameIdx++;
             }
-            while (InterpreterEnvironment.Stack.FramesInformation.size() > FrameIdx) {
-                while (InterpreterEnvironment.Stack.FramesInformation.back().Length--)
-                    InterpreterEnvironment.Stack.Elements.pop_back();
+            while (InterpreterEnvironment->Threads[ThreadID].Stack.FramesInformation.size() > FrameIdx) {
+                while (InterpreterEnvironment->Threads[ThreadID].Stack.FramesInformation.back().Length--)
+                    InterpreterEnvironment->Threads[ThreadID].Stack.Elements.pop_back();
 
-                InterpreterEnvironment.ProgramCounter = InterpreterEnvironment.Stack.FramesInformation.back().ReturnAddress;
+                InterpreterEnvironment->Threads[ThreadID].PC = InterpreterEnvironment->Threads[ThreadID].Stack.FramesInformation.back().ReturnAddress;
             }
-            while (Ex.StackItemCnt > InterpreterEnvironment.Stack.Elements.size()) {
-                InterpreterEnvironment.Stack.Elements.pop_back();
+            while (Ex.StackItemCnt > InterpreterEnvironment->Threads[ThreadID].Stack.Elements.size()) {
+                InterpreterEnvironment->Threads[ThreadID].Stack.Elements.pop_back();
             }
 
             // 將Exception壓入棧
-            InterpreterEnvironment.Stack.PushValueToStack(threwValue);
+            InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(threwValue);
 
 
             // 定位catch
-            InterpreterEnvironment.ProgramCounter.NowIndex =
+            InterpreterEnvironment->Threads[ThreadID].PC.NowIndex =
                     Ex.ExceptionRegisterCommandPosition + Ex.CatchBlockOffset; // 唔計算exception_push個行
         }
     }
 
     void BytecodeInterpreter::InstructionClassInstanceOf(BytecodeStructure::InstructionParam Param) {
         EnvClassObject *Target =
-                InterpreterEnvironment.Heap.HeapData[InterpreterEnvironment.Stack.PopValueFromStack().Value.HeapPointerVal].Value.ClassObjectPointer;
+                InterpreterEnvironment->Heap.HeapData[InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack().Value.HeapPointerVal].Value.ClassObjectPointer;
         bool Res =
-                Target->IsInstanceOf({InterpreterEnvironment.ProgramCounter.Package, Param.HeapPointerValue});
-        InterpreterEnvironment.Stack.PushValueToStack((EnvironmentStackItem) {
+                Target->IsInstanceOf({InterpreterEnvironment->Threads[ThreadID].PC.Package, Param.HeapPointerValue});
+        InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack((EnvironmentStackItem) {
                 EnvironmentStackItem::ItemKind::Boolean,
                 (EnvironmentStackItem::ItemValue) {Res}
         });
+    }
+
+    BytecodeInterpreter::BytecodeInterpreter() : IsBusy(false), ThreadID(0), InterpreterEnvironment(nullptr), GC(nullptr) {
+
     }
 } // XScript
