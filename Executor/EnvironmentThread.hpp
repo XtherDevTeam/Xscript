@@ -5,6 +5,7 @@
 #ifndef XSCRIPT2_ENVIRONMENTTHREAD_HPP
 #define XSCRIPT2_ENVIRONMENTTHREAD_HPP
 
+#include <thread>
 #include "ProgramCounterInformation.hpp"
 #include "EnvironmentStack.hpp"
 
@@ -15,6 +16,7 @@ namespace XScript {
         bool IsBusy;
         EnvironmentStack Stack;
         ProgramCounterInformation PC;
+        std::thread Thread;
 
         EnvironmentThread();
     };

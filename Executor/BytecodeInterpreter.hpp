@@ -26,7 +26,7 @@ namespace XScript {
         void MainLoop();
 
         void ConstructNativeClass(XIndexType HashOfPath);
-
+        
         void InstructionCalculationAdd(BytecodeStructure::InstructionParam Param);
 
         void InstructionCalculationSub(BytecodeStructure::InstructionParam Param);

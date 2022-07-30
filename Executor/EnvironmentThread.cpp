@@ -5,7 +5,7 @@
 #include "EnvironmentThread.hpp"
 
 namespace XScript {
-    EnvironmentThread::EnvironmentThread() : IsBusy(), Stack(), PC() {
+    EnvironmentThread::EnvironmentThread() : IsBusy(), Stack(), PC(), Thread() {
 
     }
 } // XScript

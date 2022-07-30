@@ -27,4 +27,10 @@ namespace XScript {
     EnvironmentThreadPool::~EnvironmentThreadPool() {
         delete[] Pool;
     }
+
+    void EnvironmentThreadPool::WaitForThread(XIndexType Idx) {
+        if(Pool[Idx].Thread.joinable()) {
+            Pool[Idx].Thread.join();
+        }
+    }
 } // XScript

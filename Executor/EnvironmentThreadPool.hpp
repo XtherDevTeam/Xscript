@@ -18,6 +18,8 @@ namespace XScript {
 
         XIndexType Allocate();
 
+        void WaitForThread(XIndexType Idx);
+
         EnvironmentThread& operator[](XIndexType Idx) const;
 
         ~EnvironmentThreadPool();

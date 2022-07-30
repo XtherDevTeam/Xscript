@@ -11,10 +11,9 @@ namespace XScript {
     void BytecodeInterpreter::MainLoop() {
         IsBusy = true;
         InterpreterEnvironment->Threads[ThreadID].IsBusy = true;
-        while (InterpreterEnvironment->Threads[ThreadID].PC.NowIndex !=
-               InterpreterEnvironment->Threads[ThreadID].PC.Pointer->size()) {
+        while ( !InterpreterEnvironment->Threads[ThreadID].Stack.FramesInformation.empty() and
+                InterpreterEnvironment->Threads[ThreadID].PC.NowIndex != InterpreterEnvironment->Threads[ThreadID].PC.Pointer->size()) {
             auto &CurrentInstruction = (*InterpreterEnvironment->Threads[ThreadID].PC.Pointer)[InterpreterEnvironment->Threads[ThreadID].PC.NowIndex];
-            puts(wstring2string(CurrentInstruction.ToString()).c_str());
             switch (CurrentInstruction.Instruction) {
                 case BytecodeStructure::InstructionEnum::calculation_add:
                     InstructionCalculationAdd(CurrentInstruction.Param);
