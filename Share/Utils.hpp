@@ -45,7 +45,23 @@ namespace XScript {
     XArray<XString> SplitStrings(const XString &Str, XCharacter Delim);
 } // XScript
 
-#if defined(__linux__) or defined(_WIN32)
+#if defined(__WIN32)
+#define builtin_hash_code_main (XScript::XIndexType){9328764686893287123}
+#define builtin_hash_code___instruction_add__ (XScript::XIndexType){15666197330935411857}
+#define builtin_hash_code___instruction_sub__ (XScript::XIndexType){16920049096241614577}
+#define builtin_hash_code___instruction_mul__ (XScript::XIndexType){13912836029130607537}
+#define builtin_hash_code___instruction_div__ (XScript::XIndexType){2588076979984842845}
+#define builtin_hash_code___instruction_logic_and__ (XScript::XIndexType){7124057605393048397}
+#define builtin_hash_code___instruction_logic_or__ (XScript::XIndexType){12949669326930031122}
+#define builtin_hash_code___instruction_logic_great_equal__ (XScript::XIndexType){1198041032740863977}
+#define builtin_hash_code___instruction_logic_less_equal__ (XScript::XIndexType){16404804629521996931}
+#define builtin_hash_code___instruction_logic_great__ (XScript::XIndexType){13338539619241891218}
+#define builtin_hash_code___instruction_logic_less__ (XScript::XIndexType){296125903598827187}
+#define builtin_hash_code___instruction_indexOf__ (XScript::XIndexType){10918802888327628437}
+#define builtin_hash_code_super (XScript::XIndexType){3155968044394352334}
+#define builtin_hash_code___native_library_identifier__ (XScript::XIndexType){18070401361008655398}
+#define builtin_hash_code___XScriptRuntimeEntry__ (XScript::XIndexType){7217704021400880566}
+#elif defined(__linux__)
 #define builtin_hash_code_main (XScript::XIndexType){7670424507768520307}
 #define builtin_hash_code___instruction_add__ (XScript::XIndexType){7874026003045742965}
 #define builtin_hash_code___instruction_sub__ (XScript::XIndexType){11838334185600141604}

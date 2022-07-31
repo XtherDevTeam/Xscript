@@ -45,7 +45,7 @@ namespace XScript {
         // 写入运行时函数
         GenerateRuntimeFunction(Environment);
 
-        FILE *FilePointer = fopen(XScript::wstring2string(FilePath).c_str(), "w+");
+        FILE *FilePointer = fopen(XScript::wstring2string(FilePath).c_str(), "wb");
         XIndexType MagicNumber = 0x114514ff2b;
         Serializatior::BaseTypeSerializatior()(FilePointer, MagicNumber);
         /* 写入依赖 */

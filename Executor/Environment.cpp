@@ -10,7 +10,7 @@
 namespace XScript {
     void Environment::LoadFromFile(const XString &FilePath, const XString &PackageName, bool IsMainPackage) {
         XBytes FinalPath = wstring2string(FilePath);
-        FILE *FilePointer = fopen(FinalPath.c_str(), "r+");
+        FILE *FilePointer = fopen(FinalPath.c_str(), "rb");
         if (FilePointer == nullptr) {
             throw InternalException(L"Environment::LoadFromFile() : Cannot open file.");
         }
@@ -45,7 +45,7 @@ namespace XScript {
 
             for (auto &Prefix: PathsToSearch) {
                 XString FFF = Prefix + (Prefix.back() == L'/' or Prefix == L"" ? L"" : L"/") + Package;
-                FILE *IsExist = fopen(wstring2string(FFF).c_str(), "rb+");
+                FILE *IsExist = fopen(wstring2string(FFF).c_str(), "rb");
                 if (IsExist == nullptr)
                     continue;
                 fclose(IsExist);
