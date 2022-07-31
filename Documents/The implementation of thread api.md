@@ -3,9 +3,9 @@
 ## Example code
 
 ```js
-native_class IO in "libio.xnc.so";
-native_class String in "libstring.xnc.so";
-native_class Thread in "libthread.xnc.so";
+native_class IO in "libio.xnc";
+native_class String in "libstring.xnc";
+native_class Thread in "libthread.xnc";
 
 def test_func (x, y) {
   for (var i = 0;i < 10;i += 1) {

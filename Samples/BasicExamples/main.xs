@@ -1,7 +1,7 @@
-native_class IO in "libio.xnc.so";
-native_class String in "libstring.xnc.so";
-native_class Array in "libarray.xnc.so";
-native_class Thread in "libthread.xnc.so";
+native_class IO in "libio.xnc";
+native_class String in "libstring.xnc";
+native_class Array in "libarray.xnc";
+native_class Thread in "libthread.xnc";
 
 def main () {
     var uf = func (a, b) {

@@ -1,7 +1,7 @@
-native_class IO in "libio.xnc.so";
-native_class String in "libstring.xnc.so";
-native_class Array in "libarray.xnc.so";
-native_class FS in "libfs.xnc.so";
+native_class IO in "libio.xnc";
+native_class String in "libstring.xnc";
+native_class Array in "libarray.xnc";
+native_class FS in "libfs.xnc";
 
 def main () {
     var file = FS.open("test.txt", "r+");

@@ -38,4 +38,14 @@ namespace XScript {
     constexpr XIndexType EnvHeapGCStartCondition = 256;
 } // XScript
 
+#if defined(_WIN32)
+#define DynamicLibraryPostfix L".dll"
+#elif defined(__linux__)
+#define DynamicLibraryPostfix L".so"
+#elif defined(__APPLE__)
+#define DynamicLibraryPostfix L".dylib"
+#else
+#define DynamicLibraryPostfix L""
+#endif
+
 #endif //XSCRIPT2_CONFIG_HPP

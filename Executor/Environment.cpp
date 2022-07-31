@@ -25,7 +25,7 @@ namespace XScript {
             bool LoadFail = true;
 
             for (auto &Prefix: PathsToSearch) {
-                XString FFF = Prefix + (Prefix.back() == L'/' or Prefix == L"" ? L"" : L"/") + Class;
+                XString FFF = Prefix + (Prefix.back() == L'/' or Prefix == L"" ? L"" : L"/") + Class + DynamicLibraryPostfix;
                 try {
                     NativeLibraries.LoadLib(FFF, Hash(Class));
                     LoadFail = false;

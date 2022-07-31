@@ -66,7 +66,7 @@ namespace XScript::Compiler {
     void CompilerEnvironment::LoadNativeClass(const XString &FileName) {
         for (auto &PathToSearch: PathsToSearch) {
             XString FinalPath =
-                    PathToSearch + (PathToSearch.back() == L'/' or PathToSearch == L"" ? L"" : L"/") + FileName;
+                    PathToSearch + (PathToSearch.back() == L'/' or PathToSearch == L"" ? L"" : L"/") + FileName + DynamicLibraryPostfix;
             try {
                 NativeLibraries.LoadLib(FinalPath, Hash(FileName));
                 DependencyNativeClasses.push_back(FileName);
