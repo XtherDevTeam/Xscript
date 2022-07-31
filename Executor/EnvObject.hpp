@@ -11,6 +11,7 @@
 #include "EnvStringObject.hpp"
 #include "EnvFunction.hpp"
 #include "../NativeLibrary/NativeLibrary.hpp"
+#include "EnvBytesObject.hpp"
 
 namespace XScript {
 
@@ -22,6 +23,7 @@ namespace XScript {
             ClassObject,
             ArrayObject,
             StringObject,
+            BytesObject,
             Integer,
             Decimal,
             Boolean,
@@ -42,6 +44,10 @@ namespace XScript {
             EnvStringObject *StringObjectPointer;
 
             explicit ObjectValue(EnvStringObject *stringObjectPointer);
+
+            EnvBytesObject *BytesObjectPointer;
+
+            explicit ObjectValue(EnvBytesObject *bytesObjectPointer);
 
             XInteger IntegerValue{};
 

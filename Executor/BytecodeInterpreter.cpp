@@ -306,6 +306,24 @@ namespace XScript {
                         }
                         break;
                     }
+                    case EnvObject::ObjectKind::BytesObject: {
+                        if (Right.Kind == EnvironmentStackItem::ItemKind::HeapPointer and
+                            InterpreterEnvironment->Heap.HeapData[Right.Value.HeapPointerVal].Kind ==
+                            EnvObject::ObjectKind::BytesObject) {
+                            auto ObjPointer = InterpreterEnvironment->Heap.PushElement(
+                                    {EnvObject::ObjectKind::BytesObject,
+                                     (EnvObject::ObjectValue) {MergeEnvBytesObject(
+                                             InterpreterEnvironment->Heap.HeapData[Left.Value.HeapPointerVal].Value.BytesObjectPointer,
+                                             InterpreterEnvironment->Heap.HeapData[Right.Value.HeapPointerVal].Value.BytesObjectPointer)}});
+
+                            InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(
+                                    (EnvironmentStackItem) {EnvironmentStackItem::ItemKind::HeapPointer,
+                                                            (EnvironmentStackItem::ItemValue) {ObjPointer}});
+                        } else {
+                            throw BytecodeInterpretError(L"Unsupported string operation.");
+                        }
+                        break;
+                    }
                     default:
                         throw BytecodeInterpretError(L"Cannot operate an basic-type heap item.");
                 }

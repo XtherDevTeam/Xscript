@@ -26,6 +26,10 @@ namespace XScript {
     EnvObject::ObjectValue::ObjectValue(NativeMethodInformation *nativeMethodPointerValue) : NativeMethodPointerValue(
             nativeMethodPointerValue) {}
 
+    EnvObject::ObjectValue::ObjectValue(EnvBytesObject *bytesObjectPointer) : BytesObjectPointer(bytesObjectPointer) {
+
+    }
+
     EnvObject::EnvObject() : Marked(false), Kind(ObjectKind::Integer), Value(static_cast<XInteger>(0)) {
 
     }
