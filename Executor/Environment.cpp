@@ -45,7 +45,7 @@ namespace XScript {
 
             for (auto &Prefix: PathsToSearch) {
                 XString FFF = Prefix + (Prefix.back() == L'/' or Prefix == L"" ? L"" : L"/") + Package;
-                FILE *IsExist = fopen(wstring2string(FFF).c_str(), "r+");
+                FILE *IsExist = fopen(wstring2string(FFF).c_str(), "rb+");
                 if (IsExist == nullptr)
                     continue;
                 fclose(IsExist);

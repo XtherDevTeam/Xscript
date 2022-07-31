@@ -20,8 +20,9 @@ namespace XScript {
         }
 
         BytecodeStructure ExtendedTypeReader::ReadInstruction(FILE *FilePointer) {
-            return {static_cast<BytecodeStructure::InstructionEnum>(BaseTypeReader().ReadInteger(FilePointer)),
-                    ReadInstructionParam(FilePointer)};
+            auto A = BaseTypeReader().ReadInteger(FilePointer);
+            auto B = ReadInstructionParam(FilePointer);
+            return {static_cast<BytecodeStructure::InstructionEnum>(A), B};
         }
 
         XArray<BytecodeStructure> ExtendedTypeReader::ReadInstructionArray(FILE *FilePointer) {
@@ -55,7 +56,7 @@ namespace XScript {
         }
 
         EnvFunction ExtendedTypeReader::ReadFunction(FILE *FilePointer) {
-            BaseTypeReader().ReadIndex(FilePointer);
+            auto ParamCount = BaseTypeReader().ReadIndex(FilePointer);
             return (EnvFunction) {0, ReadInstructionArray(FilePointer)};
         }
 

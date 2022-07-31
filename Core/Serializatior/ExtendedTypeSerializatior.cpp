@@ -19,7 +19,7 @@ namespace XScript {
         }
 
         void ExtendedTypeSerializatior::operator()(FILE *FilePointer, BytecodeStructure::InstructionParam Param) {
-            if (fwrite(&Param, sizeof(Param), 1, FilePointer) == -1) {
+            if (fwrite(&Param, sizeof(BytecodeStructure::InstructionParam), 1, FilePointer) == -1) {
                 throw InternalException(L"ExtendedTypeSerializatior: Cannot write to file.");
             }
         }

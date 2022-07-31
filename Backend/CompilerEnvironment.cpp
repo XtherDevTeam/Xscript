@@ -27,7 +27,7 @@ namespace XScript::Compiler {
         for (auto &PathToSearch: PathsToSearch) {
             XBytes FinalPath = wstring2string(
                     PathToSearch + (PathToSearch.back() == L'/' or PathToSearch == L"" ? L"" : L"/") + FileName);
-            FILE *FilePointer = fopen(FinalPath.c_str(), "r+");
+            FILE *FilePointer = fopen(FinalPath.c_str(), "rb+");
             if (FilePointer == nullptr) {
                 continue;
             }
