@@ -17,7 +17,7 @@ namespace XScript {
                 LoadedLibraries.erase(Alias);
                 throw InternalException(L"NativeLibrariesManager::LoadLib(): Cannot open dynamic library.");
             }
-            typedef NativeClassInformation (*InitializerType)();
+            typedef NativeLibraryInformation (*InitializerType)();
 
             auto Func = (InitializerType) dlsym(LoadedLibraries[Alias].Handle, "Initialize");
 
@@ -29,13 +29,15 @@ namespace XScript {
         return LoadedLibraries.count(Alias);
     }
 
-    NativeClass &NativeLibrariesManager::operator[](XIndexType Alias) {
+    NativeLib &NativeLibrariesManager::operator[](XIndexType Alias) {
         return LoadedLibraries[Alias];
     }
 
     void NativeLibrariesManager::FreeLibraries() {
         for (auto &I: LoadedLibraries) {
-            I.second.Information.Methods.clear(); // quick fix
+            for (auto &J : I.second.Information.Classes) {
+                J.second.Methods.clear(); // quick fix
+            }
             dlclose(I.second.Handle);
         }
         LoadedLibraries = {};

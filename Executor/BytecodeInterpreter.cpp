@@ -1427,7 +1427,7 @@ namespace XScript {
     void BytecodeInterpreter::InstructionStackPushEmpty(BytecodeStructure::InstructionParam Param) {
         InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Null,
                                                                           (EnvironmentStackItem::ItemValue) {
-                                                                                  (XIndexType) 0}});
+                                                                                  (XIndexType) Param.HeapPointerValue}});
     }
 
     void BytecodeInterpreter::InstructionStackPop(BytecodeStructure::InstructionParam Param) {
@@ -1918,7 +1918,7 @@ namespace XScript {
         InterpreterEnvironment->Threads[ThreadID].PC.Package = PkgID.Value.HeapPointerVal;
     }
 
-    void BytecodeInterpreter::ConstructNativeClass(XIndexType HashOfPath) {
+    void BytecodeInterpreter::ConstructNativeClass(XIndexType HashOfPath, XIndexType ClassName) {
         if (InterpreterEnvironment->NativeLibraries.IsLoaded(HashOfPath)) {
             EnvClassObject *Object = NewEnvClassObject();
 
@@ -1926,7 +1926,7 @@ namespace XScript {
                     {EnvObject::ObjectKind::Index, (EnvObject::ObjectValue) {HashOfPath}});
 
             /* Because the address of each element in LoadedLibraries are static after initialized, we can use pointer to this address without any worried. */
-            for (auto &I: InterpreterEnvironment->NativeLibraries[HashOfPath].Information.Methods) {
+            for (auto &I: InterpreterEnvironment->NativeLibraries[HashOfPath].Information.Classes[ClassName].Methods) {
                 Object->Members[I.first] = InterpreterEnvironment->Heap.PushElement(
                         {EnvObject::ObjectKind::NativeMethodPointer, (EnvObject::ObjectValue) {&I.second}});
             }
@@ -1942,7 +1942,8 @@ namespace XScript {
 
     void BytecodeInterpreter::InstructionNativeClassNew(BytecodeStructure::InstructionParam param) {
         GC->Start();
-        ConstructNativeClass(param.HeapPointerValue);
+        EnvironmentStackItem LibName = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
+        ConstructNativeClass(LibName.Value.HeapPointerVal, param.HeapPointerValue);
     }
 
     void BytecodeInterpreter::InstructionExceptionPush(BytecodeStructure::InstructionParam Param) {

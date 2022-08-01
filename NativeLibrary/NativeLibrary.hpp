@@ -22,16 +22,21 @@ namespace XScript {
     };
 
     struct NativeClassInformation {
-        XString Author;
-        XString Description;
+        XString ClassName;
         XMap<XIndexType, NativeMethodInformation> Methods;
     };
 
-    struct NativeClass {
-        void *Handle;
-        NativeClassInformation Information;
+    struct NativeLibraryInformation {
+        XString Author;
+        XString Description;
+        XMap<XIndexType, NativeClassInformation> Classes;
+    };
 
-        NativeClass();
+    struct NativeLib {
+        void *Handle;
+        NativeLibraryInformation Information;
+
+        NativeLib();
     };
 };
 

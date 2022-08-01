@@ -12,7 +12,7 @@ namespace XScript {
 
     class NativeLibrariesManager {
     public:
-        XMap<XIndexType, NativeClass> LoadedLibraries;
+        XMap<XIndexType, NativeLib> LoadedLibraries;
 
         void LoadLib(const XString &FullLibraryPath, XIndexType Alias);
 
@@ -20,7 +20,7 @@ namespace XScript {
 
         bool IsLoaded(XIndexType Alias);
 
-        NativeClass &operator[](XIndexType Alias);
+        NativeLib &operator[](XIndexType Alias);
     };
 
 } // XScript

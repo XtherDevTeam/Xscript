@@ -198,8 +198,13 @@ namespace XScript {
                                                                               Typename::TypenameKind::Unknown}, false});
 
             Environment.MainPackage.PackageInitializeCodes.push_back((BytecodeStructure) {
-                    BytecodeStructure::InstructionEnum::native_class_new,
+                    BytecodeStructure::InstructionEnum::stack_push_empty,
                     (BytecodeStructure::InstructionParam) {Hash(Target.Subtrees[1].Node.Value)}
+            });
+
+            Environment.MainPackage.PackageInitializeCodes.push_back((BytecodeStructure) {
+                    BytecodeStructure::InstructionEnum::native_class_new,
+                    (BytecodeStructure::InstructionParam) {Hash(Target.Subtrees[0].Node.Value)}
             });
 
             Environment.MainPackage.PackageInitializeCodes.push_back((BytecodeStructure) {

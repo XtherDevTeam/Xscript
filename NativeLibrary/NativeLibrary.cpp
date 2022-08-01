@@ -4,6 +4,6 @@
 
 #include "NativeLibrary.hpp"
 
-XScript::NativeClass::NativeClass() : Handle(nullptr), Information() {
+XScript::NativeLib::NativeLib() : Handle(nullptr), Information() {
 
 }
