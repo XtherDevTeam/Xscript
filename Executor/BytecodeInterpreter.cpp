@@ -129,9 +129,6 @@ namespace XScript {
                 case BytecodeStructure::InstructionEnum::list_push:
                     InstructionListPush(CurrentInstruction.Param);
                     break;
-                case BytecodeStructure::InstructionEnum::list_pop:
-                    InstructionListPop(CurrentInstruction.Param);
-                    break;
                 case BytecodeStructure::InstructionEnum::pc_jump_if_true:
                     InstructionPCJumpIfTrue(CurrentInstruction.Param);
                     break;
@@ -183,8 +180,6 @@ namespace XScript {
                     InstructionExceptionThrow(CurrentInstruction.Param);
                     break;
                 case BytecodeStructure::InstructionEnum::force_exit:
-                    IsBusy = false;
-                    InterpreterEnvironment->Threads[ThreadID].IsBusy = false;
                     return;
                 case BytecodeStructure::InstructionEnum::fake_command_continue:
                 case BytecodeStructure::InstructionEnum::fake_command_break:
@@ -192,8 +187,6 @@ namespace XScript {
             }
             InterpreterEnvironment->Threads[ThreadID].PC.NowIndex++;
         }
-        IsBusy = false;
-        InterpreterEnvironment->Threads[ThreadID].IsBusy = false;
     }
 
     void BytecodeInterpreter::InstructionCalculationAdd(BytecodeStructure::InstructionParam Param) {
@@ -1138,6 +1131,7 @@ namespace XScript {
                     case EnvironmentStackItem::ItemKind::Boolean:
                         Result = Left.Value.IntVal > static_cast<XInteger>(Right.Value.BoolVal);
                         break;
+                    case EnvironmentStackItem::ItemKind::NativeMethodPointer:
                     case EnvironmentStackItem::ItemKind::FunctionPointer:
                     case EnvironmentStackItem::ItemKind::HeapPointer:
                         throw BytecodeInterpretError(L"Cannot compare integers with a object.");
@@ -1159,6 +1153,7 @@ namespace XScript {
                     case EnvironmentStackItem::ItemKind::Boolean:
                         Result = Left.Value.DeciVal > static_cast<XDecimal>(Right.Value.BoolVal);
                         break;
+                    case EnvironmentStackItem::ItemKind::NativeMethodPointer:
                     case EnvironmentStackItem::ItemKind::FunctionPointer:
                     case EnvironmentStackItem::ItemKind::HeapPointer:
                         throw BytecodeInterpretError(L"Cannot add integers with a object.");
@@ -1180,6 +1175,7 @@ namespace XScript {
                     case EnvironmentStackItem::ItemKind::Boolean:
                         Result = Left.Value.BoolVal > Right.Value.BoolVal;
                         break;
+                    case EnvironmentStackItem::ItemKind::NativeMethodPointer:
                     case EnvironmentStackItem::ItemKind::FunctionPointer:
                     case EnvironmentStackItem::ItemKind::HeapPointer:
                         throw BytecodeInterpretError(L"Cannot compare integers with a object.");
@@ -1221,6 +1217,7 @@ namespace XScript {
                 break;
             case EnvironmentStackItem::ItemKind::Null:
                 throw BytecodeInterpretError(L"Cannot add elements with a null value.");
+            case EnvironmentStackItem::ItemKind::NativeMethodPointer:
             case EnvironmentStackItem::ItemKind::FunctionPointer:
                 throw BytecodeInterpretError(L"Cannot add elements with a function pointer value.");
         }
@@ -1243,6 +1240,7 @@ namespace XScript {
                     case EnvironmentStackItem::ItemKind::Boolean:
                         Result = Left.Value.IntVal < static_cast<XInteger>(Right.Value.BoolVal);
                         break;
+                    case EnvironmentStackItem::ItemKind::NativeMethodPointer:
                     case EnvironmentStackItem::ItemKind::FunctionPointer:
                     case EnvironmentStackItem::ItemKind::HeapPointer:
                         throw BytecodeInterpretError(L"Cannot compare integers with a object.");
@@ -1264,6 +1262,7 @@ namespace XScript {
                     case EnvironmentStackItem::ItemKind::Boolean:
                         Result = Left.Value.DeciVal < static_cast<XDecimal>(Right.Value.BoolVal);
                         break;
+                    case EnvironmentStackItem::ItemKind::NativeMethodPointer:
                     case EnvironmentStackItem::ItemKind::FunctionPointer:
                     case EnvironmentStackItem::ItemKind::HeapPointer:
                         throw BytecodeInterpretError(L"Cannot add integers with a object.");
@@ -1285,6 +1284,7 @@ namespace XScript {
                     case EnvironmentStackItem::ItemKind::Boolean:
                         Result = Left.Value.BoolVal < Right.Value.BoolVal;
                         break;
+                    case EnvironmentStackItem::ItemKind::NativeMethodPointer:
                     case EnvironmentStackItem::ItemKind::FunctionPointer:
                     case EnvironmentStackItem::ItemKind::HeapPointer:
                         throw BytecodeInterpretError(L"Cannot compare integers with a object.");
@@ -1326,6 +1326,9 @@ namespace XScript {
                 break;
             case EnvironmentStackItem::ItemKind::Null:
                 throw BytecodeInterpretError(L"Cannot add elements with a null value.");
+            default:
+                throw BytecodeInterpretError(L"Cannot add elements with a function pointer.");
+                break;
         }
     }
 
@@ -1541,15 +1544,6 @@ namespace XScript {
         InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(ListItem);
     }
 
-    void BytecodeInterpreter::InstructionListPop(BytecodeStructure::InstructionParam Param) {
-        EnvironmentStackItem ListItem = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
-        if (ListItem.Kind == EnvironmentStackItem::ItemKind::HeapPointer and
-            InterpreterEnvironment->Heap.HeapData[ListItem.Value.HeapPointerVal].Kind ==
-            EnvObject::ObjectKind::ArrayObject) {
-            InterpreterEnvironment->Heap.HeapData[ListItem.Value.HeapPointerVal].Value.ArrayObjectPointer->Elements.pop_back();
-        }
-    }
-
     void BytecodeInterpreter::InstructionListPush(BytecodeStructure::InstructionParam Param) {
         EnvironmentStackItem ListItem = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
         if (ListItem.Kind == EnvironmentStackItem::ItemKind::HeapPointer and
@@ -1574,6 +1568,11 @@ namespace XScript {
                     Object = (EnvObject) {
                             EnvObject::ObjectKind::FunctionPointer,
                             (EnvObject::ObjectValue) {Item.Value.FuncPointerVal}};
+                    break;
+                case EnvironmentStackItem::ItemKind::NativeMethodPointer:
+                    Object = (EnvObject) {
+                            EnvObject::ObjectKind::NativeMethodPointer,
+                            (EnvObject::ObjectValue) {Item.Value.NativeMethodPointerVal}};
                     break;
                 case EnvironmentStackItem::ItemKind::HeapPointer:
                     Object = InterpreterEnvironment->Heap.HeapData[Item.Value.HeapPointerVal];
@@ -1623,6 +1622,8 @@ namespace XScript {
                     }
                     break;
                 }
+                default:
+                    break;
             }
         } else {
             throw BytecodeInterpretError(L"list_get_member: Unknown item type");
@@ -1657,6 +1658,11 @@ namespace XScript {
                         EnvObject::ObjectKind::FunctionPointer,
                         (EnvObject::ObjectValue) {RightValue.Value.FuncPointerVal}};
                 break;
+            case EnvironmentStackItem::ItemKind::NativeMethodPointer:
+                InterpreterEnvironment->Heap.HeapData[LeftValue.Value.HeapPointerVal] = (EnvObject) {
+                        EnvObject::ObjectKind::NativeMethodPointer,
+                        (EnvObject::ObjectValue) {RightValue.Value.NativeMethodPointerVal}};
+                break;
             case EnvironmentStackItem::ItemKind::HeapPointer:
                 InterpreterEnvironment->Heap.HeapData[LeftValue.Value.HeapPointerVal] = InterpreterEnvironment->Heap.HeapData[RightValue.Value.HeapPointerVal];
                 break;
@@ -1674,6 +1680,7 @@ namespace XScript {
                 case EnvObject::ObjectKind::ClassObject:
                 case EnvObject::ObjectKind::ArrayObject:
                 case EnvObject::ObjectKind::StringObject:
+                case EnvObject::ObjectKind::BytesObject:
                     break;
                 case EnvObject::ObjectKind::Integer:
                     Item.Kind = EnvironmentStackItem::ItemKind::Integer;
@@ -1711,26 +1718,7 @@ namespace XScript {
     void BytecodeInterpreter::InstructionPCJumpIfTrue(BytecodeStructure::InstructionParam Param) {
         EnvironmentStackItem Element = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
         bool Flag = false;
-        switch (Element.Kind) {
-            case EnvironmentStackItem::ItemKind::Integer:
-                Flag = Element.Value.IntVal;
-                break;
-            case EnvironmentStackItem::ItemKind::Decimal:
-                Flag = static_cast<XInteger>(Element.Value.DeciVal);
-                break;
-            case EnvironmentStackItem::ItemKind::Boolean:
-                Flag = Element.Value.BoolVal;
-                break;
-            case EnvironmentStackItem::ItemKind::HeapPointer:
-                Flag = Element.Value.HeapPointerVal;
-                break;
-            case EnvironmentStackItem::ItemKind::FunctionPointer:
-                Flag = Element.Value.FuncPointerVal;
-                break;
-            case EnvironmentStackItem::ItemKind::Null:
-                Flag = false;
-                break;
-        }
+        Flag = Element.Value.IntVal;
 
         if (Flag) {
             InterpreterEnvironment->Threads[ThreadID].PC.NowIndex += Param.IntValue - 1;
@@ -1755,6 +1743,9 @@ namespace XScript {
                 break;
             case EnvironmentStackItem::ItemKind::FunctionPointer:
                 Flag = Element.Value.FuncPointerVal;
+                break;
+            case EnvironmentStackItem::ItemKind::NativeMethodPointer:
+                Flag = Element.Value.NativeMethodPointerVal;
                 break;
             case EnvironmentStackItem::ItemKind::Null:
                 Flag = false;

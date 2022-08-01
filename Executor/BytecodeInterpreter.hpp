@@ -5,12 +5,12 @@
 #ifndef XSCRIPT2_BYTECODEINTERPRETER_HPP
 #define XSCRIPT2_BYTECODEINTERPRETER_HPP
 
+#include <mutex>
 #include "Environment.hpp"
 #include "../Share/Exceptions/BytecodeInterpretError.hpp"
 #include "GarbageCollection.hpp"
 
 namespace XScript {
-
     class BytecodeInterpreter {
     public:
         bool IsBusy;
@@ -88,8 +88,6 @@ namespace XScript {
         void InstructionCalculationNegate(BytecodeStructure::InstructionParam Param);
 
         void InstructionListNew(BytecodeStructure::InstructionParam Param);
-
-        void InstructionListPop(BytecodeStructure::InstructionParam Param);
 
         void InstructionListPush(BytecodeStructure::InstructionParam Param);
 

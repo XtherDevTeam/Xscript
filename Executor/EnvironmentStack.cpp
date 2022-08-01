@@ -5,6 +5,8 @@
 #include "EnvironmentStack.hpp"
 
 namespace XScript {
+    std::mutex StackLock;
+
     EnvironmentStack::EnvironmentStack(EnvironmentStackFramesInformation &FrameInfo) {
         FramesInformation.push_back(FrameInfo);
     }

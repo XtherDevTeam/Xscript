@@ -7,10 +7,13 @@
 
 #include <stack>
 #include <set>
+#include <mutex>
 #include "../Share/Utils.hpp"
 #include "EnvObject.hpp"
 
 namespace XScript {
+    extern std::mutex HeapLock;
+
     class EnvironmentHeap {
     public:
         XIndexType AllocatedElementCount{};

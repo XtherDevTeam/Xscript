@@ -5,11 +5,13 @@
 #ifndef XSCRIPT2_ENVIRONMENTSTACK_HPP
 #define XSCRIPT2_ENVIRONMENTSTACK_HPP
 
+#include <mutex>
 #include "../Share/Utils.hpp"
 #include "EnvironmentStackItem.hpp"
 #include "EnvironmentStackFramesInfomation.hpp"
 
 namespace XScript {
+    extern std::mutex StackLock;
 
     /**
      * Environment Stack of XScript Bytecode Interpreter
@@ -27,14 +29,18 @@ namespace XScript {
         EnvironmentStack();
 
         inline void PushValueToStack(const EnvironmentStackItem &Item) {
+            StackLock.lock();
             Elements.push_back(Item);
             FramesInformation.back().Length++;
+            StackLock.unlock();
         }
 
         inline EnvironmentStackItem PopValueFromStack() {
+            StackLock.lock();
             auto R = Elements[Elements.size() - 1];
             Elements.pop_back();
             FramesInformation.back().Length--;
+            StackLock.unlock();
             return R;
         }
 
@@ -48,8 +54,11 @@ namespace XScript {
         }
 
         inline void StoreValueToIndex(XIndexType IndexInFrame, const EnvironmentStackItem &Item) {
+            StackLock.lock();
             XIndexType RealPos = FramesInformation[FramesInformation.size() - 1].From + IndexInFrame;
             Elements[RealPos] = Item;
+            StackLock.unlock();
+
         }
 
     };

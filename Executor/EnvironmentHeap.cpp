@@ -6,24 +6,30 @@
 #include "../Share/Exceptions/HeapOverflowException.hpp"
 
 namespace XScript {
+    std::mutex HeapLock;
+
     EnvironmentHeap::EnvironmentHeap() {
         HeapData.resize(EnvHeapDataAllocateSize);
     }
 
     XHeapIndexType EnvironmentHeap::PushElement(EnvObject Object) {
+        HeapLock.lock();
         if (!UsedElementSet.empty()) {
             auto Index = *UsedElementSet.begin();
             UsedElementSet.erase(Index);
             HeapData[Index] = Object;
+            HeapLock.unlock();
             return Index;
         } else if (AllocatedElementCount == EnvHeapDataAllocateSize) {
             throw HeapOverflowException(L"heap elements limit exceeded");
         }
         HeapData[AllocatedElementCount] = Object;
+        HeapLock.unlock();
         return AllocatedElementCount++;
     }
 
     void EnvironmentHeap::PopElement(XHeapIndexType Object) {
+        HeapLock.lock();
         switch (HeapData[Object].Kind) {
             case EnvObject::ObjectKind::ClassObject:
                 /* TODO: Add classes to XScript2 */
@@ -45,9 +51,11 @@ namespace XScript {
         } else {
             UsedElementSet.insert(Object);
         }
+        HeapLock.unlock();
     }
 
     EnvironmentHeap::~EnvironmentHeap() {
+        HeapLock.lock();
         std::set<void *> FreedAddresses;
         for (XIndexType index = 0; index < AllocatedElementCount; index++) {
             auto &I = HeapData[index];
@@ -67,6 +75,7 @@ namespace XScript {
         }
         UsedElementSet.clear();
         HeapData.clear();
+        HeapLock.unlock();
     }
 
 } // XScript

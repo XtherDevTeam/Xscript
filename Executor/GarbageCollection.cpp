@@ -16,6 +16,7 @@ namespace XScript {
      */
     void GarbageCollection::Start() {
         if (Check()) {
+            HeapLock.lock();
             std::queue<XHeapIndexType> Queue;
             for (auto &I: Env.Packages) {
                 for (auto &J: I.second.Statics) {
@@ -87,6 +88,7 @@ namespace XScript {
 
             Limit = Env.Heap.AllocatedElementCount > AAllocCount ? Env.Heap.AllocatedElementCount : AAllocCount +
                                                                                                     EnvHeapGCStartCondition;
+            HeapLock.unlock();
         }
     }
 

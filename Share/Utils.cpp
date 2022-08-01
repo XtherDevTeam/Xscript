@@ -25,13 +25,13 @@ namespace XScript {
     }
 
     XInteger XStringToXInteger(const XString &T) {
-        char *MakeStdlibHappyXD;
+        char *MakeStdlibHappyXD = nullptr;
         const std::string P = wstring2string(T);
         return strtol(P.data(), &MakeStdlibHappyXD, 10);
     }
 
     XDecimal XStringToXDecimal(const XString &T) {
-        char *MakeStdlibHappyXD;
+        char *MakeStdlibHappyXD = nullptr;
         const std::string P = wstring2string(T);
         return strtof(P.data(), &MakeStdlibHappyXD);
     }
