@@ -5,6 +5,8 @@
 #include <queue>
 #include "GarbageCollection.hpp"
 
+#include "../Share/Xqueue.hpp"
+
 namespace XScript {
 
     GarbageCollection::GarbageCollection(Environment &Env) : Env(Env) {
@@ -17,7 +19,7 @@ namespace XScript {
     void GarbageCollection::Start() {
         if (Check()) {
             HeapLock.lock();
-            std::queue<XHeapIndexType> Queue;
+            XScript2::xqueue<XHeapIndexType> Queue;
             for (auto &I: Env.Packages) {
                 for (auto &J: I.second.Statics) {
                     if (J.Kind == EnvironmentStackItem::ItemKind::HeapPointer)
@@ -86,8 +88,7 @@ namespace XScript {
             // 执行完GC之后 查看堆尾部是否有未使用的元素，将其回收
             Env.Heap.AllocatedElementCount = Top + 1;
 
-            Limit = Env.Heap.AllocatedElementCount > AAllocCount ? Env.Heap.AllocatedElementCount : AAllocCount +
-                                                                                                    EnvHeapGCStartCondition;
+            Limit = AAllocCount + EnvHeapGCStartCondition;
             HeapLock.unlock();
         }
     }

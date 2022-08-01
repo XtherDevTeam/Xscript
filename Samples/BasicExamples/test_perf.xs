@@ -76,7 +76,7 @@ def gc_test () {
 
     var Duration = System.time_ms() - Start;
     IO.println(String.fromBuffer("GC test ended."));
-
+    IO.println(String.fromInt(Start) + " " + String.fromInt(System.time_ms()));
     return Duration;
 }
 
