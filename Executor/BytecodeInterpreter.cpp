@@ -9,8 +9,6 @@ namespace XScript {
             IsBusy(false), ThreadID(0), Pool(Pool), InterpreterEnvironment(interpreterEnvironment), GC(GC) {}
 
     void BytecodeInterpreter::MainLoop() {
-        IsBusy = true;
-        InterpreterEnvironment->Threads[ThreadID].IsBusy = true;
         while ( InterpreterEnvironment->Threads[ThreadID].PC.Pointer and
                 InterpreterEnvironment->Threads[ThreadID].PC.NowIndex != InterpreterEnvironment->Threads[ThreadID].PC.Pointer->size()) {
             InterpreterLock.lock();

@@ -29,8 +29,10 @@ namespace XScript {
     }
 
     void EnvironmentThreadPool::WaitForThread(XIndexType Idx) {
+        InterpreterLock.unlock();
         if(Pool[Idx].Thread.joinable()) {
             Pool[Idx].Thread.join();
         }
+        InterpreterLock.lock();
     }
 } // XScript

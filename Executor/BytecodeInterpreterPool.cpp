@@ -19,6 +19,8 @@ namespace XScript {
     XIndexType BytecodeInterpreterPool::Allocate() {
         for (XIndexType i = 0;i < MaxThreadCount;i++) {
             if(!Interpreters[i].IsBusy) {
+                Interpreters[i].IsBusy = true;
+                Interpreters->InterpreterEnvironment->Threads[i].IsBusy = true;
                 return i;
             }
         }
