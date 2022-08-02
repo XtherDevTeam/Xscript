@@ -15,19 +15,19 @@ class GCTestItem {
 
 def io_test () {
     IO.println(String.fromBuffer("IO test starting..."));
-    var Start = System.time_ms();
+    var Start = System.boot_time_ms();
 
     for (var i = 0;i < 50000;i += 1) {
         IO.println(String.fromBuffer("XScript2 is under the MIT license. Developed by Jerry Chou! ZoengJyutJing, ngo zungji nei!"));
     }
-    var Duration = System.time_ms() - Start;
+    var Duration = System.boot_time_ms() - Start;
     IO.println(String.fromBuffer("IO test ended."));
     return Duration;
 }
 
 def fs_test () {
     IO.println(String.fromBuffer("FS test starting..."));
-    var Start = System.time_ms();
+    var Start = System.boot_time_ms();
 
     var file = FS.open("test.txt", "w+");
     for (var i = 0;i < 50000;i += 1) {
@@ -38,14 +38,14 @@ def fs_test () {
     var dest = file.read();
     IO.println(String.fromBytes(dest));
 
-    var Duration = System.time_ms() - Start;
+    var Duration = System.boot_time_ms() - Start;
     IO.println(String.fromBuffer("FS test ended."));
     return Duration;
 }
 
 def array_test () {
     IO.println(String.fromBuffer("Array test starting..."));
-    var Start = System.time_ms();
+    var Start = System.boot_time_ms();
 
     var arr = Array.create();
     for (var i = 0; i < 50000; i += 1) {
@@ -59,7 +59,7 @@ def array_test () {
         arr.pop_back();
     }
 
-    var Duration = System.time_ms() - Start;
+    var Duration = System.boot_time_ms() - Start;
     IO.println(String.fromBuffer("Array test ended."));
 
     return Duration;
@@ -67,16 +67,16 @@ def array_test () {
 
 def gc_test () {
     IO.println(String.fromBuffer("GC test starting..."));
-    var Start = System.time_ms();
+    var Start = System.boot_time_ms();
 
     for (var i = 0;i < 50000; i += 1) {
         var Str = String.fromBuffer("ZoengJyutJing, ngo zungji nei!");
         var Item = new GCTestItem();
     }
 
-    var Duration = System.time_ms() - Start;
+    var Duration = System.boot_time_ms() - Start;
     IO.println(String.fromBuffer("GC test ended."));
-    IO.println(String.fromInt(Start) + " " + String.fromInt(System.time_ms()));
+    IO.println(String.fromInt(Start) + " " + String.fromInt(System.boot_time_ms()));
     return Duration;
 }
 

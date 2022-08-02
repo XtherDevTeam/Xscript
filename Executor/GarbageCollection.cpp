@@ -10,14 +10,14 @@
 namespace XScript {
 
     GarbageCollection::GarbageCollection(Environment &Env) : Env(Env) {
-
+        ActiveGCThread = (std::thread){ActiveGCThreadFunc, std::ref(*this)};
     }
 
     /**
      * BFS
      */
-    void GarbageCollection::Start() {
-        if (Check()) {
+    void GarbageCollection::Start(bool force) {
+        if (force || PassiveCheck()) {
             HeapLock.lock();
             XScript2::xqueue<XHeapIndexType> Queue;
             for (auto &I: Env.Packages) {
@@ -88,12 +88,29 @@ namespace XScript {
             // 执行完GC之后 查看堆尾部是否有未使用的元素，将其回收
             Env.Heap.AllocatedElementCount = Top + 1;
 
-            Limit = AAllocCount + EnvHeapGCStartCondition;
+            Limit = Env.Heap.AllocatedElementCount > AAllocCount ? Env.Heap.AllocatedElementCount : AAllocCount + EnvHeapGCStartCondition;
             HeapLock.unlock();
         }
     }
 
-    bool GarbageCollection::Check() const {
+    bool GarbageCollection::PassiveCheck() const {
+        return Env.Heap.UsedElementSet.empty() && Env.Heap.AllocatedElementCount >= EnvHeapDataAllocateSize - EnvHeapGCStartCondition;
+    }
+
+    bool GarbageCollection::ActiveCheck() const {
         return Env.Heap.UsedElementSet.empty() && Env.Heap.AllocatedElementCount >= Limit;
+    }
+
+    [[noreturn]] void GarbageCollection::ActiveGCThreadFunc(GarbageCollection &GC) {
+        while (true) {
+            if (GC.ActiveCheck()) {
+                GC.Start();
+            }
+            std::this_thread::sleep_for(std::chrono::milliseconds(5));
+        }
+    }
+
+    GarbageCollection::~GarbageCollection() {
+        ActiveGCThread.detach();
     }
 } // XScript
