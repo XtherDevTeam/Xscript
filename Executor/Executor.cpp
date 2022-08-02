@@ -11,6 +11,8 @@ namespace XScript {
     }
 
     void Executor::Init() {
+        Interpreters[0].IsBusy = true;
+        Interpreters[0].InterpreterEnvironment->Threads[0].IsBusy = true;
         for (auto &PackageID: VM.LoadedPackageIDs) {
             VM.Threads[0].PC = (ProgramCounterInformation) {VM.Packages[PackageID].PackageInitializeCodes,
                                                              PackageID};

@@ -81,10 +81,14 @@ def gc_test () {
 }
 
 def main () {
-    var res_io = io_test();
-    var res_fs = fs_test();
-    var res_arr = array_test();
-    var res_gc = gc_test();
+    var th_io = Thread.start(io_test);
+    var th_fs = Thread.start(fs_test);
+    var th_arr = Thread.start(array_test);
+    var th_gc = Thread.start(gc_test);
+    var res_io = Thread.getResult(th_io);
+    var res_fs = Thread.getResult(th_fs);
+    var res_arr = Thread.getResult(th_arr);
+    var res_gc = Thread.getResult(th_gc);
     var Result = 
         String.fromBuffer("XScript 2 Performance report: \n") +  String.fromBuffer("\n") + 
         String.fromBuffer("Test Items(4): IO, FS, Array, GC\n") + String.fromBuffer("\n") + 
