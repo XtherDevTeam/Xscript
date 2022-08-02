@@ -18,7 +18,7 @@ namespace XScript {
      */
     void GarbageCollection::Start(bool force) {
         if (force || PassiveCheck()) {
-            HeapLock.lock();
+            InterpreterLock.lock();
             XScript2::xqueue<XHeapIndexType> Queue;
             for (auto &I: Env.Packages) {
                 for (auto &J: I.second.Statics) {
@@ -89,7 +89,8 @@ namespace XScript {
             Env.Heap.AllocatedElementCount = Top + 1;
 
             Limit = Env.Heap.AllocatedElementCount > AAllocCount ? Env.Heap.AllocatedElementCount : AAllocCount + EnvHeapGCStartCondition;
-            HeapLock.unlock();
+
+            InterpreterLock.unlock();
         }
     }
 

@@ -8,6 +8,8 @@
 #include "../ThirdPartyLibraries/localr.hpp"
 
 namespace XScript {
+    std::mutex InterpreterLock;
+
     std::string wstring2string(const std::wstring &ws) {
         return localr::string_convert<localr::codecvt<wchar_t, char>>::in(ws);
     }

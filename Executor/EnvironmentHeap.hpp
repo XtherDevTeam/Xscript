@@ -12,8 +12,6 @@
 #include "EnvObject.hpp"
 
 namespace XScript {
-    extern std::mutex HeapLock;
-
     class EnvironmentHeap {
     public:
         XIndexType AllocatedElementCount{};

@@ -13,6 +13,7 @@ namespace XScript {
         InterpreterEnvironment->Threads[ThreadID].IsBusy = true;
         while ( InterpreterEnvironment->Threads[ThreadID].PC.Pointer and
                 InterpreterEnvironment->Threads[ThreadID].PC.NowIndex != InterpreterEnvironment->Threads[ThreadID].PC.Pointer->size()) {
+            InterpreterLock.lock();
             auto &CurrentInstruction = (*InterpreterEnvironment->Threads[ThreadID].PC.Pointer)[InterpreterEnvironment->Threads[ThreadID].PC.NowIndex];
             switch (CurrentInstruction.Instruction) {
                 case BytecodeStructure::InstructionEnum::calculation_add:
@@ -180,11 +181,13 @@ namespace XScript {
                     InstructionExceptionThrow(CurrentInstruction.Param);
                     break;
                 case BytecodeStructure::InstructionEnum::force_exit:
+                    InterpreterLock.unlock();
                     return;
                 case BytecodeStructure::InstructionEnum::fake_command_continue:
                 case BytecodeStructure::InstructionEnum::fake_command_break:
                     break;
             }
+            InterpreterLock.unlock();
             InterpreterEnvironment->Threads[ThreadID].PC.NowIndex++;
         }
     }

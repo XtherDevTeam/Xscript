@@ -6,10 +6,13 @@
 #define XSCRIPT2_UTILS_HPP
 
 #include <cstring>
+#include <mutex>
 
 #include "Config.hpp"
 
 namespace XScript {
+    extern std::mutex InterpreterLock;
+
     std::string wstring2string(const std::wstring &ws);
 
     std::wstring string2wstring(const std::string &s);
