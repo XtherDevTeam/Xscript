@@ -3,6 +3,7 @@ native_class String in "libstring.xnc";
 native_class Array in "libarray.xnc";
 native_class Thread in "libthread.xnc";
 
+/* Comment test */
 def main () {
     var uf = func (a, b) {
         IO.println(String.fromBuffer("Konnichiha, Sekai. ThreadID: ") + String.fromInt(Thread.id()) + 

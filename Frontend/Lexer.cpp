@@ -144,6 +144,16 @@ namespace XScript {
             if (String[Position] == L'=') {
                 NextCharacter();   // Read after '='
                 LastToken = {TokenKind::DivisionAssignment, L"/=", Line, Column};
+            } else if (String[Position] == L'/') {
+                while (NextCharacter() != L'\n' and String[Position] != L'\0');
+                return Scan();
+            } else if (String[Position] == L'*') {
+                NextCharacter();
+                while ((String[Position] != L'*' or String[Position+1] != L'/') and String[Position] != '\0')
+                    NextCharacter();
+                NextCharacter();
+                NextCharacter();
+                return Scan();
             } else {
                 LastToken = {TokenKind::Slash, L"/", Line, Column};
             }
