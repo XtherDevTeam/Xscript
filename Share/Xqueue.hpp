@@ -87,7 +87,7 @@ namespace XScript2 {
     }
 
     template<typename T>
-    xqueue<T>::~xqueue<T>() {
+    xqueue<T>::~xqueue() {
         if (size) {
             auto nxt = first->next;
             while (first) {
