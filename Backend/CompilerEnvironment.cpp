@@ -26,7 +26,7 @@ namespace XScript::Compiler {
     void CompilerEnvironment::ImportFromPackage(const XString &FileName) {
         for (auto &PathToSearch: PathsToSearch) {
             XBytes FinalPath = wstring2string(
-                    PathToSearch + (PathToSearch.back() == std::filesystem::path::preferred_separator or PathToSearch == L"" ? L"" : L"/") + FileName);
+                    PathToSearch + (PathToSearch.back() == std::filesystem::path::preferred_separator or PathToSearch == L"" ? L"" : (std::wstring){L"" + std::filesystem::path::preferred_separator}) + FileName);
             FILE *FilePointer = fopen(FinalPath.c_str(), "rb");
             if (FilePointer == nullptr) {
                 continue;
@@ -66,7 +66,7 @@ namespace XScript::Compiler {
     void CompilerEnvironment::LoadNativeClass(const XString &FileName) {
         for (auto &PathToSearch: PathsToSearch) {
             XString FinalPath =
-                    PathToSearch + (PathToSearch.back() == std::filesystem::path::preferred_separator or PathToSearch == L"" ? L"" : L"/") + FileName + DynamicLibraryPostfix;
+                    PathToSearch + (PathToSearch.back() == std::filesystem::path::preferred_separator or PathToSearch == L"" ? L"" : (std::wstring){L"" + std::filesystem::path::preferred_separator}) + FileName + DynamicLibraryPostfix;
             try {
                 NativeLibraries.LoadLib(FinalPath, Hash(FileName));
                 DependencyNativeClasses.push_back(FileName);

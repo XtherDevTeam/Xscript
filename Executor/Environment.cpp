@@ -25,7 +25,7 @@ namespace XScript {
             bool LoadFail = true;
 
             for (auto &Prefix: PathsToSearch) {
-                XString FFF = Prefix + (Prefix.back() == std::filesystem::path::preferred_separator or Prefix == L"" ? L"" : L"/") + Class + DynamicLibraryPostfix;
+                XString FFF = Prefix + (Prefix.back() == std::filesystem::path::preferred_separator or Prefix == L"" ? L"" : (std::wstring){L"" + std::filesystem::path::preferred_separator}) + Class + DynamicLibraryPostfix;
                 try {
                     NativeLibraries.LoadLib(FFF, Hash(Class));
                     LoadFail = false;
@@ -44,7 +44,7 @@ namespace XScript {
             bool LoadFail = true;
 
             for (auto &Prefix: PathsToSearch) {
-                XString FFF = Prefix + (Prefix.back() == std::filesystem::path::preferred_separator or Prefix == L"" ? L"" : L"/") + Package;
+                XString FFF = Prefix + (Prefix.back() == std::filesystem::path::preferred_separator or Prefix == L"" ? L"" : (std::wstring){L"" + std::filesystem::path::preferred_separator}) + Package;
                 FILE *IsExist = fopen(wstring2string(FFF).c_str(), "rb");
                 if (IsExist == nullptr)
                     continue;
