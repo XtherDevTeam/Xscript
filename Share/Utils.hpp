@@ -7,6 +7,7 @@
 
 #include <cstring>
 #include <mutex>
+#include <filesystem>
 
 #include "Config.hpp"
 
