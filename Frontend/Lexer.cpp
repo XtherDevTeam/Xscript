@@ -155,7 +155,7 @@ namespace XScript {
                 NextCharacter();
                 return Scan();
             } else {
-                LastToken = {TokenKind::Slash, (std::wstring){L"" + std::filesystem::path::preferred_separator}, Line, Column};
+                LastToken = {TokenKind::Slash, (std::wstring){std::filesystem::path::preferred_separator}, Line, Column};
             }
         }
             /* Starts with % */
