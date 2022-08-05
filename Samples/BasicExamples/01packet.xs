@@ -1,6 +1,6 @@
-native_class IO in "libio.xnc";
-native_class String in "libstring.xnc";
-native_class Array in "libarray.xnc";
+native_class IO in "libio";
+native_class String in "libstring";
+native_class Array in "libarray";
 
 var N = 0;
 var M = 0;

@@ -1,9 +1,9 @@
-native_class IO in "libio.xnc";
-native_class String in "libstring.xnc";
-native_class Array in "libarray.xnc";
-native_class FS in "libfs.xnc";
-native_class Thread in "libthread.xnc";
-native_class System in "libsys.xnc";
+native_class IO in "libio";
+native_class String in "libstring";
+native_class Array in "libarray";
+native_class FS in "libfs";
+native_class Thread in "libthread";
+native_class System in "libsys";
 
 class GCTestItem {
     def constructor () {
