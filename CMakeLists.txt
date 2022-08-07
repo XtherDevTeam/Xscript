@@ -19,12 +19,15 @@ file(GLOB SRC_FILES
 
 add_executable(xsc Binary/Compiler/main.cpp ${SRC_FILES})
 add_executable(xsvm Binary/Executor/main.cpp ${SRC_FILES})
+add_executable(xnl-info Binary/XNativeLibraryInfo/main.cpp ${SRC_FILES})
 
 if (CMAKE_HOST_SYSTEM_NAME MATCHES "Linux")
     TARGET_LINK_LIBRARIES(xsc dl)
     TARGET_LINK_LIBRARIES(xsvm dl)
+    TARGET_LINK_LIBRARIES(xnl-info dl)
     TARGET_LINK_LIBRARIES(xsc pthread)
     TARGET_LINK_LIBRARIES(xsvm pthread)
+    TARGET_LINK_LIBRARIES(xnl-info pthread)
 elseif (CMAKE_HOST_SYSTEM_NAME MATCHES "Windows")
     set(CMAKE_EXE_LINKER_FLAGS "--static -lpthread")
 endif ()
