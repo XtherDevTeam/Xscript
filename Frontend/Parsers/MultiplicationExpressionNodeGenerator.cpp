@@ -21,13 +21,13 @@ namespace XScript::Generator {
                L.LastToken.Kind == Lexer::TokenKind::PercentSign) {
             AST Operator = {AST::TreeType::Operator, L.LastToken};
             L.Scan();
-            AST RightTree = IndexExpressionNodeGenerator(L).Parse();
+            AST RightTree = IncrementExpressionNodeGenerator(L).Parse();
             if (RightTree.IsNotMatchNode()) {
                 if ((LeftTree = DecrementExpressionNodeGenerator(L).Parse()).IsNotMatchNode()) {
                     Rollback();
                     return {};
                 }
-                MakeException(L"AdditionExpression: Expected a MultiplicationExpression");
+                MakeException(L"MultiplicationExpressionNodeGenerator: Expected a right hand side");
             }
             LeftTree = {AST::TreeType::AdditionExpression, {LeftTree, Operator, RightTree}};
         }
