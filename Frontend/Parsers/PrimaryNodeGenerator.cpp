@@ -17,6 +17,7 @@ namespace XScript::Generator {
             L.Scan(); // prepare for next time.
             return Result;
         } else if (L.LastToken.Kind == Lexer::TokenKind::LeftParentheses) {
+            L.Scan();
             AST Expr = ExpressionNodeGenerator(L).Parse();
             if (Expr.IsNotMatchNode())
                 return Expr;
