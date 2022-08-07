@@ -1,10 +1,9 @@
-native_class IO in "XScript2Stdlib/NativeLibraries/libio";
-native_class String in "XScript2Stdlib/NativeLibraries/libstring";
-native_class Array in "XScript2Stdlib/NativeLibraries/libarray";
-native_class File in "XScript2Stdlib/NativeLibraries/libfs";
-native_class FS in "XScript2Stdlib/NativeLibraries/libfs";
-native_class Thread in "XScript2Stdlib/NativeLibraries/libthread";
-native_class Error in "XScript2Stdlib/NativeLibraries/liberror";
+native_class IO in "libio";
+native_class String in "libstring";
+native_class Array in "libarray";
+native_class File in "libfs";
+native_class FS in "libfs";
+native_class Thread in "libthread";
 
 class Solution {
     def constructor () {
@@ -26,7 +25,6 @@ class Solution {
 
 def main () {
     var S = new Solution();
-    var n = IO.readInt();
-    IO.println(S.numWays(n));
+    IO.println(S.numWays(8));
     return 0;
 }

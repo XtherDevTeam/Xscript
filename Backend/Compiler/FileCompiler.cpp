@@ -166,12 +166,12 @@ namespace XScript {
                 }
             }
 
+            Arguments.push_back(L"this");
             for (auto &I: Target.Subtrees[1].Subtrees[1].Subtrees) {
                 Arguments.push_back(I.Node.Value);
             }
 
             auto Backup = Environment.Locals;
-            Arguments.push_back(L"this");
             Environment.Locals = {};
             for (auto &I: Arguments) {
                 Environment.PushLocal(I, {(Typename) {Typename::TypenameKind::Unknown}, false});
