@@ -15,7 +15,7 @@ namespace XScript {
     using XBytes = std::string;
     using XString = std::wstring;
     using XInteger = int64_t;
-    using XDecimal = float;
+    using XDecimal = double;
     using XBoolean = bool;
     using XIndexType = uint64_t;
     using XCharacter = wchar_t;
