@@ -1719,7 +1719,29 @@ namespace XScript {
     void BytecodeInterpreter::InstructionPCJumpIfTrue(BytecodeStructure::InstructionParam Param) {
         EnvironmentStackItem Element = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
         bool Flag = false;
-        Flag = Element.Value.IntVal;
+        switch (Element.Kind) {
+            case EnvironmentStackItem::ItemKind::Integer:
+                Flag = Element.Value.IntVal;
+                break;
+            case EnvironmentStackItem::ItemKind::Decimal:
+                Flag = static_cast<XInteger>(Element.Value.DeciVal);
+                break;
+            case EnvironmentStackItem::ItemKind::Boolean:
+                Flag = Element.Value.BoolVal;
+                break;
+            case EnvironmentStackItem::ItemKind::HeapPointer:
+                Flag = Element.Value.HeapPointerVal;
+                break;
+            case EnvironmentStackItem::ItemKind::FunctionPointer:
+                Flag = Element.Value.FuncPointerVal;
+                break;
+            case EnvironmentStackItem::ItemKind::NativeMethodPointer:
+                Flag = Element.Value.NativeMethodPointerVal;
+                break;
+            case EnvironmentStackItem::ItemKind::Null:
+                Flag = false;
+                break;
+        }
 
         if (Flag) {
             InterpreterEnvironment->Threads[ThreadID].PC.NowIndex += Param.IntValue - 1;

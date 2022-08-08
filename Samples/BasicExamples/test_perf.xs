@@ -7,8 +7,9 @@ native_class System in "libsys";
 
 class GCTestItem {
     def constructor () {
-        def test in this;
-        this.test = 1145141919;
+        def test_arr in this;
+        this.test_arr = Array.create();
+        this.test_arr.resize(128);
         return this;
     }
 };
@@ -29,14 +30,15 @@ def fs_test () {
     IO.println(String.fromBuffer("FS test starting..."));
     var Start = System.boot_time_ms();
 
-    var file = FS.open("test.txt", "w+");
+    var file = File.open("test.txt", "w+");
     for (var i = 0;i < 50000;i += 1) {
         file.write("ZoengJyutJing, ngo zungji nei!\n");
     }
     file.close();
-    file = FS.open("test.txt", "r+");
+    file = File.open("test.txt", "r+");
     var dest = file.read();
     IO.println(String.fromBytes(dest));
+    file.close();
 
     var Duration = System.boot_time_ms() - Start;
     IO.println(String.fromBuffer("FS test ended."));
@@ -89,14 +91,14 @@ def main () {
     var res_fs = Thread.getResult(th_fs);
     var res_arr = Thread.getResult(th_arr);
     var res_gc = Thread.getResult(th_gc);
-    var Result = 
-        String.fromBuffer("XScript 2 Performance report: \n") +  String.fromBuffer("\n") + 
-        String.fromBuffer("Test Items(4): IO, FS, Array, GC\n") + String.fromBuffer("\n") + 
-        String.fromBuffer("IO test duration: ") + String.fromInt(res_io) + String.fromBuffer("\n") + 
-        String.fromBuffer("FS test duration: ") + String.fromInt(res_fs) + String.fromBuffer("\n") + 
-        String.fromBuffer("Array test duration: ") + String.fromInt(res_arr) + String.fromBuffer("\n") + 
+    var Result =
+        String.fromBuffer("XScript 2 Performance report: \n") +  String.fromBuffer("\n") +
+        String.fromBuffer("Test Items(4): IO, FS, Array, GC\n") + String.fromBuffer("\n") +
+        String.fromBuffer("IO test duration: ") + String.fromInt(res_io) + String.fromBuffer("\n") +
+        String.fromBuffer("FS test duration: ") + String.fromInt(res_fs) + String.fromBuffer("\n") +
+        String.fromBuffer("Array test duration: ") + String.fromInt(res_arr) + String.fromBuffer("\n") +
         String.fromBuffer("GC test duration: ") + String.fromInt(res_gc) + String.fromBuffer("\n");
-    
+
     IO.println(Result);
     return 0;
 }

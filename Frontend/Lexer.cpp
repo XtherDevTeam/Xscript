@@ -214,8 +214,9 @@ namespace XScript {
             if (String[Position] == L'=') {
                 NextCharacter();   // Read after '='
                 LastToken = {TokenKind::NotEqual, L"!=", Line, Column};
+            } else {
+                throw LexerException(Line, Column, L"Unknown token : " + std::to_wstring(String[Position]));
             }
-            throw LexerException(Line, Column, L"Unknown token : " + std::to_wstring(String[Position]));
         }
             /* Starts with < */
         else if (String[Position] == L'<') {

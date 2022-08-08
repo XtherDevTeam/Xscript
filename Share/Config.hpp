@@ -25,12 +25,12 @@ namespace XScript {
 
     using XHeapIndexType = XIndexType;
 
-    constexpr XIndexType MaxThreadCount = 32;
+    constexpr XIndexType MaxThreadCount = 64;
 
     /**
      * Allocate 1024 elements when heap is created.
      */
-    constexpr XIndexType EnvHeapDataAllocateSize = 1048576;
+    constexpr XIndexType EnvHeapDataAllocateSize = 536870912;
 
     /**
      * When there are 256 elements in heap, start gc process.
