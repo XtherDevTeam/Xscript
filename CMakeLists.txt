@@ -1,6 +1,11 @@
 cmake_minimum_required(VERSION 3.0)
 project(Xscript2)
 
+include("./Share/Git.cmake")
+
+set(GIT_COMMIT_HASH "")
+get_git_hash(GIT_COMMIT_HASH)
+
 set(CMAKE_CXX_STANDARD 20)
 
 file(GLOB SRC_FILES
@@ -33,3 +38,5 @@ elseif (CMAKE_HOST_SYSTEM_NAME MATCHES "Windows")
 endif ()
 
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+
+add_definitions(-DXSCRIPT2_COMMIT_VERSION=L\"${GIT_COMMIT_HASH}\")

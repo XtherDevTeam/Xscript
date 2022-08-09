@@ -36,6 +36,10 @@ namespace XScript {
      * When there are 256 elements in heap, start gc process.
      */
     constexpr XIndexType EnvHeapGCStartCondition = 256;
+
+#ifdef XSCRIPT2_COMMIT_VERSION
+    constexpr const wchar_t* CommitVersion = XSCRIPT2_COMMIT_VERSION;
+#endif
 } // XScript
 
 #if defined(_WIN32)
