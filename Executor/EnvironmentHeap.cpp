@@ -19,7 +19,7 @@ namespace XScript {
 
             return Index;
         } else if (AllocatedElementCount == EnvHeapDataAllocateSize) {
-            throw HeapOverflowException(L"heap elements limit exceeded");
+            throw HeapOverflowException(L"heap elements limit exceeded: debug heap elements count: " + std::to_wstring(CreatedUnfreeElement));
         }
         HeapData[AllocatedElementCount] = Object;
 
