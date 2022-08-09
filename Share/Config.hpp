@@ -10,6 +10,7 @@
 #include <map>
 #include <unordered_map>
 #include <clocale>
+#include <unordered_set>
 
 namespace XScript {
     using XBytes = std::string;
@@ -28,9 +29,9 @@ namespace XScript {
     constexpr XIndexType MaxThreadCount = 64;
 
     /**
-     * Allocate 1024 elements when heap is created.
+     * Allocate 2097152 elements when heap is created.
      */
-    constexpr XIndexType EnvHeapDataAllocateSize = 536870912;
+    constexpr XIndexType EnvHeapDataAllocateSize = 2097152;
 
     /**
      * When there are 256 elements in heap, start gc process.

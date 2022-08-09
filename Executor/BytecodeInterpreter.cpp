@@ -9,8 +9,9 @@ namespace XScript {
             IsBusy(false), ThreadID(0), Pool(Pool), InterpreterEnvironment(interpreterEnvironment), GC(GC) {}
 
     void BytecodeInterpreter::MainLoop() {
-        while ( InterpreterEnvironment->Threads[ThreadID].PC.Pointer and
-                InterpreterEnvironment->Threads[ThreadID].PC.NowIndex != InterpreterEnvironment->Threads[ThreadID].PC.Pointer->size()) {
+        while (InterpreterEnvironment->Threads[ThreadID].PC.Pointer and
+               InterpreterEnvironment->Threads[ThreadID].PC.NowIndex !=
+               InterpreterEnvironment->Threads[ThreadID].PC.Pointer->size()) {
             InterpreterLock.lock();
             auto &CurrentInstruction = (*InterpreterEnvironment->Threads[ThreadID].PC.Pointer)[InterpreterEnvironment->Threads[ThreadID].PC.NowIndex];
             switch (CurrentInstruction.Instruction) {
@@ -1469,13 +1470,13 @@ namespace XScript {
         switch (Element.Kind) {
             case EnvConstantPool::EnvConstant::ItemKind::StringVal:
                 InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(
-                        (EnvironmentStackItem) {EnvironmentStackItem::ItemKind::HeapPointer,
-                                                (EnvironmentStackItem::ItemValue) {
-                                                        InterpreterEnvironment->Heap.PushElement(
-                                                                (EnvObject) {EnvObject::ObjectKind::StringObject,
-                                                                             (EnvObject::ObjectValue) {
-                                                                                     CreateEnvStringObjectFromXString(
-                                                                                             Element.Value)}})}
+                        (EnvironmentStackItem) {
+                                EnvironmentStackItem::ItemKind::HeapPointer,
+                                (EnvironmentStackItem::ItemValue) {
+                                        InterpreterEnvironment->Heap.PushElement(
+                                                (EnvObject) {
+                                                        EnvObject::ObjectKind::StringObject,
+                                                        (EnvObject::ObjectValue) {CreateEnvStringObjectFromXString(Element.Value)}})}
                         });
 
                 break;

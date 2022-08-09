@@ -40,6 +40,7 @@ namespace XScript {
     }
 
     void EnvObject::DestroyObject() const {
+        CreatedUnfreeElement--;
         switch (Kind) {
             case ObjectKind::ClassObject:
                 FreeEnvClassObject(Value.ClassObjectPointer);
@@ -49,6 +50,9 @@ namespace XScript {
                 break;
             case ObjectKind::StringObject:
                 FreeEnvStringObject(Value.StringObjectPointer);
+                break;
+            case ObjectKind::BytesObject:
+                FreeEnvBytesObject(Value.BytesObjectPointer);
                 break;
             default:
                 break;

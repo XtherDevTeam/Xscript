@@ -8,6 +8,8 @@
 #include "../ThirdPartyLibraries/localr.hpp"
 
 namespace XScript {
+    XIndexType CreatedUnfreeElement;
+
     std::mutex InterpreterLock;
 
     std::string wstring2string(const std::wstring &ws) {

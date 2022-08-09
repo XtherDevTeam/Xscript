@@ -7,11 +7,11 @@
 
 namespace XScript {
     EnvironmentHeap::EnvironmentHeap() {
-        HeapData.resize(EnvHeapDataAllocateSize);
+        HeapData = new EnvObject[EnvHeapDataAllocateSize];
     }
 
     XHeapIndexType EnvironmentHeap::PushElement(EnvObject Object) {
-
+        CreatedUnfreeElement++;
         if (!UsedElementSet.empty()) {
             auto Index = *UsedElementSet.begin();
             UsedElementSet.erase(Index);
@@ -54,26 +54,30 @@ namespace XScript {
 
     EnvironmentHeap::~EnvironmentHeap() {
 
-        std::set<void *> FreedAddresses;
+        std::unordered_set<void *> FreedAddresses;
         for (XIndexType index = 0; index < AllocatedElementCount; index++) {
             auto &I = HeapData[index];
-            if (I.Kind == EnvObject::ObjectKind::ClassObject || I.Kind == EnvObject::ObjectKind::StringObject ||
-                I.Kind == EnvObject::ObjectKind::ArrayObject) {
-                if (FreedAddresses.count(static_cast<void *>(I.Value.ClassObjectPointer))) {
-                    UsedElementSet.insert(index);
-                    I = {};
-                    continue;
-                } else {
-                    FreedAddresses.insert(static_cast<void *>(I.Value.ClassObjectPointer));
+            if (!I.Marked) {
+                if (I.Kind == EnvObject::ObjectKind::ClassObject || I.Kind == EnvObject::ObjectKind::StringObject || I.Kind == EnvObject::ObjectKind::BytesObject ||
+                    I.Kind == EnvObject::ObjectKind::ArrayObject) {
+                    if (FreedAddresses.count(static_cast<void *>(I.Value.ClassObjectPointer))) {
+                        CreatedUnfreeElement--;
+                        UsedElementSet.insert(index);
+                        I = {};
+                        continue;
+                    } else {
+                        FreedAddresses.insert(static_cast<void *>(I.Value.ClassObjectPointer));
+                    }
                 }
+                I.DestroyObject();
+                I = {};
+                UsedElementSet.insert(index);
+            } else {
+                HeapData[index].Marked = !HeapData[index].Marked;
             }
-            I.DestroyObject();
-            I = {};
-            UsedElementSet.insert(index);
         }
         UsedElementSet.clear();
-        HeapData.clear();
-
+        delete[] HeapData;
     }
 
 } // XScript

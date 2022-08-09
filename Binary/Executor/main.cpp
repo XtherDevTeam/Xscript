@@ -16,7 +16,7 @@ XMap<XString, XString> Arguments;
 
 void ParseArguments(int argc, const char **argv) {
     /* defaults */
-    Arguments[L"PATH"] = (XString){L".;"};
+    Arguments[L"PATH"] = (XString) {L".;"};
     for (int i = 1; i < argc; i++) {
         XString Str = string2wstring(argv[i]);
         XIndexType Equ = Str.find(L'=');

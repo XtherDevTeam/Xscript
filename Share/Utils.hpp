@@ -12,6 +12,8 @@
 #include "Config.hpp"
 
 namespace XScript {
+    extern XIndexType CreatedUnfreeElement;
+
     extern std::mutex InterpreterLock;
 
     std::string wstring2string(const std::wstring &ws);
