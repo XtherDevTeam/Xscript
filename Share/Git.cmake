@@ -1,5 +1,9 @@
 macro(get_git_hash _git_hash)   # 宏的开始
     find_package(Git QUIET)     # 查找Git，QUIET静默方式不报错
+    if (NOT WHERE_IS_REPO_PATH)
+        set(WHERE_IS_REPO_PATH ${CMAKE_CURRENT_SOURCE_DIR})
+    endif ()
+    
     if(GIT_FOUND)
         execute_process(          # 执行一个子进程
                 COMMAND ${GIT_EXECUTABLE} log -1 --pretty=format:%h # 命令
@@ -7,7 +11,7 @@ macro(get_git_hash _git_hash)   # 宏的开始
                 OUTPUT_STRIP_TRAILING_WHITESPACE    # 删除字符串尾的换行符
                 ERROR_QUIET                         # 对执行错误静默
                 WORKING_DIRECTORY                   # 执行路径
-                ${CMAKE_CURRENT_SOURCE_DIR}
+                ${WHERE_IS_REPO_PATH}
                 )
     endif()
 endmacro()                      # 宏的结束
@@ -22,7 +26,7 @@ macro(get_git_branch _git_branch)   # 宏的开始
                 OUTPUT_STRIP_TRAILING_WHITESPACE    # 删除字符串尾的换行符
                 ERROR_QUIET                         # 对执行错误静默
                 WORKING_DIRECTORY                   # 执行路径
-                ${CMAKE_CURRENT_SOURCE_DIR}
+                ${WHERE_IS_REPO_PATH}
                 )
     endif()
 endmacro()
