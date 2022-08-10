@@ -19,7 +19,7 @@ namespace XScript {
      * BFS
      */
     void GarbageCollection::Start(bool force) {
-        if (force || ActiveCheck()) {
+        if (force || PassiveCheck()) {
             XScript2::xqueue<XHeapIndexType> Queue;
             for (auto &I: Env.Packages) {
                 for (auto &J: I.second.Statics) {
@@ -97,7 +97,7 @@ namespace XScript {
 
     bool GarbageCollection::PassiveCheck() const {
         return Env.Heap.UsedElementSet.empty() &&
-               Env.Heap.AllocatedElementCount >= EnvHeapDataAllocateSize - EnvHeapGCStartCondition;
+               Env.Heap.AllocatedElementCount >= EnvHeapDataAllocateSize / 2;
     }
 
     bool GarbageCollection::ActiveCheck() const {
