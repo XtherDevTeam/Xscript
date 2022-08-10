@@ -11,6 +11,7 @@
 namespace XScript {
 
     GarbageCollection::GarbageCollection(Environment &Env) : Env(Env) {
+        ThreadFlag = true;
         ActiveGCThread = (std::thread){ActiveGCThreadFunc, std::ref(*this)};
     }
 
@@ -18,7 +19,7 @@ namespace XScript {
      * BFS
      */
     void GarbageCollection::Start(bool force) {
-        if (force || PassiveCheck()) {
+        if (force || ActiveCheck()) {
             XScript2::xqueue<XHeapIndexType> Queue;
             for (auto &I: Env.Packages) {
                 for (auto &J: I.second.Statics) {
@@ -104,18 +105,19 @@ namespace XScript {
     }
 
     [[noreturn]] void GarbageCollection::ActiveGCThreadFunc(GarbageCollection &GC) {
-        while (true) {
+        while (GC.ThreadFlag) {
             if (GC.ActiveCheck()) {
                 InterpreterLock.lock();
                 GC.Start(true);
                 InterpreterLock.unlock();
             }
-            std::this_thread::sleep_for(std::chrono::milliseconds(5));
+            std::this_thread::sleep_for(std::chrono::milliseconds(2));
         }
     }
 
-    GarbageCollection::~GarbageCollection() {
+    void GarbageCollection::Stop() {
+        ThreadFlag = false;
         if (ActiveGCThread.joinable())
-            ActiveGCThread.detach();
+            ActiveGCThread.join();
     }
 } // XScript

@@ -11,6 +11,7 @@ namespace XScript {
     class GarbageCollection {
         XIndexType Limit = 0 + EnvHeapGCStartCondition;
         Environment &Env;
+        bool ThreadFlag;
         std::thread ActiveGCThread;
     public:
         explicit GarbageCollection(Environment &Env);
@@ -27,7 +28,7 @@ namespace XScript {
 
         GarbageCollection(const GarbageCollection &copy) = delete;
 
-        ~GarbageCollection();
+        void Stop();
     };
 
 } // XScript

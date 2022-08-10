@@ -48,6 +48,7 @@ int main(int argc, const char **argv) {
         if (Arguments[L"show_duration"] == L"true") {
             std::wcout << L"Execution duration: " << Dur << L" ms?" << std::endl;
         }
+        Executor.GC.Stop();
     } catch (InternalException &E) {
         std::cerr << E.what() << "\n" << std::flush;
     } catch (BytecodeInterpretError &E) {

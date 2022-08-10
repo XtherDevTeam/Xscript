@@ -9,7 +9,7 @@ native_class Math in "libmath";
 native_class System in "libsys";
 
 def main () {
-    for (var i = 0;i + 1;i += 1) {
+    for (var i = 0;i < 10000000;i += 1) {
         var Arr = Array.create();
         Arr.resize(1024);
         Arr.resize(1024);
