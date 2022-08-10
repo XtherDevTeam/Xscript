@@ -26,35 +26,9 @@ namespace XScript {
         return AllocatedElementCount++;
     }
 
-    void EnvironmentHeap::PopElement(XHeapIndexType Object) {
-
-        switch (HeapData[Object].Kind) {
-            case EnvObject::ObjectKind::ClassObject:
-                /* TODO: Add classes to XScript2 */
-                break;
-            case EnvObject::ObjectKind::ArrayObject:
-                for (XIndexType Index = 0; Index < HeapData[Object].Value.ArrayObjectPointer->Length(); ++Index) {
-                    PopElement(HeapData[Object].Value.ArrayObjectPointer->Elements[Index]);
-                }
-                break;
-            case EnvObject::ObjectKind::StringObject:
-            case EnvObject::ObjectKind::Integer:
-            case EnvObject::ObjectKind::Decimal:
-            case EnvObject::ObjectKind::Boolean:
-                break;
-        }
-        HeapData[Object].DestroyObject();
-        if (Object == AllocatedElementCount - 1) {
-            AllocatedElementCount--;
-        } else {
-            UsedElementSet.insert(Object);
-        }
-
-    }
-
     EnvironmentHeap::~EnvironmentHeap() {
 
-        std::unordered_set<void *> FreedAddresses;
+        std::set<void *> FreedAddresses;
         for (XIndexType index = 0; index < AllocatedElementCount; index++) {
             auto &I = HeapData[index];
             if (!I.Marked) {

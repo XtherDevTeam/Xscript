@@ -16,7 +16,7 @@ namespace XScript {
     public:
         XIndexType AllocatedElementCount{};
         EnvObject *HeapData;
-        std::unordered_set<XHeapIndexType> UsedElementSet;
+        std::set<XHeapIndexType> UsedElementSet;
 
         EnvironmentHeap();
 

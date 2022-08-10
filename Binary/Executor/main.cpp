@@ -46,12 +46,13 @@ int main(int argc, const char **argv) {
         Executor.Init();
         XIndexType Dur = Executor.StartWithRuntimeDuration();
         if (Arguments[L"show_duration"] == L"true") {
-            std::wcout << L"Execution duration: " << Dur << L" ms" << std::endl;
+            std::wcout << L"Execution duration: " << Dur << L" ms?" << std::endl;
         }
     } catch (InternalException &E) {
         std::cerr << E.what() << "\n" << std::flush;
     } catch (BytecodeInterpretError &E) {
         std::cerr << E.what() << "\n" << std::flush;
     }
+    std::wcout << L"WoShiGeShaBi: " << CreatedUnfreeElement << std::endl << std::flush;
     return 0;
 }

@@ -27,8 +27,6 @@ namespace XScript {
                 }
             }
             for (XIndexType TID = 0; TID < MaxThreadCount; TID++) {
-                if (!Env.Threads[TID].IsBusy)
-                    continue;
                 for (auto &I: Env.Threads[TID].Stack.Elements) {
                     if (I.Kind == EnvironmentStackItem::ItemKind::HeapPointer)
                         Queue.push(I.Value.HeapPointerVal);
@@ -63,29 +61,36 @@ namespace XScript {
             }
 
             // 清除
-            std::unordered_set<void *> FreedAddresses;
-            for (XIndexType index = Env.Heap.AllocatedElementCount - 1; index + 1; index--) {
-                auto &I = Env.Heap.HeapData[index];
-                if (!I.Marked) {
-                    if (I.Kind == EnvObject::ObjectKind::ClassObject || I.Kind == EnvObject::ObjectKind::StringObject ||
-                        I.Kind == EnvObject::ObjectKind::BytesObject || I.Kind == EnvObject::ObjectKind::ArrayObject) {
-                        if (FreedAddresses.count(static_cast<void *>(I.Value.ClassObjectPointer))) {
-                            Env.Heap.UsedElementSet.insert(index);
-                            I = {};
-                            continue;
-                        } else {
-                            FreedAddresses.insert(static_cast<void *>(I.Value.ClassObjectPointer));
-                        }
-                    }
-                    I.DestroyObject();
-                    I = {};
-                    Env.Heap.UsedElementSet.insert(index);
+            std::set<void *> FreeAddresses;
+            for (XIndexType I = Env.Heap.AllocatedElementCount - 1; I + 1; I--) {
+                if (Env.Heap.HeapData[I].Marked) {
+                    Env.Heap.HeapData[I].Marked = false;
+                    continue;
                 } else {
-                    Env.Heap.HeapData[index].Marked = !Env.Heap.HeapData[index].Marked;
+                    switch (Env.Heap.HeapData[I].Kind) {
+                        case EnvObject::ObjectKind::BytesObject:
+                        case EnvObject::ObjectKind::StringObject:
+                        case EnvObject::ObjectKind::ClassObject:
+                        case EnvObject::ObjectKind::ArrayObject: {
+                            if (FreeAddresses.count(static_cast<void *>(Env.Heap.HeapData[I].Value.ClassObjectPointer))) {
+                                CreatedUnfreeElement--;
+                                Env.Heap.HeapData[I] = {};
+                                Env.Heap.UsedElementSet.insert(I);
+                                continue;
+                            } else {
+                                FreeAddresses.insert(static_cast<void *>(Env.Heap.HeapData[I].Value.ClassObjectPointer));
+                            }
+                        }
+                        default:
+                            break;
+                    }
+                    Env.Heap.HeapData[I].DestroyObject();
+                    Env.Heap.HeapData[I] = {};
+                    Env.Heap.UsedElementSet.insert(I);
                 }
             }
 
-            Limit = std::min(AAllocCount + EnvHeapGCStartCondition, EnvHeapDataAllocateSize);
+            Limit = Env.Heap.AllocatedElementCount > AAllocCount ? Env.Heap.AllocatedElementCount : Env.Heap.AllocatedElementCount + EnvHeapGCStartCondition;
         }
     }
 
