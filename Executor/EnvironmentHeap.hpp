@@ -8,6 +8,7 @@
 #include <stack>
 #include <set>
 #include <mutex>
+#include <queue>
 #include "../Share/Utils.hpp"
 #include "../Share/Xqueue.hpp"
 #include "EnvObject.hpp"
@@ -17,7 +18,7 @@ namespace XScript {
     public:
         XIndexType AllocatedElementCount{};
         XMap<XHeapIndexType, EnvObject> HeapData;
-        XScript::xqueue<XHeapIndexType> UsedIndexes;
+        std::queue<XHeapIndexType> UsedIndexes;
 
         EnvironmentHeap();
 

@@ -20,7 +20,7 @@ namespace XScript {
      */
     void GarbageCollection::Start(bool force) {
         if (force || PassiveCheck()) {
-            xqueue<XHeapIndexType> Queue;
+            std::queue<XHeapIndexType> Queue;
             for (auto &I: Env.Packages) {
                 for (auto &J: I.second.Statics) {
                     if (J.Kind == EnvironmentStackItem::ItemKind::HeapPointer)
@@ -33,8 +33,10 @@ namespace XScript {
                         Queue.push(I.Value.HeapPointerVal);
                 }
             }
-            while (!Queue.empty()) {
 
+            XHeapIndexType AAllocCount = 0;
+            while (!Queue.empty()) {
+                AAllocCount++;
                 auto &Element = Env.Heap.HeapData[Queue.front()];
                 Queue.pop();
                 if (Element.Marked)
@@ -86,12 +88,12 @@ namespace XScript {
                 }
             }
 
-            Limit = Env.Heap.HeapData.size() + EnvHeapGCStartCondition;
+            Limit = AAllocCount + EnvHeapGCStartCondition;
         }
     }
 
     bool GarbageCollection::PassiveCheck() const {
-        return (Env.Heap.UsedIndexes.empty() && Env.Heap.HeapData.size() == EnvHeapDataAllocateSize);
+        return (Env.Heap.UsedIndexes.empty() && Env.Heap.HeapData.size() >= EnvHeapDataAllocateSize / 2);
     }
 
     bool GarbageCollection::ActiveCheck() const {
