@@ -9,9 +9,10 @@ namespace XScript {
     }
 
     XHeapIndexType EnvironmentHeap::PushElement(EnvObject Object) {
+        CreatedUnfreeElement++;
         if (!UsedIndexes.empty()) {
-            auto Idx = UsedIndexes.front();
-            UsedIndexes.pop();
+            auto Idx = *UsedIndexes.begin();
+            UsedIndexes.erase(UsedIndexes.begin());
             HeapData[Idx] = Object;
             return Idx;
         }

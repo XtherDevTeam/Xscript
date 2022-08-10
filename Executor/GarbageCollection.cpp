@@ -75,17 +75,20 @@ namespace XScript {
                                 I.second.DestroyObject();
                                 I.second = {};
                             }
-                            Env.Heap.UsedIndexes.push(I.first);
+                            Env.Heap.UsedIndexes.insert(I.first);
                             break;
                         }
                         default: {
                             I.second.DestroyObject();
                             I.second = {};
-                            Env.Heap.UsedIndexes.push(I.first);
+                            Env.Heap.UsedIndexes.insert(I.first);
                             break;
                         }
                     }
                 }
+            }
+            for (auto &I : Env.Heap.UsedIndexes) {
+                Env.Heap.HeapData.erase(I);
             }
 
             Limit = AAllocCount + EnvHeapGCStartCondition;
