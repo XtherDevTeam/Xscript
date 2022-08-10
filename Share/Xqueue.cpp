@@ -6,5 +6,5 @@
 #include <stdexcept>
 #include "Xqueue.hpp"
 
-namespace XScript2 {
-} // XScript2
+namespace XScript {
+} // XScript

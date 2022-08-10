@@ -3,55 +3,47 @@
 //
 
 #include "EnvironmentHeap.hpp"
-#include "../Share/Exceptions/HeapOverflowException.hpp"
 
 namespace XScript {
     EnvironmentHeap::EnvironmentHeap() {
-        HeapData = new EnvObject[EnvHeapDataAllocateSize];
     }
 
     XHeapIndexType EnvironmentHeap::PushElement(EnvObject Object) {
-        CreatedUnfreeElement++;
-        if (!UsedElementSet.empty()) {
-            auto Index = *UsedElementSet.begin();
-            UsedElementSet.erase(Index);
-            HeapData[Index] = Object;
-
-            return Index;
-        } else if (AllocatedElementCount == EnvHeapDataAllocateSize) {
-            throw HeapOverflowException(L"heap elements limit exceeded: debug heap elements count: " + std::to_wstring(CreatedUnfreeElement));
+        if (!UsedIndexes.empty()) {
+            auto Idx = UsedIndexes.front();
+            UsedIndexes.pop();
+            HeapData[Idx] = Object;
+            return Idx;
         }
         HeapData[AllocatedElementCount] = Object;
-
         return AllocatedElementCount++;
     }
 
     EnvironmentHeap::~EnvironmentHeap() {
-
-        std::set<void *> FreedAddresses;
-        for (XIndexType index = 0; index < AllocatedElementCount; index++) {
-            auto &I = HeapData[index];
-            if (!I.Marked) {
-                if (I.Kind == EnvObject::ObjectKind::ClassObject || I.Kind == EnvObject::ObjectKind::StringObject || I.Kind == EnvObject::ObjectKind::BytesObject ||
-                    I.Kind == EnvObject::ObjectKind::ArrayObject) {
-                    if (FreedAddresses.count(static_cast<void *>(I.Value.ClassObjectPointer))) {
-                        CreatedUnfreeElement--;
-                        UsedElementSet.insert(index);
-                        I = {};
-                        continue;
+        std::unordered_set<void *> DoubleFreeFucker;
+        for (auto &I : HeapData) {
+            switch (I.second.Kind) {
+                case EnvObject::ObjectKind::ArrayObject:
+                case EnvObject::ObjectKind::ClassObject:
+                case EnvObject::ObjectKind::StringObject:
+                case EnvObject::ObjectKind::BytesObject: {
+                    if (DoubleFreeFucker.count(static_cast<void *>(I.second.Value.ClassObjectPointer))) {
+                        I.second = {};
                     } else {
-                        FreedAddresses.insert(static_cast<void *>(I.Value.ClassObjectPointer));
+                        DoubleFreeFucker.insert(static_cast<void *>(I.second.Value.ClassObjectPointer));
+                        I.second.DestroyObject();
+                        I.second = {};
                     }
+                    break;
                 }
-                I.DestroyObject();
-                I = {};
-                UsedElementSet.insert(index);
-            } else {
-                HeapData[index].Marked = !HeapData[index].Marked;
+                default: {
+                    I.second.DestroyObject();
+                    I.second = {};
+                    break;
+                }
             }
         }
-        UsedElementSet.clear();
-        delete[] HeapData;
+        HeapData.clear();
     }
 
 } // XScript

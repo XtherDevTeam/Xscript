@@ -20,7 +20,7 @@ namespace XScript {
      */
     void GarbageCollection::Start(bool force) {
         if (force || PassiveCheck()) {
-            XScript2::xqueue<XHeapIndexType> Queue;
+            xqueue<XHeapIndexType> Queue;
             for (auto &I: Env.Packages) {
                 for (auto &J: I.second.Statics) {
                     if (J.Kind == EnvironmentStackItem::ItemKind::HeapPointer)
@@ -33,11 +33,7 @@ namespace XScript {
                         Queue.push(I.Value.HeapPointerVal);
                 }
             }
-            // 标记
-            XHeapIndexType Top = 0;
-            XHeapIndexType AAllocCount = 0;
             while (!Queue.empty()) {
-                Top = std::max(Top, Queue.front());
 
                 auto &Element = Env.Heap.HeapData[Queue.front()];
                 Queue.pop();
@@ -58,50 +54,48 @@ namespace XScript {
                     default:
                         break;
                 }
-                AAllocCount++;
             }
 
-            // 清除
-            std::set<void *> FreeAddresses;
-            for (XIndexType I = Env.Heap.AllocatedElementCount - 1; I + 1; I--) {
-                if (Env.Heap.HeapData[I].Marked) {
-                    Env.Heap.HeapData[I].Marked = false;
-                    continue;
+            std::unordered_set<void *> DoubleFreeFucker;
+            for (auto &I : Env.Heap.HeapData) {
+                if (I.second.Marked) {
+                    I.second.Marked = !I.second.Marked;
                 } else {
-                    switch (Env.Heap.HeapData[I].Kind) {
-                        case EnvObject::ObjectKind::BytesObject:
-                        case EnvObject::ObjectKind::StringObject:
+                    switch (I.second.Kind) {
+                        case EnvObject::ObjectKind::ArrayObject:
                         case EnvObject::ObjectKind::ClassObject:
-                        case EnvObject::ObjectKind::ArrayObject: {
-                            if (FreeAddresses.count(static_cast<void *>(Env.Heap.HeapData[I].Value.ClassObjectPointer))) {
-                                CreatedUnfreeElement--;
-                                Env.Heap.HeapData[I] = {};
-                                Env.Heap.UsedElementSet.insert(I);
-                                continue;
+                        case EnvObject::ObjectKind::StringObject:
+                        case EnvObject::ObjectKind::BytesObject: {
+                            if (DoubleFreeFucker.count(static_cast<void *>(I.second.Value.ClassObjectPointer))) {
+                                I.second = {};
                             } else {
-                                FreeAddresses.insert(static_cast<void *>(Env.Heap.HeapData[I].Value.ClassObjectPointer));
+                                DoubleFreeFucker.insert(static_cast<void *>(I.second.Value.ClassObjectPointer));
+                                I.second.DestroyObject();
+                                I.second = {};
                             }
-                        }
-                        default:
+                            Env.Heap.UsedIndexes.push(I.first);
                             break;
+                        }
+                        default: {
+                            I.second.DestroyObject();
+                            I.second = {};
+                            Env.Heap.UsedIndexes.push(I.first);
+                            break;
+                        }
                     }
-                    Env.Heap.HeapData[I].DestroyObject();
-                    Env.Heap.HeapData[I] = {};
-                    Env.Heap.UsedElementSet.insert(I);
                 }
             }
 
-            Limit = Env.Heap.AllocatedElementCount > AAllocCount ? Env.Heap.AllocatedElementCount : Env.Heap.AllocatedElementCount + EnvHeapGCStartCondition;
+            Limit = Env.Heap.HeapData.size() + EnvHeapGCStartCondition;
         }
     }
 
     bool GarbageCollection::PassiveCheck() const {
-        return Env.Heap.UsedElementSet.empty() &&
-               Env.Heap.AllocatedElementCount >= EnvHeapDataAllocateSize / 2;
+        return (Env.Heap.UsedIndexes.empty() && Env.Heap.HeapData.size() == EnvHeapDataAllocateSize);
     }
 
     bool GarbageCollection::ActiveCheck() const {
-        return Env.Heap.UsedElementSet.empty() && Env.Heap.AllocatedElementCount >= Limit;
+        return (Env.Heap.UsedIndexes.empty() && Env.Heap.HeapData.size() >= Limit);
     }
 
     [[noreturn]] void GarbageCollection::ActiveGCThreadFunc(GarbageCollection &GC) {

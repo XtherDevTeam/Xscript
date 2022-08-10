@@ -9,20 +9,19 @@
 #include <set>
 #include <mutex>
 #include "../Share/Utils.hpp"
+#include "../Share/Xqueue.hpp"
 #include "EnvObject.hpp"
 
 namespace XScript {
     class EnvironmentHeap {
     public:
         XIndexType AllocatedElementCount{};
-        EnvObject *HeapData;
-        std::set<XHeapIndexType> UsedElementSet;
+        XMap<XHeapIndexType, EnvObject> HeapData;
+        XScript::xqueue<XHeapIndexType> UsedIndexes;
 
         EnvironmentHeap();
 
         XHeapIndexType PushElement(EnvObject Object);
-
-        void PopElement(XHeapIndexType Object);
 
         ~EnvironmentHeap();
     };

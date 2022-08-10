@@ -7,7 +7,7 @@
 
 #include <cstddef>
 
-namespace XScript2 {
+namespace XScript {
     template<typename T>
     struct xqueue_node {
         xqueue_node<T> *next;
@@ -97,6 +97,6 @@ namespace XScript2 {
             }
         }
     }
-} // XScript2
+} // XScript
 
 #endif //XSCRIPT2_XQUEUE_HPP
