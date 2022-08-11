@@ -21,7 +21,7 @@ namespace XScript {
     }
 
     EnvironmentHeap::~EnvironmentHeap() {
-        std::unordered_set<void *> DoubleFreeFucker;
+        std::set<void *> DoubleFreeFucker;
         for (auto &I : HeapData) {
             switch (I.second.Kind) {
                 case EnvObject::ObjectKind::ArrayObject:

@@ -10,7 +10,7 @@
 #include <map>
 #include <unordered_map>
 #include <clocale>
-#include <unordered_set>
+#include <set>
 
 namespace XScript {
     using XBytes = std::string;

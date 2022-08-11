@@ -3,7 +3,7 @@
 //
 
 #include <queue>
-#include <unordered_set>
+#include <set>
 #include "GarbageCollection.hpp"
 
 #include "../Share/Xqueue.hpp"
@@ -58,7 +58,7 @@ namespace XScript {
                 }
             }
 
-            std::unordered_set<void *> DoubleFreeFucker;
+            std::set<void *> DoubleFreeFucker;
             for (auto &I : Env.Heap.HeapData) {
                 if (I.second.Marked) {
                     I.second.Marked = !I.second.Marked;
