@@ -41,7 +41,7 @@ namespace XScript {
     }
 
     XIndexType Hash(const XString &T) {
-        return std::hash<XString>()(T);
+        return HashBytes(wstring2string(T));
     }
 
     XArray<XString> SplitStrings(const XString &Str, XCharacter Delim) {
@@ -114,6 +114,14 @@ namespace XScript {
             return Char - 'A' + 10;
 
         return 0;
+    }
+
+    XIndexType HashBytes(const XBytes &Bytes) {
+        XIndexType result = 0;
+        for (char Byte : Bytes) {
+            result = (result * 131) + Byte;
+        }
+        return result;
     }
 
 
