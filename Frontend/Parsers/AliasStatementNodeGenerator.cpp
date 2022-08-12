@@ -17,5 +17,9 @@ namespace XScript {
                 return {};
             }
         }
+
+        AliasStatementNodeGenerator::AliasStatementNodeGenerator(Lexer &L) : BaseGenerator(L) {
+
+        }
     } // XScript
 } // Generator
