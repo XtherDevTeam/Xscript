@@ -12,6 +12,7 @@ namespace XScript {
                 if (Tok.Kind != Lexer::TokenKind::Identifier) {
                     MakeException(L"AliasStatementNodeGenerator: Expected a identifier for package alias.");
                 }
+                L.Scan();
                 return {AST::TreeType::AliasStatement, Tok};
             } else {
                 return {};
