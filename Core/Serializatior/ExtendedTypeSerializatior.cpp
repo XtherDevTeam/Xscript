@@ -99,6 +99,8 @@ namespace XScript {
 
         void ExtendedTypeSerializatior::operator()(FILE *FilePointer,
                                                    const Compiler::CompilingTimePackageStructure &Package) {
+            BaseTypeSerializatior()(FilePointer, Package.Alias);
+
             ExtendedTypeSerializatior()(FilePointer, Package.Constants);
 
             ExtendedTypeSerializatior()(FilePointer, Package.Classes);

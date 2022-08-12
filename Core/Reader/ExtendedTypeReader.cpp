@@ -90,6 +90,10 @@ namespace XScript {
 
         EnvPackageStructure ExtendedTypeReader::ReadPackage(FILE *FilePointer) {
             EnvPackageStructure Result;
+
+            // package alias
+            BaseTypeReader().ReadString(FilePointer);
+
             Result.Constants = ReadConstants(FilePointer);
 
             XIndexType ClassesCount = BaseTypeReader().ReadIndex(FilePointer);
@@ -146,6 +150,8 @@ namespace XScript {
 
         Compiler::CompilingTimePackageStructure ExtendedTypeReader::ReadPackageEx(FILE *FilePointer) {
             Compiler::CompilingTimePackageStructure Result;
+            Result.Alias = BaseTypeReader().ReadString(FilePointer);
+
             Result.Constants = ReadConstantsEx(FilePointer);
 
             XIndexType ClassesCount = BaseTypeReader().ReadIndex(FilePointer);

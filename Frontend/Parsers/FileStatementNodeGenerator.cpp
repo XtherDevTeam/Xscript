@@ -9,6 +9,7 @@
 #include "ImportStatementNodeGenerator.hpp"
 #include "PackageStatementNodeGenerator.hpp"
 #include "NativeClassDeclarationStatementNodeGenerator.hpp"
+#include "AliasStatementNodeGenerator.h"
 
 namespace XScript {
     namespace Generator {
@@ -18,6 +19,10 @@ namespace XScript {
 
         AST FileStatementNodeGenerator::Parse() {
             AST Result{};
+
+            Result = AliasStatementNodeGenerator(L).Parse();
+            if (!Result.IsNotMatchNode())
+                return Result;
 
             Result = NativeClassDeclarationStatementNodeGenerator(L).Parse();
             if (!Result.IsNotMatchNode())

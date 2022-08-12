@@ -17,21 +17,21 @@ namespace XScript {
                 return {};
             }
             L.Scan();
-            if (L.LastToken.Kind != Lexer::TokenKind::LeftBraces)
-                MakeException(L"CrossPackageAccessExpressionNodeGenerator: Expected a left braces.");
+            if (L.LastToken.Kind != Lexer::TokenKind::LeftParentheses)
+                MakeException(L"CrossPackageAccessExpressionNodeGenerator: Expected a left parentheses.");
             L.Scan();
 
-            if (L.LastToken.Kind != Lexer::TokenKind::String)
-                MakeException(L"CrossPackageAccessExpressionNodeGenerator: Expected a string value for package name.");
-            AST PkgName{AST::TreeType::Primary, L.LastToken};
+            if (L.LastToken.Kind != Lexer::TokenKind::Identifier)
+                MakeException(L"CrossPackageAccessExpressionNodeGenerator: Expected a identifier for package alias.");
+            AST PkgName{AST::TreeType::Identifier, L.LastToken};
             L.Scan();
 
-            if (L.LastToken.Kind != Lexer::TokenKind::RightBraces)
-                MakeException(L"CrossPackageAccessExpressionNodeGenerator: Expected a right braces.");
+            if (L.LastToken.Kind != Lexer::TokenKind::RightParentheses)
+                MakeException(L"CrossPackageAccessExpressionNodeGenerator: Expected a right parentheses.");
             L.Scan();
 
-            if (L.LastToken.Kind != Lexer::TokenKind::ToSign)
-                MakeException(L"CrossPackageAccessExpressionNodeGenerator: Expected a `->`");
+            if (L.LastToken.Kind != Lexer::TokenKind::Dot)
+                MakeException(L"CrossPackageAccessExpressionNodeGenerator: Expected a `.`");
             L.Scan();
 
             AST MemberExpression = IdentifierNodeGenerator(L).Parse();

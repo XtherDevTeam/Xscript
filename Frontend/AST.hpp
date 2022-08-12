@@ -76,6 +76,7 @@ namespace XScript {
             ThrowStatement,
             InstanceOfExpression,
             UnnamedFunctionDefinition,
+            AliasStatement,
         } Type;
         Lexer::Token Node;
         XArray<AST> Subtrees;

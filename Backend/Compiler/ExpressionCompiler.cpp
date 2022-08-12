@@ -456,7 +456,7 @@ namespace XScript::Compiler {
                         (BytecodeStructure::InstructionParam) {(XHeapIndexType) {}}
                 });
                 XIndexType Backup = Environment.InWhichPackage;
-                Environment.InWhichPackage = Hash(Target.Subtrees[0].Node.Value);
+                Environment.InWhichPackage = Hash(Environment.AliasIndex[Target.Subtrees[0].Node.Value]);
 
                 Result.push_back((BytecodeStructure) {
                         BytecodeStructure::InstructionEnum::pc_set_current_package_id,
@@ -610,7 +610,7 @@ namespace XScript::Compiler {
                         (BytecodeStructure::InstructionParam) {(XHeapIndexType) {}}
                 });
                 XIndexType Backup = Environment.InWhichPackage;
-                Environment.InWhichPackage = Hash(Target.Subtrees[0].Node.Value);
+                Environment.InWhichPackage = Hash(Environment.AliasIndex[Target.Subtrees[0].Node.Value]);
 
                 Result.push_back((BytecodeStructure) {
                         BytecodeStructure::InstructionEnum::pc_set_current_package_id,
@@ -749,7 +749,7 @@ namespace XScript::Compiler {
                         (BytecodeStructure::InstructionParam) {(XHeapIndexType) {}}
                 });
                 XIndexType Backup = Environment.InWhichPackage;
-                Environment.InWhichPackage = Hash(Target.Subtrees[0].Node.Value);
+                Environment.InWhichPackage = Hash(Environment.AliasIndex[Target.Subtrees[0].Node.Value]);
 
                 Result.push_back((BytecodeStructure) {
                         BytecodeStructure::InstructionEnum::pc_set_current_package_id,

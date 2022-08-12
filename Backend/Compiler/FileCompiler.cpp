@@ -28,6 +28,8 @@ namespace XScript {
                     return GenerateForImportStatement(Target);
                 case AST::TreeType::NativeClassDeclarationStatement:
                     return GeneratorForNativeClassDeclaration(Target);
+                case AST::TreeType::AliasStatement:
+                    return GenerateForAliasStatement(Target);
                 default:
                     throw InternalException(L"FileCompiler::Generate : Invalid invoke");
             }
@@ -211,6 +213,11 @@ namespace XScript {
                     BytecodeStructure::InstructionEnum::static_store,
                     (BytecodeStructure::InstructionParam) {StaticIdx}
             });
+            return {};
+        }
+
+        XArray<BytecodeStructure> FileCompiler::GenerateForAliasStatement(AST &Target) {
+            Environment.MainPackage.Alias = Target.Node.Value;
             return {};
         }
     } // XScript

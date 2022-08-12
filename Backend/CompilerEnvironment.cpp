@@ -47,6 +47,8 @@ namespace XScript::Compiler {
 
             DependencyPackages.push_back(
                     std::make_pair(FileName, Reader::ExtendedTypeReader().ReadPackageEx(FilePointer)));
+
+            AliasIndex[GetPackage(Hash(FileName)).second.Alias] = FileName;
             return;
         }
         throw InternalException(L"Cannot open file.");

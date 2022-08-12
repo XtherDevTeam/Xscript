@@ -42,7 +42,7 @@ Status: `Implmented`
 Syntax:
 
 ```
-CrossPackageAccessExpression ::= "@" "{" TokenString "}" TokenToSign MemberExpression
+CrossPackageAccessExpression ::= "@" TokenLeftParentheses TokenIdentifier TokenRightParentheses TokenDot MemberExpression
 ```
 
 ### NewExpression

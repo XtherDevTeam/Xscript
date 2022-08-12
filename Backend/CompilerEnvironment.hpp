@@ -30,6 +30,9 @@ namespace XScript::Compiler {
 
         XArray<std::pair<XString, SymbolItem>> Locals;
 
+        // PackageAliasName -> PackageRealName
+        XMap<XString, XString> AliasIndex;
+
         void ImportFromPackage(const XString &FileName);
 
         void LoadNativeClass(const XString &FileName);

@@ -14,6 +14,8 @@ namespace XScript::Compiler {
 
     class CompilingTimePackageStructure {
     public:
+        XString Alias;
+
         ConstantPool Constants;
 
         XArray<std::pair<XString, CompilingTimeFunction>> Functions;
