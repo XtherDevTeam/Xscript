@@ -22,7 +22,7 @@ namespace XScript {
 
         bool ActiveCheck() const;
 
-        [[noreturn]] static void ActiveGCThreadFunc(GarbageCollection &GC);
+        static void ActiveGCThreadFunc(GarbageCollection &GC);
 
         GarbageCollection(GarbageCollection &copy) = delete;
 

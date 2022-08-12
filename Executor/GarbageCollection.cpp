@@ -103,7 +103,7 @@ namespace XScript {
         return (Env.Heap.UsedIndexes.empty() && Env.Heap.HeapData.size() >= Limit);
     }
 
-    [[noreturn]] void GarbageCollection::ActiveGCThreadFunc(GarbageCollection &GC) {
+    void GarbageCollection::ActiveGCThreadFunc(GarbageCollection &GC) {
         while (GC.ThreadFlag) {
             if (GC.ActiveCheck()) {
                 InterpreterLock.lock();
