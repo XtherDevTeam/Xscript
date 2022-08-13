@@ -119,4 +119,8 @@ namespace XScript {
         if (ActiveGCThread.joinable())
             ActiveGCThread.join();
     }
+
+    GarbageCollection::~GarbageCollection() {
+        Stop();
+    }
 } // XScript

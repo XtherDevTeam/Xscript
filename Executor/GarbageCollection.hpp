@@ -29,6 +29,8 @@ namespace XScript {
         GarbageCollection(const GarbageCollection &copy) = delete;
 
         void Stop();
+
+        ~GarbageCollection();
     };
 
 } // XScript
