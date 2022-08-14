@@ -53,6 +53,11 @@ namespace XScript {
                             Queue.push(I);
                         }
                         break;
+                    case EnvObject::ObjectKind::ClosurePointer:
+                        for (auto &I: Element.Value.ClosurePointer->OuterVars) {
+                            Queue.push(I);
+                        }
+                        break;
                     default:
                         break;
                 }

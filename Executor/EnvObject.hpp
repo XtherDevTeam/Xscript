@@ -12,6 +12,7 @@
 #include "EnvFunction.hpp"
 #include "../NativeLibrary/NativeLibrary.hpp"
 #include "EnvBytesObject.hpp"
+#include "EnvClosureObject.hpp"
 
 namespace XScript {
 
@@ -30,6 +31,7 @@ namespace XScript {
             Index,
             FunctionPointer,
             NativeMethodPointer,
+            ClosurePointer,
         } Kind;
 
         union ObjectValue {
@@ -72,6 +74,10 @@ namespace XScript {
             NativeMethodInformation *NativeMethodPointerValue;
 
             explicit ObjectValue(NativeMethodInformation *nativeMethodPointerValue);
+
+            EnvClosureObject *ClosurePointer;
+
+            explicit ObjectValue(EnvClosureObject *closurePointer);
         } Value;
 
         EnvObject();

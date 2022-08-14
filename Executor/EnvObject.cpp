@@ -30,6 +30,10 @@ namespace XScript {
 
     }
 
+    EnvObject::ObjectValue::ObjectValue(EnvClosureObject *closurePointer) : ClosurePointer(closurePointer) {
+
+    }
+
     EnvObject::EnvObject() : Marked(false), Kind(ObjectKind::Integer), Value(static_cast<XInteger>(0)) {
 
     }
@@ -53,6 +57,9 @@ namespace XScript {
                 break;
             case ObjectKind::BytesObject:
                 FreeEnvBytesObject(Value.BytesObjectPointer);
+                break;
+            case ObjectKind::ClosurePointer:
+                FreeEnvClosureObject(Value.ClosurePointer);
                 break;
             default:
                 break;

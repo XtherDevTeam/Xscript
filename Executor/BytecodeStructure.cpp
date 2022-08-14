@@ -186,10 +186,6 @@ namespace XScript {
                 Result += L"list_push";
                 ParamType = N;
                 break;
-            case InstructionEnum::list_pop:
-                Result += L"list_pop";
-                ParamType = N;
-                break;
             case InstructionEnum::pc_jump_if_true:
                 Result += L"pc_jump_if_true";
                 ParamType = I;
@@ -201,10 +197,6 @@ namespace XScript {
             case InstructionEnum::pc_jump:
                 Result += L"pc_jump";
                 ParamType = I;
-                break;
-            case InstructionEnum::debugger:
-                Result += L"debugger";
-                ParamType = H;
                 break;
             case InstructionEnum::static_get:
                 Result += L"static_get";

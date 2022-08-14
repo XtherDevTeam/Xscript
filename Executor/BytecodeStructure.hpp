@@ -65,11 +65,9 @@ namespace XScript {
             list_get_member,
             list_remove_index,
             list_push,
-            list_pop,
             pc_jump_if_true,
             pc_jump_if_false,
             pc_jump,
-            debugger,
             static_store,
             static_get,
             object_lvalue2rvalue,
@@ -87,9 +85,6 @@ namespace XScript {
             exception_pop,
             exception_throw,
             create_closure,
-            /*未完成命令*/
-            calculation_increment,
-            calculation_decrement,
         } Instruction;
 
         InstructionParam Param;

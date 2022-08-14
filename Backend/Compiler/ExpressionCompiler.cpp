@@ -120,18 +120,6 @@ namespace XScript::Compiler {
                                                       (BytecodeStructure::InstructionParam) {(XIndexType) 0}});
                 break;
             }
-            case AST::TreeType::IncrementExpression: {
-                MergeArray(Result, ParseMemberExpression(Target.Subtrees.back(), false));
-                Result.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::calculation_increment,
-                                                      (BytecodeStructure::InstructionParam) {(XIndexType) 0}});
-                break;
-            }
-            case AST::TreeType::DecrementExpression: {
-                MergeArray(Result, ParseMemberExpression(Target.Subtrees.back(), false));
-                Result.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::calculation_decrement,
-                                                      (BytecodeStructure::InstructionParam) {(XIndexType) 0}});
-                break;
-            }
 
             case AST::TreeType::AdditionExpression:
             case AST::TreeType::MultiplicationExpression:
@@ -825,8 +813,8 @@ namespace XScript::Compiler {
         XScript::XArray<BytecodeStructure> Result;
         // outer vars
         XIndexType OuterVarsCount = Target.Subtrees[0].Subtrees.size();
-        for (auto &I : Target.Subtrees[0].Subtrees) {
-            MergeArray(Result, ParseMemberExpression(I, false));
+        for (auto Iter = Target.Subtrees[0].Subtrees.rbegin(); Iter != Target.Subtrees[1].Subtrees.rend(); Iter++) {
+            MergeArray(Result, ParseMemberExpression(*Iter, false));
         }
 
         // function
@@ -837,8 +825,12 @@ namespace XScript::Compiler {
         /**
          * initialize params
          */
-        for (auto &I: Target.Subtrees[1].Subtrees) {
-            Params.push_back(I.Node.Value);
+        for (auto & Subtree : Target.Subtrees[0].Subtrees) {
+            Params.push_back(Subtree.Node.Value);
+        }
+        // load param first, outer vars second
+        for (auto & Subtree : Target.Subtrees[1].Subtrees) {
+            Params.push_back(Subtree.Node.Value);
         }
 
         CompilingTimeFunction Func{
@@ -858,6 +850,10 @@ namespace XScript::Compiler {
 
         auto Backup = Environment.Locals;
         Environment.Locals = {};
+
+        for (auto &I: Target.Subtrees[0].Subtrees) {
+            Environment.PushLocal(I.Node.Value, {(Typename) {Typename::TypenameKind::Unknown}, {}});
+        }
         for (auto &I: Target.Subtrees[1].Subtrees) {
             Environment.PushLocal(I.Node.Value, {(Typename) {Typename::TypenameKind::Unknown}, {}});
         }

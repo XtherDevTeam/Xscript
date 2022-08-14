@@ -15,11 +15,9 @@ namespace XScript {
     public:
         bool IsBusy;
         XIndexType ThreadID;
-        void *Pool;
+        void *Pool{};
         Environment *InterpreterEnvironment;
         GarbageCollection *GC;
-
-        explicit BytecodeInterpreter(void* Pool, Environment *interpreterEnvironment, GarbageCollection *GC);
 
         BytecodeInterpreter();
 
@@ -134,6 +132,8 @@ namespace XScript {
         void InstructionExceptionPop(BytecodeStructure::InstructionParam Param);
 
         void InstructionExceptionThrow(BytecodeStructure::InstructionParam Param);
+
+        void InstructionCreateClosure(BytecodeStructure::InstructionParam Param);
     };
 
 } // XScript
