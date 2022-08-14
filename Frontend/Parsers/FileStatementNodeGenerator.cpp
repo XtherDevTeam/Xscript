@@ -9,7 +9,7 @@
 #include "ImportStatementNodeGenerator.hpp"
 #include "PackageStatementNodeGenerator.hpp"
 #include "NativeClassDeclarationStatementNodeGenerator.hpp"
-#include "AliasStatementNodeGenerator.h"
+#include "AliasStatementNodeGenerator.hpp"
 
 namespace XScript {
     namespace Generator {
