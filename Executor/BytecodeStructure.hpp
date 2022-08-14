@@ -86,6 +86,7 @@ namespace XScript {
             exception_push,
             exception_pop,
             exception_throw,
+            create_closure,
             /*未完成命令*/
             calculation_increment,
             calculation_decrement,

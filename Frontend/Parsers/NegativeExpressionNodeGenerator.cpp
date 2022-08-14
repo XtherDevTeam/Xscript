@@ -5,6 +5,7 @@
 #include "NegativeExpressionNodeGenerator.hpp"
 #include "NewExpressionNodeGenerator.hpp"
 #include "UnnamedFunctionDefinitionNodeGenerator.hpp"
+#include "ClosureDefinitionNodeGenerator.hpp"
 
 namespace XScript::Generator {
     NegativeExpressionNodeGenerator::NegativeExpressionNodeGenerator(Lexer &L) : BaseGenerator(L) {
@@ -19,9 +20,12 @@ namespace XScript::Generator {
                 if (Right.IsNotMatchNode()) {
                     Right = UnnamedFunctionDefinitionNodeGenerator(L).Parse();
                     if (Right.IsNotMatchNode()) {
-                        Right = PrimaryNodeGenerator(L).Parse();
+                        Right = ClosureDefinitionNodeGenerator(L).Parse();
                         if (Right.IsNotMatchNode()) {
-                            MakeException(L"Expected a rvalue expression.");
+                            Right = PrimaryNodeGenerator(L).Parse();
+                            if (Right.IsNotMatchNode()) {
+                                MakeException(L"Expected a rvalue expression.");
+                            }
                         }
                     }
                 }
@@ -34,7 +38,10 @@ namespace XScript::Generator {
             if (Right.IsNotMatchNode()) {
                 Right = UnnamedFunctionDefinitionNodeGenerator(L).Parse();
                 if (Right.IsNotMatchNode()) {
-                    return PrimaryNodeGenerator(L).Parse();
+                    Right = ClosureDefinitionNodeGenerator(L).Parse();
+                    if (Right.IsNotMatchNode()) {
+                        return PrimaryNodeGenerator(L).Parse();
+                    }
                 }
             }
         }

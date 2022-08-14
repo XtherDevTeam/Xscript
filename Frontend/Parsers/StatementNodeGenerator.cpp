@@ -24,6 +24,7 @@ namespace XScript {
 
         AST StatementNodeGenerator::Parse() {
             AST Result{};
+
             Result = VariableStatementNodeGenerator(L).Parse();
             if (!Result.IsNotMatchNode())
                 return Result;

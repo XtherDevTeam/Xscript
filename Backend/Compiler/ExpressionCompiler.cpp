@@ -109,6 +109,10 @@ namespace XScript::Compiler {
                 Environment.MainPackage.Functions[FuncIndex].second.BytecodeArray = Structure;
                 break;
             }
+            case AST::TreeType::ClosureDefinition: {
+                MergeArray(Result, ParseClosureDefinition(Target));
+                break;
+            }
 
             case AST::TreeType::NegativeExpression: {
                 MergeArray(Result, Generate(Target.Subtrees.back()));
@@ -815,5 +819,59 @@ namespace XScript::Compiler {
                 (BytecodeStructure::InstructionParam) {(XHeapIndexType) {}}
         });
         return Result;
+    }
+
+    XArray<BytecodeStructure> ExpressionCompiler::ParseClosureDefinition(AST &Target) {
+        XScript::XArray<BytecodeStructure> Result;
+        // outer vars
+        XIndexType OuterVarsCount = Target.Subtrees[0].Subtrees.size();
+        for (auto &I : Target.Subtrees[0].Subtrees) {
+            MergeArray(Result, ParseMemberExpression(I, false));
+        }
+
+        // function
+        XArray<XString> Params;
+
+        XArray<BytecodeStructure> Structure;
+
+        /**
+         * initialize params
+         */
+        for (auto &I: Target.Subtrees[1].Subtrees) {
+            Params.push_back(I.Node.Value);
+        }
+
+        CompilingTimeFunction Func{
+                XArray<CompilingTimeFunction::Descriptor>{CompilingTimeFunction::Descriptor::Public}, Params,
+                {}};
+
+        auto FuncIndex = Environment.MainPackage.PushUnnamedFunction(Func);
+
+        /**
+         * Push function pointer to stack
+         */
+
+        Result.push_back((BytecodeStructure) {
+                BytecodeStructure::InstructionEnum::stack_push_function,
+                (BytecodeStructure::InstructionParam) {Hash(Environment.MainPackage.Functions[FuncIndex].first)}
+        });
+
+        auto Backup = Environment.Locals;
+        Environment.Locals = {};
+        for (auto &I: Target.Subtrees[1].Subtrees) {
+            Environment.PushLocal(I.Node.Value, {(Typename) {Typename::TypenameKind::Unknown}, {}});
+        }
+
+        Structure = StatementCompiler(Environment).GenerateForCodeBlock(Target.Subtrees[2]);
+
+        Environment.Locals = Backup;
+
+        Environment.MainPackage.Functions[FuncIndex].second.BytecodeArray = Structure;
+
+        // create
+        Result.push_back((BytecodeStructure) {
+                BytecodeStructure::InstructionEnum::create_closure,
+                (BytecodeStructure::InstructionParam) {OuterVarsCount}
+        });
     }
 } // Compiler
