@@ -857,11 +857,21 @@ namespace XScript {
         if (Left.Kind == Right.Kind) {
             switch (Left.Kind) {
                 case EnvironmentStackItem::ItemKind::Integer:
+                    Result = Left.Value.IntVal == Right.Value.IntVal;
+                    break;
                 case EnvironmentStackItem::ItemKind::Decimal:
+                    Result = Left.Value.DeciVal == Right.Value.DeciVal;
+                    break;
                 case EnvironmentStackItem::ItemKind::Boolean:
+                    Result = Left.Value.BoolVal == Right.Value.BoolVal;
+                    break;
                 case EnvironmentStackItem::ItemKind::Null:
-                case EnvironmentStackItem::ItemKind::FunctionPointer:
+                    Result = false;
+                    break;
                 case EnvironmentStackItem::ItemKind::NativeMethodPointer:
+                    Result = Left.Value.NativeMethodPointerVal == Right.Value.NativeMethodPointerVal;
+                    break;
+                case EnvironmentStackItem::ItemKind::FunctionPointer:
                     Result = Left.Value.FuncPointerVal == Right.Value.FuncPointerVal;
                     break;
                 case EnvironmentStackItem::ItemKind::HeapPointer:
@@ -882,10 +892,20 @@ namespace XScript {
         if (Left.Kind == Right.Kind) {
             switch (Left.Kind) {
                 case EnvironmentStackItem::ItemKind::Integer:
+                    Result = Left.Value.IntVal != Right.Value.IntVal;
+                    break;
                 case EnvironmentStackItem::ItemKind::Decimal:
+                    Result = Left.Value.DeciVal != Right.Value.DeciVal;
+                    break;
                 case EnvironmentStackItem::ItemKind::Boolean:
+                    Result = Left.Value.BoolVal != Right.Value.BoolVal;
+                    break;
                 case EnvironmentStackItem::ItemKind::Null:
+                    Result = false;
+                    break;
                 case EnvironmentStackItem::ItemKind::NativeMethodPointer:
+                    Result = Left.Value.NativeMethodPointerVal != Right.Value.NativeMethodPointerVal;
+                    break;
                 case EnvironmentStackItem::ItemKind::FunctionPointer:
                     Result = Left.Value.FuncPointerVal != Right.Value.FuncPointerVal;
                     break;
