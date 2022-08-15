@@ -49,26 +49,26 @@ namespace XScript {
                             Interpreter->InterpreterEnvironment->Threads[NewThreadIdx].Thread = std::thread(
                                     [=]() -> void {
                                         auto FuncIdx = Element.Value.ClassObjectPointer->Members[builtin_has_code_before_destruct];
-                                        NewInterpreter->InterpreterEnvironment->Threads[Interpreter->ThreadID].Stack = {};
-                                        NewInterpreter->InterpreterEnvironment->Threads[Interpreter->ThreadID].Stack.FramesInformation.push_back(
+                                        NewInterpreter->InterpreterEnvironment->Threads[NewInterpreter->ThreadID].Stack = {};
+                                        NewInterpreter->InterpreterEnvironment->Threads[NewInterpreter->ThreadID].Stack.FramesInformation.push_back(
                                                 {
                                                         EnvironmentStackFramesInformation::FrameKind::FunctionStackFrame,
                                                         0, 0,
                                                         {}});
-                                        NewInterpreter->InterpreterEnvironment->Threads[Interpreter->ThreadID].Stack.PushValueToStack(
+                                        NewInterpreter->InterpreterEnvironment->Threads[NewInterpreter->ThreadID].Stack.PushValueToStack(
                                                 {EnvironmentStackItem::ItemKind::HeapPointer,
                                                  (EnvironmentStackItem::ItemValue) ElementIdx});
-                                        NewInterpreter->InterpreterEnvironment->Threads[Interpreter->ThreadID].Stack.PushValueToStack(
+                                        NewInterpreter->InterpreterEnvironment->Threads[NewInterpreter->ThreadID].Stack.PushValueToStack(
                                                 {EnvironmentStackItem::ItemKind::HeapPointer,
                                                  (EnvironmentStackItem::ItemValue) FuncIdx});
                                         NewInterpreter->InstructionObjectLvalue2Rvalue(
                                                 (BytecodeStructure::InstructionParam) (XHeapIndexType) {});
                                         NewInterpreter->InstructionFuncInvoke(
-                                                (BytecodeStructure::InstructionParam) (XHeapIndexType) {});
+                                                (BytecodeStructure::InstructionParam) (XHeapIndexType) {1});
                                         if (NewInterpreter->InterpreterEnvironment->Heap.HeapData[FuncIdx].Kind ==
                                             EnvObject::ObjectKind::FunctionPointer)
                                             NewInterpreter->MainLoop();
-                                        NewInterpreter->InterpreterEnvironment->Threads[Interpreter->ThreadID].Stack = {};
+                                        NewInterpreter->InterpreterEnvironment->Threads[NewInterpreter->ThreadID].Stack = {};
                                     });
                             Interpreter->InterpreterEnvironment->Threads.WaitForThread(NewThreadIdx);
                         }
