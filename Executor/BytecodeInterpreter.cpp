@@ -1847,7 +1847,7 @@ namespace XScript {
                              InterpreterEnvironment->Threads[ThreadID].PC
                             });
 
-                    for (auto &I : Closure.Value.ClosurePointer->OuterVars) {
+                    for (auto &I: Closure.Value.ClosurePointer->OuterVars) {
                         InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(
                                 {EnvironmentStackItem::ItemKind::HeapPointer, (EnvironmentStackItem::ItemValue) I});
                     }
@@ -2086,39 +2086,40 @@ namespace XScript {
                 case EnvironmentStackItem::ItemKind::Null: {
                     HeapIdx = InterpreterEnvironment->Heap.PushElement(
                             {EnvObject::ObjectKind::Integer, (EnvObject::ObjectValue) (XInteger) 0});
-
+                    break;
                 }
                 case EnvironmentStackItem::ItemKind::Integer: {
                     HeapIdx = InterpreterEnvironment->Heap.PushElement(
-                            {EnvObject::ObjectKind::Integer,(EnvObject::ObjectValue) Cur.Value.IntVal});
-
+                            {EnvObject::ObjectKind::Integer, (EnvObject::ObjectValue) Cur.Value.IntVal});
+                    break;
                 }
                 case EnvironmentStackItem::ItemKind::Decimal: {
                     HeapIdx = InterpreterEnvironment->Heap.PushElement(
-                            {EnvObject::ObjectKind::Decimal,(EnvObject::ObjectValue) Cur.Value.DeciVal});
-
+                            {EnvObject::ObjectKind::Decimal, (EnvObject::ObjectValue) Cur.Value.DeciVal});
+                    break;
                 }
                 case EnvironmentStackItem::ItemKind::Boolean: {
                     HeapIdx = InterpreterEnvironment->Heap.PushElement(
-                            {EnvObject::ObjectKind::Boolean,(EnvObject::ObjectValue) Cur.Value.BoolVal});
-
+                            {EnvObject::ObjectKind::Boolean, (EnvObject::ObjectValue) Cur.Value.BoolVal});
+                    break;
                 }
                 case EnvironmentStackItem::ItemKind::FunctionPointer: {
                     HeapIdx = InterpreterEnvironment->Heap.PushElement(
                             {
                                     EnvObject::ObjectKind::FunctionPointer,
                                     (EnvObject::ObjectValue) Cur.Value.FuncPointerVal});
-
+                    break;
                 }
                 case EnvironmentStackItem::ItemKind::NativeMethodPointer: {
                     HeapIdx = InterpreterEnvironment->Heap.PushElement(
                             {
                                     EnvObject::ObjectKind::NativeMethodPointer,
                                     (EnvObject::ObjectValue) Cur.Value.NativeMethodPointerVal});
-
+                    break;
                 }
                 case EnvironmentStackItem::ItemKind::HeapPointer: {
                     HeapIdx = Cur.Value.HeapPointerVal;
+                    break;
                 }
             }
             Closure->OuterVars.push_back(HeapIdx);
@@ -2127,6 +2128,6 @@ namespace XScript {
         auto Idx = InterpreterEnvironment->Heap.PushElement(
                 {EnvObject::ObjectKind::ClosurePointer, (EnvObject::ObjectValue) Closure});
         InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack((EnvironmentStackItem) {
-            EnvironmentStackItem::ItemKind::HeapPointer, (EnvironmentStackItem::ItemValue) {Idx}});
+                EnvironmentStackItem::ItemKind::HeapPointer, (EnvironmentStackItem::ItemValue) {Idx}});
     }
 } // XScript
