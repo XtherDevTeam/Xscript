@@ -4,9 +4,9 @@ XScript 2 is the Next Generation XScript Programming Language.
 
 ### The goal of XScript 2
 
-- [ ] Create a bytecode-based virtual machine for XScript2
-- [ ] Create a standard library for XScript 2
-- [ ] Implement a full package system for XScript 2
+- [x] Create a bytecode-based virtual machine for XScript2
+- [x] Create a standard library for XScript 2
+- [x] Implement a full package system for XScript 2
 
 ### Developing state
 
