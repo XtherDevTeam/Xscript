@@ -7,28 +7,25 @@
 #include "GarbageCollection.hpp"
 
 #include "../Share/Xqueue.hpp"
+#include "BytecodeInterpreter.hpp"
+#include "BytecodeInterpreterPool.hpp"
 
 namespace XScript {
-
-    GarbageCollection::GarbageCollection(Environment &Env) : Env(Env) {
-        ThreadFlag = true;
-        ActiveGCThread = (std::thread){ActiveGCThreadFunc, std::ref(*this)};
-    }
-
     /**
      * BFS
      */
     void GarbageCollection::Start(bool force) {
-        if (force || PassiveCheck()) {
+        auto *Interpreter = static_cast<BytecodeInterpreter *>(InterpreterPointer);
+        if (Interpreter && (force || PassiveCheck())) {
             std::queue<XHeapIndexType> Queue;
-            for (auto &I: Env.Packages) {
+            for (auto &I: Interpreter->InterpreterEnvironment->Packages) {
                 for (auto &J: I.second.Statics) {
                     if (J.Kind == EnvironmentStackItem::ItemKind::HeapPointer)
                         Queue.push(J.Value.HeapPointerVal);
                 }
             }
             for (XIndexType TID = 0; TID < MaxThreadCount; TID++) {
-                for (auto &I: Env.Threads[TID].Stack.Elements) {
+                for (auto &I: Interpreter->InterpreterEnvironment->Threads[TID].Stack.Elements) {
                     if (I.Kind == EnvironmentStackItem::ItemKind::HeapPointer)
                         Queue.push(I.Value.HeapPointerVal);
                 }
@@ -37,17 +34,49 @@ namespace XScript {
             XHeapIndexType AAllocCount = 0;
             while (!Queue.empty()) {
                 AAllocCount++;
-                auto &Element = Env.Heap.HeapData[Queue.front()];
+                XHeapIndexType ElementIdx = Queue.front();
+                auto &Element = Interpreter->InterpreterEnvironment->Heap.HeapData[Queue.front()];
                 Queue.pop();
                 if (Element.Marked)
                     continue;
                 Element.Marked = true;
                 switch (Element.Kind) {
-                    case EnvObject::ObjectKind::ClassObject:
+                    case EnvObject::ObjectKind::ClassObject: {
+                        if (Element.Value.ClassObjectPointer->Members.count(builtin_has_code_before_destruct)) {
+                            auto NewThreadIdx = static_cast<BytecodeInterpreterPool *>(Interpreter->Pool)->Allocate();
+                            BytecodeInterpreter *NewInterpreter = &(*static_cast<BytecodeInterpreterPool *>(Interpreter->Pool))[NewThreadIdx];
+                            Interpreter->InterpreterEnvironment->Threads[NewThreadIdx].IsBusy = true;
+                            Interpreter->InterpreterEnvironment->Threads[NewThreadIdx].Thread = std::thread(
+                                    [=]() -> void {
+                                        auto FuncIdx = Element.Value.ClassObjectPointer->Members[builtin_has_code_before_destruct];
+                                        NewInterpreter->InterpreterEnvironment->Threads[Interpreter->ThreadID].Stack = {};
+                                        NewInterpreter->InterpreterEnvironment->Threads[Interpreter->ThreadID].Stack.FramesInformation.push_back(
+                                                {
+                                                        EnvironmentStackFramesInformation::FrameKind::FunctionStackFrame,
+                                                        0, 0,
+                                                        {}});
+                                        NewInterpreter->InterpreterEnvironment->Threads[Interpreter->ThreadID].Stack.PushValueToStack(
+                                                {EnvironmentStackItem::ItemKind::HeapPointer,
+                                                 (EnvironmentStackItem::ItemValue) ElementIdx});
+                                        NewInterpreter->InterpreterEnvironment->Threads[Interpreter->ThreadID].Stack.PushValueToStack(
+                                                {EnvironmentStackItem::ItemKind::HeapPointer,
+                                                 (EnvironmentStackItem::ItemValue) FuncIdx});
+                                        NewInterpreter->InstructionObjectLvalue2Rvalue(
+                                                (BytecodeStructure::InstructionParam) (XHeapIndexType) {});
+                                        NewInterpreter->InstructionFuncInvoke(
+                                                (BytecodeStructure::InstructionParam) (XHeapIndexType) {});
+                                        if (NewInterpreter->InterpreterEnvironment->Heap.HeapData[FuncIdx].Kind ==
+                                            EnvObject::ObjectKind::FunctionPointer)
+                                            NewInterpreter->MainLoop();
+                                        NewInterpreter->InterpreterEnvironment->Threads[Interpreter->ThreadID].Stack = {};
+                                    });
+                            Interpreter->InterpreterEnvironment->Threads.WaitForThread(NewThreadIdx);
+                        }
                         for (auto &I: Element.Value.ClassObjectPointer->Members) {
                             Queue.push(I.second);
                         }
                         break;
+                    }
                     case EnvObject::ObjectKind::ArrayObject:
                         for (auto &I: Element.Value.ArrayObjectPointer->Elements) {
                             Queue.push(I);
@@ -64,7 +93,7 @@ namespace XScript {
             }
 
             std::set<void *> DoubleFreeFucker;
-            for (auto &I : Env.Heap.HeapData) {
+            for (auto &I: Interpreter->InterpreterEnvironment->Heap.HeapData) {
                 if (I.second.Marked) {
                     I.second.Marked = !I.second.Marked;
                 } else {
@@ -80,20 +109,20 @@ namespace XScript {
                                 I.second.DestroyObject();
                                 I.second = {};
                             }
-                            Env.Heap.UsedIndexes.insert(I.first);
+                            Interpreter->InterpreterEnvironment->Heap.UsedIndexes.insert(I.first);
                             break;
                         }
                         default: {
                             I.second.DestroyObject();
                             I.second = {};
-                            Env.Heap.UsedIndexes.insert(I.first);
+                            Interpreter->InterpreterEnvironment->Heap.UsedIndexes.insert(I.first);
                             break;
                         }
                     }
                 }
             }
-            for (auto &I : Env.Heap.UsedIndexes) {
-                Env.Heap.HeapData.erase(I);
+            for (auto &I: Interpreter->InterpreterEnvironment->Heap.UsedIndexes) {
+                Interpreter->InterpreterEnvironment->Heap.HeapData.erase(I);
             }
 
             Limit = AAllocCount + EnvHeapGCStartCondition;
@@ -101,11 +130,16 @@ namespace XScript {
     }
 
     bool GarbageCollection::PassiveCheck() const {
-        return (Env.Heap.UsedIndexes.empty() && Env.Heap.HeapData.size() >= EnvHeapDataAllocateSize / 2);
+        auto *Interpreter = static_cast<BytecodeInterpreter *>(InterpreterPointer);
+        return Interpreter && (Interpreter->InterpreterEnvironment->Heap.UsedIndexes.empty() &&
+                               Interpreter->InterpreterEnvironment->Heap.HeapData.size() >=
+                               EnvHeapDataAllocateSize / 2);
     }
 
     bool GarbageCollection::ActiveCheck() const {
-        return (Env.Heap.UsedIndexes.empty() && Env.Heap.HeapData.size() >= Limit);
+        auto *Interpreter = static_cast<BytecodeInterpreter *>(InterpreterPointer);
+        return Interpreter && (Interpreter->InterpreterEnvironment->Heap.UsedIndexes.empty() &&
+                               Interpreter->InterpreterEnvironment->Heap.HeapData.size() >= Limit);
     }
 
     void GarbageCollection::ActiveGCThreadFunc(GarbageCollection &GC) {
@@ -127,5 +161,10 @@ namespace XScript {
 
     GarbageCollection::~GarbageCollection() {
         Stop();
+    }
+
+    GarbageCollection::GarbageCollection(void *InterpreterPointer) : InterpreterPointer(InterpreterPointer) {
+        ThreadFlag = true;
+        ActiveGCThread = (std::thread) {ActiveGCThreadFunc, std::ref(*this)};
     }
 } // XScript

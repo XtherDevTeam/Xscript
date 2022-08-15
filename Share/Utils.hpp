@@ -68,5 +68,6 @@ namespace XScript {
 #define builtin_hash_code_super (XScript::XIndexType)34132452939
 #define builtin_hash_code___native_library_identifier__ (XScript::XIndexType)5769486266365919877
 #define builtin_hash_code___XScriptRuntimeEntry__ (XScript::XIndexType)14066748763523684209
+#define builtin_has_code_before_destruct (XScript::XIndexType)9950176563888314114
 
 #endif //XSCRIPT2_UTILS_HPP

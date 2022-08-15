@@ -1355,7 +1355,7 @@ namespace XScript {
         }
     }
 
-    void BytecodeInterpreter::InstructionBinaryAnd(BytecodeStructure::InstructionParam Param) {
+    void BytecodeInterpreter::InstructionBinaryAnd(BytecodeStructure::InstructionParam Param) const {
         /* get two operands from the stack */
         auto Right = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
         auto Left = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
@@ -1371,7 +1371,7 @@ namespace XScript {
         InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(Left);
     }
 
-    void BytecodeInterpreter::InstructionBinaryOr(BytecodeStructure::InstructionParam Param) {
+    void BytecodeInterpreter::InstructionBinaryOr(BytecodeStructure::InstructionParam Param) const {
         /* get two operands from the stack */
         auto Right = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
         auto Left = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
@@ -1387,7 +1387,7 @@ namespace XScript {
         InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(Left);
     }
 
-    void BytecodeInterpreter::InstructionBinaryXOR(BytecodeStructure::InstructionParam Param) {
+    void BytecodeInterpreter::InstructionBinaryXOR(BytecodeStructure::InstructionParam Param) const {
         /* get two operands from the stack */
         auto Right = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
         auto Left = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
@@ -1403,7 +1403,7 @@ namespace XScript {
         InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(Left);
     }
 
-    void BytecodeInterpreter::InstructionBinaryNot(BytecodeStructure::InstructionParam Param) {
+    void BytecodeInterpreter::InstructionBinaryNot(BytecodeStructure::InstructionParam Param) const {
         /* get operand from the stack */
         auto Left = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
 
@@ -1416,7 +1416,7 @@ namespace XScript {
         InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(Left);
     }
 
-    void BytecodeInterpreter::InstructionBinaryLM(BytecodeStructure::InstructionParam Param) {
+    void BytecodeInterpreter::InstructionBinaryLM(BytecodeStructure::InstructionParam Param) const {
         auto Right = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
         auto Left = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
 
@@ -1424,68 +1424,68 @@ namespace XScript {
         InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(Left);
     }
 
-    void BytecodeInterpreter::InstructionBinaryRM(BytecodeStructure::InstructionParam Param) {
+    void BytecodeInterpreter::InstructionBinaryRM(BytecodeStructure::InstructionParam Param) const {
         auto Right = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
         auto Left = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
 
         Left.Value.IntVal = Left.Value.IntVal >> Right.Value.HeapPointerVal;
     }
 
-    void BytecodeInterpreter::InstructionStackPushInteger(BytecodeStructure::InstructionParam Param) {
+    void BytecodeInterpreter::InstructionStackPushInteger(BytecodeStructure::InstructionParam Param) const {
         InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Integer,
                                                                           (EnvironmentStackItem::ItemValue) {
                                                                                   Param.IntValue}
                                                                          });
     }
 
-    void BytecodeInterpreter::InstructionStackPushDecimal(BytecodeStructure::InstructionParam Param) {
+    void BytecodeInterpreter::InstructionStackPushDecimal(BytecodeStructure::InstructionParam Param) const {
         InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Decimal,
                                                                           (EnvironmentStackItem::ItemValue) {
                                                                                   Param.DeciValue}});
     }
 
-    void BytecodeInterpreter::InstructionStackPushBoolean(BytecodeStructure::InstructionParam Param) {
+    void BytecodeInterpreter::InstructionStackPushBoolean(BytecodeStructure::InstructionParam Param) const {
         InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Boolean,
                                                                           (EnvironmentStackItem::ItemValue) {
                                                                                   Param.BoolValue}});
     }
 
-    void BytecodeInterpreter::InstructionStackPushEmpty(BytecodeStructure::InstructionParam Param) {
+    void BytecodeInterpreter::InstructionStackPushEmpty(BytecodeStructure::InstructionParam Param) const {
         InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack({EnvironmentStackItem::ItemKind::Null,
                                                                           (EnvironmentStackItem::ItemValue) {
                                                                                   (XIndexType) Param.HeapPointerValue}});
     }
 
-    void BytecodeInterpreter::InstructionStackPop(BytecodeStructure::InstructionParam Param) {
+    void BytecodeInterpreter::InstructionStackPop(BytecodeStructure::InstructionParam Param) const {
         InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
     }
 
-    void BytecodeInterpreter::InstructionStackDuplicate(BytecodeStructure::InstructionParam Param) {
+    void BytecodeInterpreter::InstructionStackDuplicate(BytecodeStructure::InstructionParam Param) const {
         InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(
                 InterpreterEnvironment->Threads[ThreadID].Stack.GetValueFromStack(
                         Param.HeapPointerValue));
     }
 
-    void BytecodeInterpreter::InstructionStackGetTop(BytecodeStructure::InstructionParam Param) {
+    void BytecodeInterpreter::InstructionStackGetTop(BytecodeStructure::InstructionParam Param) const {
         InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(
                 InterpreterEnvironment->Threads[ThreadID].Stack.Elements[
                         InterpreterEnvironment->Threads[ThreadID].Stack.Elements.size() - 1 -
                         Param.HeapPointerValue]);
     }
 
-    void BytecodeInterpreter::InstructionStackStore(BytecodeStructure::InstructionParam Param) {
+    void BytecodeInterpreter::InstructionStackStore(BytecodeStructure::InstructionParam Param) const {
         EnvironmentStackItem Element = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
         InterpreterEnvironment->Threads[ThreadID].Stack.StoreValueToIndex(Param.HeapPointerValue, Element);
     }
 
-    void BytecodeInterpreter::InstructionStaticStore(BytecodeStructure::InstructionParam Param) {
+    void BytecodeInterpreter::InstructionStaticStore(BytecodeStructure::InstructionParam Param) const {
         EnvironmentStackItem Element = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
         InterpreterEnvironment->Packages[InterpreterEnvironment->Threads[ThreadID].PC.Package].SetStatic(
                 Param.HeapPointerValue,
                 Element);
     }
 
-    void BytecodeInterpreter::InstructionConstantsLoad(BytecodeStructure::InstructionParam Param) {
+    void BytecodeInterpreter::InstructionConstantsLoad(BytecodeStructure::InstructionParam Param) const {
         GC->Start();
         auto &Element = InterpreterEnvironment->Packages[InterpreterEnvironment->Threads[ThreadID].PC.Package].Constants[Param.HeapPointerValue];
         switch (Element.Kind) {
@@ -1505,7 +1505,7 @@ namespace XScript {
         }
     }
 
-    void BytecodeInterpreter::InstructionCalculationNegate(BytecodeStructure::InstructionParam Param) {
+    void BytecodeInterpreter::InstructionCalculationNegate(BytecodeStructure::InstructionParam Param) const {
         EnvironmentStackItem Element = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
         switch (Element.Kind) {
             case EnvironmentStackItem::ItemKind::Integer:
@@ -1525,7 +1525,7 @@ namespace XScript {
         InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(Element);
     }
 
-    void BytecodeInterpreter::InstructionListNew(BytecodeStructure::InstructionParam Param) {
+    void BytecodeInterpreter::InstructionListNew(BytecodeStructure::InstructionParam Param) const {
         GC->Start();
         EnvironmentStackItem ListItem{};
         ListItem.Kind = EnvironmentStackItem::ItemKind::HeapPointer;
@@ -1568,7 +1568,7 @@ namespace XScript {
         InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(ListItem);
     }
 
-    void BytecodeInterpreter::InstructionListPush(BytecodeStructure::InstructionParam Param) {
+    void BytecodeInterpreter::InstructionListPush(BytecodeStructure::InstructionParam Param) const {
         EnvironmentStackItem ListItem = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
         if (ListItem.Kind == EnvironmentStackItem::ItemKind::HeapPointer and
             InterpreterEnvironment->Heap.HeapData[ListItem.Value.HeapPointerVal].Kind ==
@@ -1654,7 +1654,7 @@ namespace XScript {
         }
     }
 
-    void BytecodeInterpreter::InstructionObjectStore(BytecodeStructure::InstructionParam Param) {
+    void BytecodeInterpreter::InstructionObjectStore(BytecodeStructure::InstructionParam Param) const {
         GC->Start();
         EnvironmentStackItem LeftValue = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
         EnvironmentStackItem RightValue = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
@@ -1695,7 +1695,7 @@ namespace XScript {
         }
     }
 
-    void BytecodeInterpreter::InstructionObjectLvalue2Rvalue(BytecodeStructure::InstructionParam Param) {
+    void BytecodeInterpreter::InstructionObjectLvalue2Rvalue(BytecodeStructure::InstructionParam Param) const {
         EnvironmentStackItem Item = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
 
         if (Item.Kind == EnvironmentStackItem::ItemKind::HeapPointer) {
@@ -1739,7 +1739,7 @@ namespace XScript {
         }
     }
 
-    void BytecodeInterpreter::InstructionPCJumpIfTrue(BytecodeStructure::InstructionParam Param) {
+    void BytecodeInterpreter::InstructionPCJumpIfTrue(BytecodeStructure::InstructionParam Param) const {
         EnvironmentStackItem Element = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
         bool Flag = false;
         switch (Element.Kind) {
@@ -1771,7 +1771,7 @@ namespace XScript {
         }
     }
 
-    void BytecodeInterpreter::InstructionPCJumpIfFalse(BytecodeStructure::InstructionParam Param) {
+    void BytecodeInterpreter::InstructionPCJumpIfFalse(BytecodeStructure::InstructionParam Param) const {
         EnvironmentStackItem Element = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
         bool Flag = false;
         switch (Element.Kind) {
@@ -1803,7 +1803,7 @@ namespace XScript {
         }
     }
 
-    void BytecodeInterpreter::InstructionPCJump(BytecodeStructure::InstructionParam Param) {
+    void BytecodeInterpreter::InstructionPCJump(BytecodeStructure::InstructionParam Param) const {
         InterpreterEnvironment->Threads[ThreadID].PC.NowIndex += Param.IntValue - 1;
     }
 
@@ -1859,7 +1859,7 @@ namespace XScript {
         }
     }
 
-    void BytecodeInterpreter::InstructionFuncReturn(BytecodeStructure::InstructionParam Param) {
+    void BytecodeInterpreter::InstructionFuncReturn(BytecodeStructure::InstructionParam Param) const {
         GC->Start();
         /**
          * 保存结果
@@ -1884,13 +1884,13 @@ namespace XScript {
         /* 不需要调整ProgramCounter, 进入Invoke下一条指令 */
     }
 
-    void BytecodeInterpreter::InstructionStaticGet(BytecodeStructure::InstructionParam Param) {
+    void BytecodeInterpreter::InstructionStaticGet(BytecodeStructure::InstructionParam Param) const {
         InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(
                 InterpreterEnvironment->Packages[InterpreterEnvironment->Threads[ThreadID].PC.Package].GetStatic(
                         Param.HeapPointerValue));
     }
 
-    void BytecodeInterpreter::InstructionStackPushFunction(BytecodeStructure::InstructionParam Param) {
+    void BytecodeInterpreter::InstructionStackPushFunction(BytecodeStructure::InstructionParam Param) const {
         InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(
                 (EnvironmentStackItem) {EnvironmentStackItem::ItemKind::FunctionPointer,
                                         (EnvironmentStackItem::ItemValue) &InterpreterEnvironment->Packages[InterpreterEnvironment->Threads[ThreadID].PC.Package].FunctionPool[Param.HeapPointerValue]});
@@ -1933,7 +1933,7 @@ namespace XScript {
         }
     }
 
-    void BytecodeInterpreter::InstructionClassGetMember(BytecodeStructure::InstructionParam Param) {
+    void BytecodeInterpreter::InstructionClassGetMember(BytecodeStructure::InstructionParam Param) const {
         EnvironmentStackItem Item = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
         auto *ClassPointer =
                 InterpreterEnvironment->Heap.HeapData[Item.Value.HeapPointerVal].Value.ClassObjectPointer;
@@ -1943,7 +1943,7 @@ namespace XScript {
                                                 ClassPointer->GetMember(Param.HeapPointerValue)}});
     }
 
-    void BytecodeInterpreter::InstructionClassNewMember(BytecodeStructure::InstructionParam Param) {
+    void BytecodeInterpreter::InstructionClassNewMember(BytecodeStructure::InstructionParam Param) const {
         GC->Start();
         EnvironmentStackItem Item = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
         auto *ClassPointer =
@@ -1956,24 +1956,24 @@ namespace XScript {
 
     }
 
-    void BytecodeInterpreter::InstructionPCGetCurrentPackageID(BytecodeStructure::InstructionParam Param) {
+    void BytecodeInterpreter::InstructionPCGetCurrentPackageID(BytecodeStructure::InstructionParam Param) const {
         InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(
                 (EnvironmentStackItem) {EnvironmentStackItem::ItemKind::Null,
                                         (EnvironmentStackItem::ItemValue) InterpreterEnvironment->Threads[ThreadID].PC.Package});
     }
 
-    void BytecodeInterpreter::InstructionPCSetCurrentPackageID(BytecodeStructure::InstructionParam Param) {
+    void BytecodeInterpreter::InstructionPCSetCurrentPackageID(BytecodeStructure::InstructionParam Param) const {
         InterpreterEnvironment->Threads[ThreadID].PC.Package = Param.HeapPointerValue;
     }
 
-    void BytecodeInterpreter::InstructionPCRestorePackageID(BytecodeStructure::InstructionParam Param) {
+    void BytecodeInterpreter::InstructionPCRestorePackageID(BytecodeStructure::InstructionParam Param) const {
         EnvironmentStackItem Item = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
         EnvironmentStackItem PkgID = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
         InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(Item);
         InterpreterEnvironment->Threads[ThreadID].PC.Package = PkgID.Value.HeapPointerVal;
     }
 
-    void BytecodeInterpreter::ConstructNativeClass(XIndexType HashOfPath, XIndexType ClassName) {
+    void BytecodeInterpreter::ConstructNativeClass(XIndexType HashOfPath, XIndexType ClassName) const {
         if (InterpreterEnvironment->NativeLibraries.IsLoaded(HashOfPath)) {
             EnvClassObject *Object = NewEnvClassObject();
 
@@ -2001,7 +2001,7 @@ namespace XScript {
         ConstructNativeClass(LibName.Value.HeapPointerVal, param.HeapPointerValue);
     }
 
-    void BytecodeInterpreter::InstructionExceptionPush(BytecodeStructure::InstructionParam Param) {
+    void BytecodeInterpreter::InstructionExceptionPush(BytecodeStructure::InstructionParam Param) const {
         ExceptionTableItem Item{};
         Item.CatchBlockOffset = Param.IntValue;
         Item.ExceptionRegisterCommandPosition = InterpreterEnvironment->Threads[ThreadID].PC.NowIndex;
@@ -2009,11 +2009,11 @@ namespace XScript {
         InterpreterEnvironment->RuntimeExceptionTable.push_back(Item);
     }
 
-    void BytecodeInterpreter::InstructionExceptionPop(BytecodeStructure::InstructionParam Param) {
+    void BytecodeInterpreter::InstructionExceptionPop(BytecodeStructure::InstructionParam Param) const {
         InterpreterEnvironment->RuntimeExceptionTable.pop_back();
     }
 
-    void BytecodeInterpreter::InstructionExceptionThrow(BytecodeStructure::InstructionParam Param) {
+    void BytecodeInterpreter::InstructionExceptionThrow(BytecodeStructure::InstructionParam Param) const {
         ExceptionTableItem Ex = InterpreterEnvironment->RuntimeExceptionTable.back();
         InterpreterEnvironment->RuntimeExceptionTable.pop_back();
         EnvironmentStackItem threwValue = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
@@ -2056,7 +2056,7 @@ namespace XScript {
         }
     }
 
-    void BytecodeInterpreter::InstructionClassInstanceOf(BytecodeStructure::InstructionParam Param) {
+    void BytecodeInterpreter::InstructionClassInstanceOf(BytecodeStructure::InstructionParam Param) const {
         EnvClassObject *Target =
                 InterpreterEnvironment->Heap.HeapData[InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack().Value.HeapPointerVal].Value.ClassObjectPointer;
         bool Res =
@@ -2067,7 +2067,7 @@ namespace XScript {
         });
     }
 
-    void BytecodeInterpreter::InstructionCreateClosure(BytecodeStructure::InstructionParam Param) {
+    void BytecodeInterpreter::InstructionCreateClosure(BytecodeStructure::InstructionParam Param) const {
         auto Closure = NewEnvClosureObject();
         Closure->Func = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack().Value.FuncPointerVal;
         while (Param.HeapPointerValue--) {

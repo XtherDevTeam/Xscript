@@ -32,7 +32,8 @@ namespace XScript {
         }
     }
 
-    Executor::Executor() : Interpreters(VM, GC), GC(VM) {
+    Executor::Executor() : Interpreters(VM, GC), GC(nullptr) {
+        GC.InterpreterPointer = static_cast<void *>(Interpreters.Interpreters);
     }
 
     void Executor::Start() {
