@@ -813,7 +813,7 @@ namespace XScript::Compiler {
         XScript::XArray<BytecodeStructure> Result;
         // outer vars
         XIndexType OuterVarsCount = Target.Subtrees[0].Subtrees.size();
-        for (auto Iter = Target.Subtrees[0].Subtrees.rbegin(); Iter != Target.Subtrees[1].Subtrees.rend(); Iter++) {
+        for (auto Iter = Target.Subtrees[0].Subtrees.rbegin(); Iter != Target.Subtrees[0].Subtrees.rend(); Iter++) {
             MergeArray(Result, ParseMemberExpression(*Iter, false));
         }
 
