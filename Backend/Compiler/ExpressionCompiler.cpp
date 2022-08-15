@@ -869,5 +869,7 @@ namespace XScript::Compiler {
                 BytecodeStructure::InstructionEnum::create_closure,
                 (BytecodeStructure::InstructionParam) {OuterVarsCount}
         });
+
+        return Result;
     }
 } // Compiler
