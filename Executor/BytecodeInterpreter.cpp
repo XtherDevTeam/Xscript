@@ -1838,15 +1838,6 @@ namespace XScript {
             case EnvironmentStackItem::ItemKind::HeapPointer: {
                 auto &Closure = InterpreterEnvironment->Heap.HeapData[Item.Value.HeapPointerVal];
                 if (Closure.Kind == EnvObject::ObjectKind::ClosurePointer) {
-                    InterpreterEnvironment->Threads[ThreadID].Stack.FramesInformation.back().Length -= Param.HeapPointerValue;
-                    InterpreterEnvironment->Threads[ThreadID].Stack.FramesInformation.push_back(
-                            {EnvironmentStackFramesInformation::FrameKind::FunctionStackFrame,
-                             InterpreterEnvironment->Threads[ThreadID].Stack.FramesInformation.back().From +
-                             InterpreterEnvironment->Threads[ThreadID].Stack.FramesInformation.back().Length,
-                             Param.HeapPointerValue,
-                             InterpreterEnvironment->Threads[ThreadID].PC
-                            });
-
                     for (auto &I: Closure.Value.ClosurePointer->OuterVars) {
                         InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(
                                 {EnvironmentStackItem::ItemKind::HeapPointer, (EnvironmentStackItem::ItemValue) I});
