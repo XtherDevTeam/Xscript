@@ -1,4 +1,5 @@
 native_class IO in "libio";
+native_class Thread in "libthread";
 
 class testDestructClass {
     def constructor () {
@@ -17,9 +18,10 @@ def before_destruct_test_1 () {
 }
 
 def before_destruct_test () {
-    while (True) {
+    for (var i = 0;i < 500;i += 1) {
         before_destruct_test_1();
     }
+    IO.println("wocao wotuichule");
     return 0;
 }
 

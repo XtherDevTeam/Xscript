@@ -12,6 +12,7 @@ namespace XScript {
         XIndexType Limit = 0 + EnvHeapGCStartCondition;
         bool ThreadFlag;
         std::thread ActiveGCThread;
+        bool Started = false;
     public:
         void *InterpreterPointer;
 

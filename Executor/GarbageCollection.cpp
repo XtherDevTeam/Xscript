@@ -16,7 +16,8 @@ namespace XScript {
      */
     void GarbageCollection::Start(bool force) {
         auto *Interpreter = static_cast<BytecodeInterpreter *>(InterpreterPointer);
-        if (Interpreter && (force || PassiveCheck())) {
+        if (Interpreter && !Started && (force || PassiveCheck())) {
+            Started = true;
             std::queue<XHeapIndexType> Queue;
             for (auto &I: Interpreter->InterpreterEnvironment->Packages) {
                 for (auto &J: I.second.Statics) {
@@ -42,36 +43,6 @@ namespace XScript {
                 Element.Marked = true;
                 switch (Element.Kind) {
                     case EnvObject::ObjectKind::ClassObject: {
-                        if (Element.Value.ClassObjectPointer->Members.count(builtin_has_code_before_destruct)) {
-                            auto NewThreadIdx = static_cast<BytecodeInterpreterPool *>(Interpreter->Pool)->Allocate();
-                            BytecodeInterpreter *NewInterpreter = &(*static_cast<BytecodeInterpreterPool *>(Interpreter->Pool))[NewThreadIdx];
-                            Interpreter->InterpreterEnvironment->Threads[NewThreadIdx].IsBusy = true;
-                            Interpreter->InterpreterEnvironment->Threads[NewThreadIdx].Thread = std::thread(
-                                    [=]() -> void {
-                                        auto FuncIdx = Element.Value.ClassObjectPointer->Members[builtin_has_code_before_destruct];
-                                        NewInterpreter->InterpreterEnvironment->Threads[NewInterpreter->ThreadID].Stack = {};
-                                        NewInterpreter->InterpreterEnvironment->Threads[NewInterpreter->ThreadID].Stack.FramesInformation.push_back(
-                                                {
-                                                        EnvironmentStackFramesInformation::FrameKind::FunctionStackFrame,
-                                                        0, 0,
-                                                        {}});
-                                        NewInterpreter->InterpreterEnvironment->Threads[NewInterpreter->ThreadID].Stack.PushValueToStack(
-                                                {EnvironmentStackItem::ItemKind::HeapPointer,
-                                                 (EnvironmentStackItem::ItemValue) ElementIdx});
-                                        NewInterpreter->InterpreterEnvironment->Threads[NewInterpreter->ThreadID].Stack.PushValueToStack(
-                                                {EnvironmentStackItem::ItemKind::HeapPointer,
-                                                 (EnvironmentStackItem::ItemValue) FuncIdx});
-                                        NewInterpreter->InstructionObjectLvalue2Rvalue(
-                                                (BytecodeStructure::InstructionParam) (XHeapIndexType) {});
-                                        NewInterpreter->InstructionFuncInvoke(
-                                                (BytecodeStructure::InstructionParam) (XHeapIndexType) {1});
-                                        if (NewInterpreter->InterpreterEnvironment->Heap.HeapData[FuncIdx].Kind ==
-                                            EnvObject::ObjectKind::FunctionPointer)
-                                            NewInterpreter->MainLoop();
-                                        NewInterpreter->InterpreterEnvironment->Threads[NewInterpreter->ThreadID].Stack = {};
-                                    });
-                            Interpreter->InterpreterEnvironment->Threads.WaitForThread(NewThreadIdx);
-                        }
                         for (auto &I: Element.Value.ClassObjectPointer->Members) {
                             Queue.push(I.second);
                         }
@@ -89,6 +60,29 @@ namespace XScript {
                         break;
                     default:
                         break;
+                }
+            }
+
+            for (auto &I: Interpreter->InterpreterEnvironment->Heap.HeapData) {
+                if (!I.second.Marked and I.second.Kind == EnvObject::ObjectKind::ClassObject) {
+                    if (I.second.Value.ClassObjectPointer->Members.count(builtin_has_code_before_destruct)) {
+                        XHeapIndexType FuncIdx = I.second.Value.ClassObjectPointer->Members[builtin_has_code_before_destruct];
+                        Interpreter->InterpreterEnvironment->Threads[Interpreter->ThreadID].Stack.PushValueToStack(
+                                {EnvironmentStackItem::ItemKind::HeapPointer,
+                                 (EnvironmentStackItem::ItemValue) I.first});
+                        Interpreter->InterpreterEnvironment->Threads[Interpreter->ThreadID].Stack.PushValueToStack(
+                                {EnvironmentStackItem::ItemKind::HeapPointer,
+                                 (EnvironmentStackItem::ItemValue) FuncIdx});
+                        Interpreter->InstructionObjectLvalue2Rvalue(
+                                (BytecodeStructure::InstructionParam) (XHeapIndexType) {});
+                        Interpreter->InstructionFuncInvoke((BytecodeStructure::InstructionParam) (XIndexType) 1);
+                        Interpreter->InterpreterEnvironment->Threads[Interpreter->ThreadID].PC.NowIndex++;
+                        if (Interpreter->InterpreterEnvironment->Heap.HeapData[FuncIdx].Kind != EnvObject::ObjectKind::NativeMethodPointer) {
+                            Interpreter->MainLoopInGC();
+                        }
+                        // pop the result
+                        Interpreter->InterpreterEnvironment->Threads[Interpreter->ThreadID].Stack.PopValueFromStack();
+                    }
                 }
             }
 
@@ -126,6 +120,7 @@ namespace XScript {
             }
 
             Limit = AAllocCount + EnvHeapGCStartCondition;
+            Started = false;
         }
     }
 

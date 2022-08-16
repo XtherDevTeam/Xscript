@@ -23,6 +23,10 @@ namespace XScript {
 
         void MainLoop();
 
+        void MainLoopInGC();
+
+        void Interpret(BytecodeStructure CurrentInstruction);
+
         void ConstructNativeClass(XIndexType HashOfPath, XIndexType ClassName) const;
         
         void InstructionCalculationAdd(BytecodeStructure::InstructionParam Param);

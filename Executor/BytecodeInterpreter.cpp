@@ -14,181 +14,205 @@ namespace XScript {
                InterpreterEnvironment->Threads[ThreadID].PC.Pointer->size()) {
             InterpreterLock.lock();
             auto &CurrentInstruction = (*InterpreterEnvironment->Threads[ThreadID].PC.Pointer)[InterpreterEnvironment->Threads[ThreadID].PC.NowIndex];
-            switch (CurrentInstruction.Instruction) {
-                case BytecodeStructure::InstructionEnum::calculation_add:
-                    InstructionCalculationAdd(CurrentInstruction.Param);
-                    break;
-                case BytecodeStructure::InstructionEnum::calculation_sub:
-                    InstructionCalculationSub(CurrentInstruction.Param);
-                    break;
-                case BytecodeStructure::InstructionEnum::calculation_mul:
-                    InstructionCalculationMul(CurrentInstruction.Param);
-                    break;
-                case BytecodeStructure::InstructionEnum::calculation_div:
-                    InstructionCalculationDiv(CurrentInstruction.Param);
-                    break;
-                case BytecodeStructure::InstructionEnum::calculation_mod:
-                    InstructionCalculationMod(CurrentInstruction.Param);
-                    break;
-                case BytecodeStructure::InstructionEnum::calculation_negate:
-                    InstructionCalculationNegate(CurrentInstruction.Param);
-                    break;
-                case BytecodeStructure::InstructionEnum::logic_and:
-                    InstructionLogicAnd(CurrentInstruction.Param);
-                    break;
-                case BytecodeStructure::InstructionEnum::logic_or:
-                    InstructionLogicOr(CurrentInstruction.Param);
-                    break;
-                case BytecodeStructure::InstructionEnum::logic_equal:
-                    InstructionLogicEqual(CurrentInstruction.Param);
-                    break;
-                case BytecodeStructure::InstructionEnum::logic_not_equal:
-                    InstructionLogicNotEqual(CurrentInstruction.Param);
-                    break;
-                case BytecodeStructure::InstructionEnum::logic_great_equal:
-                    InstructionLogicGreatEqual(CurrentInstruction.Param);
-                    break;
-                case BytecodeStructure::InstructionEnum::logic_less_equal:
-                    InstructionLogicLessEqual(CurrentInstruction.Param);
-                    break;
-                case BytecodeStructure::InstructionEnum::logic_great:
-                    InstructionLogicGreat(CurrentInstruction.Param);
-                    break;
-                case BytecodeStructure::InstructionEnum::logic_less:
-                    InstructionLogicLess(CurrentInstruction.Param);
-                    break;
-                case BytecodeStructure::InstructionEnum::binary_and:
-                    InstructionBinaryAnd(CurrentInstruction.Param);
-                    break;
-                case BytecodeStructure::InstructionEnum::binary_or:
-                    InstructionBinaryOr(CurrentInstruction.Param);
-                    break;
-                case BytecodeStructure::InstructionEnum::binary_xor:
-                    InstructionBinaryXOR(CurrentInstruction.Param);
-                    break;
-                case BytecodeStructure::InstructionEnum::binary_not:
-                    InstructionBinaryNot(CurrentInstruction.Param);
-                    break;
-                case BytecodeStructure::InstructionEnum::binary_lm:
-                    InstructionBinaryLM(CurrentInstruction.Param);
-                    break;
-                case BytecodeStructure::InstructionEnum::binary_rm:
-                    InstructionBinaryRM(CurrentInstruction.Param);
-                    break;
-                case BytecodeStructure::InstructionEnum::stack_push_integer:
-                    InstructionStackPushInteger(CurrentInstruction.Param);
-                    break;
-                case BytecodeStructure::InstructionEnum::stack_push_decimal:
-                    InstructionStackPushDecimal(CurrentInstruction.Param);
-                    break;
-                case BytecodeStructure::InstructionEnum::stack_push_boolean:
-                    InstructionStackPushBoolean(CurrentInstruction.Param);
-                    break;
-                case BytecodeStructure::InstructionEnum::stack_push_function:
-                    InstructionStackPushFunction(CurrentInstruction.Param);
-                    break;
-                case BytecodeStructure::InstructionEnum::stack_push_empty:
-                    InstructionStackPushEmpty(CurrentInstruction.Param);
-                    break;
-                case BytecodeStructure::InstructionEnum::stack_pop:
-                    InstructionStackPop(CurrentInstruction.Param);
-                    break;
-                case BytecodeStructure::InstructionEnum::stack_duplicate:
-                    InstructionStackDuplicate(CurrentInstruction.Param);
-                    break;
-                case BytecodeStructure::InstructionEnum::stack_get_top:
-                    InstructionStackGetTop(CurrentInstruction.Param);
-                    break;
-                case BytecodeStructure::InstructionEnum::stack_store:
-                    InstructionStackStore(CurrentInstruction.Param);
-                    break;
-                case BytecodeStructure::InstructionEnum::constants_load:
-                    InstructionConstantsLoad(CurrentInstruction.Param);
-                    break;
-                case BytecodeStructure::InstructionEnum::class_new:
-                    InstructionClassNew(CurrentInstruction.Param);
-                    break;
-                case BytecodeStructure::InstructionEnum::class_get_member:
-                    InstructionClassGetMember(CurrentInstruction.Param);
-                    break;
-                case BytecodeStructure::InstructionEnum::class_new_member:
-                    InstructionClassNewMember(CurrentInstruction.Param);
-                    break;
-                case BytecodeStructure::InstructionEnum::class_instance_of:
-                    InstructionClassInstanceOf(CurrentInstruction.Param);
-                    break;
-                case BytecodeStructure::InstructionEnum::list_new:
-                    InstructionListNew(CurrentInstruction.Param);
-                    break;
-                case BytecodeStructure::InstructionEnum::list_get_member:
-                    InstructionListGetMember(CurrentInstruction.Param);
-                    break;
-                case BytecodeStructure::InstructionEnum::list_remove_index:
-                    InstructionListRemoveIndex(CurrentInstruction.Param);
-                    break;
-                case BytecodeStructure::InstructionEnum::list_push:
-                    InstructionListPush(CurrentInstruction.Param);
-                    break;
-                case BytecodeStructure::InstructionEnum::pc_jump_if_true:
-                    InstructionPCJumpIfTrue(CurrentInstruction.Param);
-                    break;
-                case BytecodeStructure::InstructionEnum::pc_jump_if_false:
-                    InstructionPCJumpIfFalse(CurrentInstruction.Param);
-                    break;
-                case BytecodeStructure::InstructionEnum::pc_jump:
-                    InstructionPCJump(CurrentInstruction.Param);
-                    break;
-                case BytecodeStructure::InstructionEnum::pc_get_current_package_id:
-                    InstructionPCGetCurrentPackageID(CurrentInstruction.Param);
-                    break;
-                case BytecodeStructure::InstructionEnum::pc_set_current_package_id:
-                    InstructionPCSetCurrentPackageID(CurrentInstruction.Param);
-                    break;
-                case BytecodeStructure::InstructionEnum::pc_restore_package_id:
-                    InstructionPCRestorePackageID(CurrentInstruction.Param);
-                    break;
-                case BytecodeStructure::InstructionEnum::static_store:
-                    InstructionStaticStore(CurrentInstruction.Param);
-                    break;
-                case BytecodeStructure::InstructionEnum::static_get:
-                    InstructionStaticGet(CurrentInstruction.Param);
-                    break;
-                case BytecodeStructure::InstructionEnum::object_lvalue2rvalue:
-                    InstructionObjectLvalue2Rvalue(CurrentInstruction.Param);
-                    break;
-                case BytecodeStructure::InstructionEnum::object_store:
-                    InstructionObjectStore(CurrentInstruction.Param);
-                    break;
-                case BytecodeStructure::InstructionEnum::func_invoke:
-                    InstructionFuncInvoke(CurrentInstruction.Param);
-                    break;
-                case BytecodeStructure::InstructionEnum::func_return:
-                    InstructionFuncReturn(CurrentInstruction.Param);
-                    break;
-                case BytecodeStructure::InstructionEnum::native_class_new:
-                    InstructionNativeClassNew(CurrentInstruction.Param);
-                    break;
-                case BytecodeStructure::InstructionEnum::exception_push:
-                    InstructionExceptionPush(CurrentInstruction.Param);
-                    break;
-                case BytecodeStructure::InstructionEnum::exception_pop:
-                    InstructionExceptionPop(CurrentInstruction.Param);
-                    break;
-                case BytecodeStructure::InstructionEnum::exception_throw:
-                    InstructionExceptionThrow(CurrentInstruction.Param);
-                    break;
-                case BytecodeStructure::InstructionEnum::force_exit:
-                    InterpreterLock.unlock();
-                    return;
-                case BytecodeStructure::InstructionEnum::create_closure:
-                    InstructionCreateClosure(CurrentInstruction.Param);
-                    break;
-                case BytecodeStructure::InstructionEnum::fake_command_continue:
-                case BytecodeStructure::InstructionEnum::fake_command_break:
-                    break;
+            if (CurrentInstruction.Instruction == BytecodeStructure::InstructionEnum::force_exit) {
+                InterpreterLock.unlock();
+                return;
+            } else {
+                Interpret(CurrentInstruction);
             }
             InterpreterLock.unlock();
             InterpreterEnvironment->Threads[ThreadID].PC.NowIndex++;
+        }
+    }
+
+    void BytecodeInterpreter::MainLoopInGC() {
+        while (InterpreterEnvironment->Threads[ThreadID].PC.Pointer and
+               InterpreterEnvironment->Threads[ThreadID].PC.NowIndex !=
+               InterpreterEnvironment->Threads[ThreadID].PC.Pointer->size()) {
+            auto &CurrentInstruction = (*InterpreterEnvironment->Threads[ThreadID].PC.Pointer)[InterpreterEnvironment->Threads[ThreadID].PC.NowIndex];
+            Interpret(CurrentInstruction);
+            switch (CurrentInstruction.Instruction) {
+                case BytecodeStructure::InstructionEnum::func_return:
+                case BytecodeStructure::InstructionEnum::force_exit: {
+                    return;
+                }
+                default: {
+                    break;
+                }
+            }
+            InterpreterEnvironment->Threads[ThreadID].PC.NowIndex++;
+        }
+    }
+
+    void BytecodeInterpreter::Interpret(BytecodeStructure CurrentInstruction) {
+        switch (CurrentInstruction.Instruction) {
+            case BytecodeStructure::InstructionEnum::calculation_add:
+                InstructionCalculationAdd(CurrentInstruction.Param);
+                break;
+            case BytecodeStructure::InstructionEnum::calculation_sub:
+                InstructionCalculationSub(CurrentInstruction.Param);
+                break;
+            case BytecodeStructure::InstructionEnum::calculation_mul:
+                InstructionCalculationMul(CurrentInstruction.Param);
+                break;
+            case BytecodeStructure::InstructionEnum::calculation_div:
+                InstructionCalculationDiv(CurrentInstruction.Param);
+                break;
+            case BytecodeStructure::InstructionEnum::calculation_mod:
+                InstructionCalculationMod(CurrentInstruction.Param);
+                break;
+            case BytecodeStructure::InstructionEnum::calculation_negate:
+                InstructionCalculationNegate(CurrentInstruction.Param);
+                break;
+            case BytecodeStructure::InstructionEnum::logic_and:
+                InstructionLogicAnd(CurrentInstruction.Param);
+                break;
+            case BytecodeStructure::InstructionEnum::logic_or:
+                InstructionLogicOr(CurrentInstruction.Param);
+                break;
+            case BytecodeStructure::InstructionEnum::logic_equal:
+                InstructionLogicEqual(CurrentInstruction.Param);
+                break;
+            case BytecodeStructure::InstructionEnum::logic_not_equal:
+                InstructionLogicNotEqual(CurrentInstruction.Param);
+                break;
+            case BytecodeStructure::InstructionEnum::logic_great_equal:
+                InstructionLogicGreatEqual(CurrentInstruction.Param);
+                break;
+            case BytecodeStructure::InstructionEnum::logic_less_equal:
+                InstructionLogicLessEqual(CurrentInstruction.Param);
+                break;
+            case BytecodeStructure::InstructionEnum::logic_great:
+                InstructionLogicGreat(CurrentInstruction.Param);
+                break;
+            case BytecodeStructure::InstructionEnum::logic_less:
+                InstructionLogicLess(CurrentInstruction.Param);
+                break;
+            case BytecodeStructure::InstructionEnum::binary_and:
+                InstructionBinaryAnd(CurrentInstruction.Param);
+                break;
+            case BytecodeStructure::InstructionEnum::binary_or:
+                InstructionBinaryOr(CurrentInstruction.Param);
+                break;
+            case BytecodeStructure::InstructionEnum::binary_xor:
+                InstructionBinaryXOR(CurrentInstruction.Param);
+                break;
+            case BytecodeStructure::InstructionEnum::binary_not:
+                InstructionBinaryNot(CurrentInstruction.Param);
+                break;
+            case BytecodeStructure::InstructionEnum::binary_lm:
+                InstructionBinaryLM(CurrentInstruction.Param);
+                break;
+            case BytecodeStructure::InstructionEnum::binary_rm:
+                InstructionBinaryRM(CurrentInstruction.Param);
+                break;
+            case BytecodeStructure::InstructionEnum::stack_push_integer:
+                InstructionStackPushInteger(CurrentInstruction.Param);
+                break;
+            case BytecodeStructure::InstructionEnum::stack_push_decimal:
+                InstructionStackPushDecimal(CurrentInstruction.Param);
+                break;
+            case BytecodeStructure::InstructionEnum::stack_push_boolean:
+                InstructionStackPushBoolean(CurrentInstruction.Param);
+                break;
+            case BytecodeStructure::InstructionEnum::stack_push_function:
+                InstructionStackPushFunction(CurrentInstruction.Param);
+                break;
+            case BytecodeStructure::InstructionEnum::stack_push_empty:
+                InstructionStackPushEmpty(CurrentInstruction.Param);
+                break;
+            case BytecodeStructure::InstructionEnum::stack_pop:
+                InstructionStackPop(CurrentInstruction.Param);
+                break;
+            case BytecodeStructure::InstructionEnum::stack_duplicate:
+                InstructionStackDuplicate(CurrentInstruction.Param);
+                break;
+            case BytecodeStructure::InstructionEnum::stack_get_top:
+                InstructionStackGetTop(CurrentInstruction.Param);
+                break;
+            case BytecodeStructure::InstructionEnum::stack_store:
+                InstructionStackStore(CurrentInstruction.Param);
+                break;
+            case BytecodeStructure::InstructionEnum::constants_load:
+                InstructionConstantsLoad(CurrentInstruction.Param);
+                break;
+            case BytecodeStructure::InstructionEnum::class_new:
+                InstructionClassNew(CurrentInstruction.Param);
+                break;
+            case BytecodeStructure::InstructionEnum::class_get_member:
+                InstructionClassGetMember(CurrentInstruction.Param);
+                break;
+            case BytecodeStructure::InstructionEnum::class_new_member:
+                InstructionClassNewMember(CurrentInstruction.Param);
+                break;
+            case BytecodeStructure::InstructionEnum::class_instance_of:
+                InstructionClassInstanceOf(CurrentInstruction.Param);
+                break;
+            case BytecodeStructure::InstructionEnum::list_new:
+                InstructionListNew(CurrentInstruction.Param);
+                break;
+            case BytecodeStructure::InstructionEnum::list_get_member:
+                InstructionListGetMember(CurrentInstruction.Param);
+                break;
+            case BytecodeStructure::InstructionEnum::list_remove_index:
+                InstructionListRemoveIndex(CurrentInstruction.Param);
+                break;
+            case BytecodeStructure::InstructionEnum::list_push:
+                InstructionListPush(CurrentInstruction.Param);
+                break;
+            case BytecodeStructure::InstructionEnum::pc_jump_if_true:
+                InstructionPCJumpIfTrue(CurrentInstruction.Param);
+                break;
+            case BytecodeStructure::InstructionEnum::pc_jump_if_false:
+                InstructionPCJumpIfFalse(CurrentInstruction.Param);
+                break;
+            case BytecodeStructure::InstructionEnum::pc_jump:
+                InstructionPCJump(CurrentInstruction.Param);
+                break;
+            case BytecodeStructure::InstructionEnum::pc_get_current_package_id:
+                InstructionPCGetCurrentPackageID(CurrentInstruction.Param);
+                break;
+            case BytecodeStructure::InstructionEnum::pc_set_current_package_id:
+                InstructionPCSetCurrentPackageID(CurrentInstruction.Param);
+                break;
+            case BytecodeStructure::InstructionEnum::pc_restore_package_id:
+                InstructionPCRestorePackageID(CurrentInstruction.Param);
+                break;
+            case BytecodeStructure::InstructionEnum::static_store:
+                InstructionStaticStore(CurrentInstruction.Param);
+                break;
+            case BytecodeStructure::InstructionEnum::static_get:
+                InstructionStaticGet(CurrentInstruction.Param);
+                break;
+            case BytecodeStructure::InstructionEnum::object_lvalue2rvalue:
+                InstructionObjectLvalue2Rvalue(CurrentInstruction.Param);
+                break;
+            case BytecodeStructure::InstructionEnum::object_store:
+                InstructionObjectStore(CurrentInstruction.Param);
+                break;
+            case BytecodeStructure::InstructionEnum::func_invoke:
+                InstructionFuncInvoke(CurrentInstruction.Param);
+                break;
+            case BytecodeStructure::InstructionEnum::func_return:
+                InstructionFuncReturn(CurrentInstruction.Param);
+                break;
+            case BytecodeStructure::InstructionEnum::native_class_new:
+                InstructionNativeClassNew(CurrentInstruction.Param);
+                break;
+            case BytecodeStructure::InstructionEnum::exception_push:
+                InstructionExceptionPush(CurrentInstruction.Param);
+                break;
+            case BytecodeStructure::InstructionEnum::exception_pop:
+                InstructionExceptionPop(CurrentInstruction.Param);
+                break;
+            case BytecodeStructure::InstructionEnum::exception_throw:
+                InstructionExceptionThrow(CurrentInstruction.Param);
+                break;
+            case BytecodeStructure::InstructionEnum::create_closure:
+                InstructionCreateClosure(CurrentInstruction.Param);
+                break;
+            default:
+                break;
         }
     }
 
