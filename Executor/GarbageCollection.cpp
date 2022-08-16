@@ -33,9 +33,10 @@ namespace XScript {
             }
 
             XHeapIndexType AAllocCount = 0;
+            XHeapIndexType Top = 0;
             while (!Queue.empty()) {
                 AAllocCount++;
-                XHeapIndexType ElementIdx = Queue.front();
+                Top = std::max(Top, Queue.front());
                 auto &Element = Interpreter->InterpreterEnvironment->Heap.HeapData[Queue.front()];
                 Queue.pop();
                 if (Element.Marked)
@@ -95,7 +96,8 @@ namespace XScript {
                         case EnvObject::ObjectKind::ArrayObject:
                         case EnvObject::ObjectKind::ClassObject:
                         case EnvObject::ObjectKind::StringObject:
-                        case EnvObject::ObjectKind::BytesObject: {
+                        case EnvObject::ObjectKind::BytesObject:
+                        case EnvObject::ObjectKind::ClosurePointer: {
                             if (DoubleFreeFucker.count(static_cast<void *>(I.second.Value.ClassObjectPointer))) {
                                 I.second = {};
                             } else {
@@ -103,13 +105,15 @@ namespace XScript {
                                 I.second.DestroyObject();
                                 I.second = {};
                             }
-                            Interpreter->InterpreterEnvironment->Heap.UsedIndexes.insert(I.first);
+                            if (I.first < Top)
+                                Interpreter->InterpreterEnvironment->Heap.UsedIndexes.insert(I.first);
                             break;
                         }
                         default: {
                             I.second.DestroyObject();
                             I.second = {};
-                            Interpreter->InterpreterEnvironment->Heap.UsedIndexes.insert(I.first);
+                            if (I.first < Top)
+                                Interpreter->InterpreterEnvironment->Heap.UsedIndexes.insert(I.first);
                             break;
                         }
                     }
@@ -119,6 +123,8 @@ namespace XScript {
                 Interpreter->InterpreterEnvironment->Heap.HeapData.erase(I);
             }
 
+            // bugfix: 防止 UsedIndexes 集合過大
+            Interpreter->InterpreterEnvironment->Heap.AllocatedElementCount = Top + 1;
             Limit = AAllocCount + EnvHeapGCStartCondition;
             Started = false;
         }
