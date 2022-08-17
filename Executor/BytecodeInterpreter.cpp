@@ -6,7 +6,8 @@
 
 namespace XScript {
     BytecodeInterpreter::BytecodeInterpreter() : IsBusy(false), ThreadID(0), InterpreterEnvironment(nullptr),
-                                                 GC(nullptr) {}
+                                                 GC(nullptr) {
+    }
 
     void BytecodeInterpreter::MainLoop() {
         while (InterpreterEnvironment->Threads[ThreadID].PC.Pointer and
