@@ -34,6 +34,7 @@ namespace XScript {
 
     Executor::Executor() : Interpreters(VM, GC), GC(nullptr) {
         GC.InterpreterPointer = static_cast<void *>(Interpreters.Interpreters);
+        GC.StartGCThread();
     }
 
     void Executor::Start() {
@@ -61,4 +62,9 @@ namespace XScript {
         auto Duration = std::chrono::system_clock::now() - StartTime;
         return std::chrono::duration_cast<std::chrono::milliseconds>(Duration).count();
     }
+
+    Executor::~Executor() {
+        GC.StopGCThread();
+    }
+
 } // XScript

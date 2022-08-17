@@ -16,7 +16,7 @@ namespace XScript {
      */
     void GarbageCollection::Start(bool force) {
         auto *Interpreter = static_cast<BytecodeInterpreter *>(InterpreterPointer);
-        if (Interpreter && !Started && (force || PassiveCheck())) {
+        if (!Started && (force || PassiveCheck())) {
             Started = true;
             std::queue<XHeapIndexType> Queue;
             for (auto &I: Interpreter->InterpreterEnvironment->Packages) {
@@ -153,15 +153,14 @@ namespace XScript {
 
     bool GarbageCollection::PassiveCheck() const {
         auto *Interpreter = static_cast<BytecodeInterpreter *>(InterpreterPointer);
-        return Interpreter && (Interpreter->InterpreterEnvironment->Heap.UsedIndexes.empty() &&
-                               Interpreter->InterpreterEnvironment->Heap.HeapData.size() >=
-                               EnvHeapDataAllocateSize / 2);
+        return Interpreter->InterpreterEnvironment->Heap.UsedIndexes.empty() &&
+               Interpreter->InterpreterEnvironment->Heap.HeapData.size() >= EnvHeapDataAllocateSize / 2;
     }
 
     bool GarbageCollection::ActiveCheck() const {
         auto *Interpreter = static_cast<BytecodeInterpreter *>(InterpreterPointer);
-        return Interpreter && (Interpreter->InterpreterEnvironment->Heap.UsedIndexes.empty() &&
-                               Interpreter->InterpreterEnvironment->Heap.HeapData.size() >= Limit);
+        return Interpreter->InterpreterEnvironment->Heap.UsedIndexes.empty() &&
+               Interpreter->InterpreterEnvironment->Heap.HeapData.size() >= Limit;
     }
 
     void GarbageCollection::ActiveGCThreadFunc(GarbageCollection &GC) {
@@ -175,17 +174,19 @@ namespace XScript {
         }
     }
 
-    void GarbageCollection::Stop() {
+    void GarbageCollection::StopGCThread() {
         ThreadFlag = false;
         if (ActiveGCThread.joinable())
             ActiveGCThread.join();
     }
 
     GarbageCollection::~GarbageCollection() {
-        Stop();
     }
 
     GarbageCollection::GarbageCollection(void *InterpreterPointer) : InterpreterPointer(InterpreterPointer) {
+    }
+
+    void GarbageCollection::StartGCThread() {
         ThreadFlag = true;
         ActiveGCThread = (std::thread) {ActiveGCThreadFunc, std::ref(*this)};
     }

@@ -27,6 +27,8 @@ namespace XScript {
         void Start();
 
         XIndexType StartWithRuntimeDuration();
+
+        ~Executor();
     };
 
 } // XScript

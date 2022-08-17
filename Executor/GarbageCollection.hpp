@@ -18,6 +18,8 @@ namespace XScript {
 
         explicit GarbageCollection(void *InterpreterPointer);
 
+        void StartGCThread();
+
         void Start(bool force = false);
 
         [[nodiscard]] bool PassiveCheck() const;
@@ -30,7 +32,7 @@ namespace XScript {
 
         GarbageCollection(const GarbageCollection &copy) = delete;
 
-        void Stop();
+        void StopGCThread();
 
         ~GarbageCollection();
     };
