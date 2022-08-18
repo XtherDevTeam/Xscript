@@ -148,8 +148,6 @@ namespace XScript {
             Interpreter->InterpreterEnvironment->Heap.AllocatedElementCount = Top + 1;
             Limit = AAllocCount + EnvHeapGCStartCondition;
             Started = false;
-            puts((std::to_string(Interpreter->InterpreterEnvironment->Heap.UsedIndexes.size()) + ", " +
-                  std::to_string(Interpreter->InterpreterEnvironment->Heap.HeapData.size())).c_str());
         }
     }
 
