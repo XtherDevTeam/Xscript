@@ -32,8 +32,11 @@ namespace XScript {
                 }
             }
 
+            XHeapIndexType Top = 0;
             XHeapIndexType AAllocCount = 0;
+
             while (!Queue.empty()) {
+                Top = std::max(Top, Queue.front());
                 AAllocCount++;
                 auto &Element = Interpreter->InterpreterEnvironment->Heap.HeapData[Queue.front()];
                 Queue.pop();
@@ -61,11 +64,10 @@ namespace XScript {
                         break;
                 }
             }
-            XHeapIndexType Top = 0;
-            for (auto &I: Interpreter->InterpreterEnvironment->Heap.HeapData) {
-                if (I.second.Marked) {
-                    Top = std::max(Top, I.first);
-                } else if (I.second.Kind == EnvObject::ObjectKind::ClassObject) {
+            for (auto Iter = Interpreter->InterpreterEnvironment->Heap.HeapData.begin();
+                 Iter != Interpreter->InterpreterEnvironment->Heap.HeapData.end(); Iter++)  {
+                auto &I = *Iter;
+                if (!I.second.Marked && I.second.Kind == EnvObject::ObjectKind::ClassObject) {
                     if (I.second.Value.ClassObjectPointer->Members.count(builtin_has_code_before_destruct)) {
                         XIndexType AResult = static_cast<BytecodeInterpreterPool *>(Interpreter->Pool)->Allocate();
                         auto *NewInterpreter = &(*static_cast<BytecodeInterpreterPool *>(Interpreter->Pool))[AResult];
@@ -89,8 +91,7 @@ namespace XScript {
                             EnvObject::ObjectKind::NativeMethodPointer) {
                             NewInterpreter->MainLoopInGC();
                         }
-                        // pop the result
-                        NewInterpreter->InterpreterEnvironment->Threads[AResult].Stack.PopValueFromStack();
+                        NewInterpreter->InterpreterEnvironment->Threads[AResult].Stack = {};
                         NewInterpreter->InterpreterEnvironment->Threads[AResult].IsBusy = false;
                         NewInterpreter->IsBusy = false;
                     }

@@ -9,7 +9,7 @@ class testDestructClass {
     }
 
     def before_destruct () {
-        "触发成功 对象将要被销毁.";
+        IO.println("触发成功 对象将要被销毁.");
         return this;
     }
 };
@@ -20,7 +20,7 @@ def before_destruct_test_1 () {
 }
 
 def before_destruct_test () {
-    for (var i = 0;i < 5000;i += 1) {
+    for (var i = 0;i < 1048576;i += 1) {
         before_destruct_test_1();
     }
     return 0;
