@@ -33,10 +33,8 @@ namespace XScript {
             }
 
             XHeapIndexType AAllocCount = 0;
-            XHeapIndexType Top = 0;
             while (!Queue.empty()) {
                 AAllocCount++;
-                Top = std::max(Top, Queue.front());
                 auto &Element = Interpreter->InterpreterEnvironment->Heap.HeapData[Queue.front()];
                 Queue.pop();
                 if (Element.Marked)
@@ -63,9 +61,11 @@ namespace XScript {
                         break;
                 }
             }
-
+            XHeapIndexType Top = 0;
             for (auto &I: Interpreter->InterpreterEnvironment->Heap.HeapData) {
-                if (!I.second.Marked and I.second.Kind == EnvObject::ObjectKind::ClassObject) {
+                if (I.second.Marked) {
+                    Top = std::max(Top, I.first);
+                } else if (I.second.Kind == EnvObject::ObjectKind::ClassObject) {
                     if (I.second.Value.ClassObjectPointer->Members.count(builtin_has_code_before_destruct)) {
                         XIndexType AResult = static_cast<BytecodeInterpreterPool *>(Interpreter->Pool)->Allocate();
                         auto *NewInterpreter = &(*static_cast<BytecodeInterpreterPool *>(Interpreter->Pool))[AResult];
@@ -120,7 +120,7 @@ namespace XScript {
                             if (I.first < Top)
                                 Interpreter->InterpreterEnvironment->Heap.UsedIndexes.insert(I.first);
                             else {
-                                Iter = Interpreter->InterpreterEnvironment->Heap.HeapData.erase(Iter++);
+                                Interpreter->InterpreterEnvironment->Heap.HeapData.erase(Iter++);
                                 continue;
                             }
                             break;
@@ -131,7 +131,7 @@ namespace XScript {
                             if (I.first < Top)
                                 Interpreter->InterpreterEnvironment->Heap.UsedIndexes.insert(I.first);
                             else {
-                                Iter = Interpreter->InterpreterEnvironment->Heap.HeapData.erase(Iter++);
+                                Interpreter->InterpreterEnvironment->Heap.HeapData.erase(Iter++);
                                 continue;
                             }
                             break;
@@ -148,6 +148,8 @@ namespace XScript {
             Interpreter->InterpreterEnvironment->Heap.AllocatedElementCount = Top + 1;
             Limit = AAllocCount + EnvHeapGCStartCondition;
             Started = false;
+            puts((std::to_string(Interpreter->InterpreterEnvironment->Heap.UsedIndexes.size()) + ", " +
+                  std::to_string(Interpreter->InterpreterEnvironment->Heap.HeapData.size())).c_str());
         }
     }
 
