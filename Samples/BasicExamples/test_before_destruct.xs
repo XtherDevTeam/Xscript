@@ -2,31 +2,18 @@ native_class IO in "libio";
 native_class Thread in "libthread";
 native_class String in "libstring";
 native_class System in "libsys";
+native_class Array in "libarray";
 
-class testDestructClass {
-    def constructor () {
-        return this;
-    }
-
-    def before_destruct () {
-        IO.println("触发成功 对象将要被销毁.");
-        return this;
-    }
-};
-
-def before_destruct_test_1 () {
-    var testObject = new testDestructClass.constructor();
-    return testObject;
-}
-
-def before_destruct_test () {
-    for (var i = 0;i < 1048576;i += 1) {
-        before_destruct_test_1();
+def test (a) {
+    IO.println(String.fromInt(a.length()));
+    for (var i = 0;i < a.length();i += 1) {
+        IO.println(String.fromInt(a[i]));
     }
     return 0;
 }
 
 def main () {
-    before_destruct_test();
+    var a = Array.fromBuffer([1, 2, 3]);
+    test(a);
     return 0;
 }

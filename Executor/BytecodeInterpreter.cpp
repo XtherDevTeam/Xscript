@@ -1542,6 +1542,7 @@ namespace XScript {
             case EnvironmentStackItem::ItemKind::Boolean:
                 Element.Value.BoolVal = -Element.Value.BoolVal;
                 break;
+            case EnvironmentStackItem::ItemKind::NativeMethodPointer:
             case EnvironmentStackItem::ItemKind::FunctionPointer:
             case EnvironmentStackItem::ItemKind::HeapPointer:
             case EnvironmentStackItem::ItemKind::Null:
@@ -1578,6 +1579,10 @@ namespace XScript {
                     Object.Kind = EnvObject::ObjectKind::FunctionPointer;
                     Object.Value.FunctionPointerValue = Item.Value.FuncPointerVal;
                     break;
+                case EnvironmentStackItem::ItemKind::NativeMethodPointer:
+                    Object.Kind = EnvObject::ObjectKind::NativeMethodPointer;
+                    Object.Value.NativeMethodPointerValue = Item.Value.NativeMethodPointerVal;
+                    break;
                 case EnvironmentStackItem::ItemKind::HeapPointer:
                     Object = InterpreterEnvironment->Heap.HeapData[Item.Value.HeapPointerVal];
                     break;
@@ -1587,7 +1592,7 @@ namespace XScript {
             }
 
             InterpreterEnvironment->Heap.HeapData[ListItem.Value.HeapPointerVal].Value.ArrayObjectPointer->Elements[
-                    Param.HeapPointerValue - I] =
+                    Param.HeapPointerValue - I - 1] =
                     InterpreterEnvironment->Heap.PushElement(Object);
         }
         InterpreterEnvironment->Threads[ThreadID].Stack.PushValueToStack(ListItem);

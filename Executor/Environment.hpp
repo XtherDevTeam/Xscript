@@ -21,6 +21,8 @@ namespace XScript {
         EnvironmentThreadPool Threads;
         EnvironmentHeap Heap;
 
+        XMap<XString, XString> OptionalData;
+
         NativeLibrariesManager NativeLibraries;
 
         XArray<XString> PathsToSearch;
