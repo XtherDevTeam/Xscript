@@ -1,5 +1,6 @@
 native_class IO in "libio";
 native_class String in "libstring";
+native_class Bytes in "libbytes";
 native_class Array in "libarray";
 native_class File in "libfs";
 native_class FS in "libfs";
@@ -8,99 +9,76 @@ native_class Error in "liberror";
 native_class Math in "libmath";
 native_class System in "libsys";
 
-class GCTestItem {
+var Arr = Array.fromBuffer([]);
+
+class TreeNode {
     def constructor () {
-        def test_arr in this;
+        def val in this;
+        def left in this;
+        def right in this;
+        this.val = 0;
+        this.left = 0;
+        this.right = 0;
         return this;
     }
 };
 
-def io_test () {
-    IO.println(String.fromBuffer("IO test starting..."));
-    var Start = System.boot_time_ms();
-
-    for (var i = 0;i < 50000;i += 1) {
-        IO.println(String.fromBuffer("XScript2 is under the MIT license. Developed by Jerry Chou! ZoengJyutJing, ngo zungji nei!"));
+class Solution {
+    def constructor () {
+        return this;
     }
-    var Duration = System.boot_time_ms() - Start;
-    IO.println(String.fromBuffer("IO test ended."));
-    return Duration;
-}
-
-def fs_test () {
-    IO.println(String.fromBuffer("FS test starting..."));
-    var Start = System.boot_time_ms();
-
-    var file = File.open("test.txt", "w+");
-    for (var i = 0;i < 50000;i += 1) {
-        file.write("ZoengJyutJing, ngo zungji nei!\n");
+    def Fucker (T, nums, L, R) {
+        var maxv = L;
+        for (var i = L + 1; i < R;i += 1) {
+            if (nums[i] > nums[maxv]) {
+                maxv = i;
+            }
+        }
+        T.val = nums[maxv];
+        if (maxv != L) {
+            T.left = new TreeNode();
+            this.Fucker(T.left, nums, L, maxv);
+        }
+        if (maxv != R - 1) {
+            T.right = new TreeNode();
+            this.Fucker(T.right, nums, maxv + 1, R);
+        }
+        return 0;
     }
-    file.close();
-    file = File.open("test.txt", "r+");
-    var dest = file.read();
-    IO.println(String.fromBytes(dest));
-    file.close();
-
-    var Duration = System.boot_time_ms() - Start;
-    IO.println(String.fromBuffer("FS test ended."));
-    return Duration;
-}
-
-def array_test () {
-    IO.println(String.fromBuffer("Array test starting..."));
-    var Start = System.boot_time_ms();
-
-    var arr = Array.create();
-    for (var i = 0; i < 50000; i += 1) {
-        arr.push_back(i);
+    def constructMaximumBinaryTree (nums) {
+        var T = new TreeNode();
+        this.Fucker(T, nums, 0, nums.length());
+        return T;
     }
-    for (var i = 0; i < 50000; i += 1) {
-        arr.pop_back();
+};
+
+def getArray(T) {
+    Arr.push_back(T.val);
+    if (T.left == 0) {
+        Arr.push_back(-1);
+    } else {
+        getArray(T.left);
     }
-    for (var i = 0; i < 50000; i += 1) {
-        arr.push_back(i);
-        arr.pop_back();
+    if (T.right == 0) {
+        Arr.push_back(-1);
+    } else {
+        getArray(T.right);
     }
-
-    var Duration = System.boot_time_ms() - Start;
-    IO.println(String.fromBuffer("Array test ended."));
-
-    return Duration;
-}
-
-def gc_test () {
-    IO.println(String.fromBuffer("GC test starting..."));
-    var Start = System.boot_time_ms();
-
-    for (var i = 0;i < 50000; i += 1) {
-        var Str = String.fromBuffer("ZoengJyutJing, ngo zungji nei!");
-        var Item = new GCTestItem();
-    }
-
-    var Duration = System.boot_time_ms() - Start;
-    IO.println(String.fromBuffer("GC test ended."));
-    IO.println(String.fromInt(Start) + " " + String.fromInt(System.boot_time_ms()));
-    return Duration;
+    return 0;
 }
 
 def main () {
-    var th_io = Thread.start(io_test);
-    var th_fs = Thread.start(fs_test);
-    var th_arr = Thread.start(array_test);
-    var th_gc = Thread.start(gc_test);
-    var res_io = Thread.getResult(th_io);
-    var res_fs = Thread.getResult(th_fs);
-    var res_arr = Thread.getResult(th_arr);
-    var res_gc = Thread.getResult(th_gc);
-    var Result =
-        String.fromBuffer("XScript 2 Performance report: \n") +  String.fromBuffer("\n") +
-        String.fromBuffer("Test Items(4): IO, FS, Array, GC\n") + String.fromBuffer("\n") +
-        String.fromBuffer("IO test duration: ") + String.fromInt(res_io) + String.fromBuffer("\n") +
-        String.fromBuffer("FS test duration: ") + String.fromInt(res_fs) + String.fromBuffer("\n") +
-        String.fromBuffer("Array test duration: ") + String.fromInt(res_arr) + String.fromBuffer("\n") +
-        String.fromBuffer("GC test duration: ") + String.fromInt(res_gc) + String.fromBuffer("\n");
-
-    IO.println(Result);
-    IO.println("Will I dead?");
+    // var arr = Array.fromBuffer([3,2,1,6,0,5]);
+    // var S = new Solution();
+    // var T = S.constructMaximumBinaryTree(arr);
+    // getArray(T);
+    // for (var i = 0;i < Arr.length();i += 1) {
+    //    IO.println(String.fromInt(Arr[i]));
+    // }
+    if (1 + 1 == 2) {
+        IO.println("yes");
+    } else {
+        IO.println("no");
+    }
     return 0;
 }

@@ -135,6 +135,11 @@ namespace XScript {
 
             MergeArray(ElseBlock, Generate(Target.Subtrees[2]));
 
+            // CodeBlock Jump out
+            CodeBlock.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::pc_jump,
+                                                     (BytecodeStructure::InstructionParam) {
+                                                             (XInteger) {static_cast<XInteger>(ElseBlock.size() + 1)}}});
+
             // 如果条件不满足，则跳转到ElseBlock
             Result.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::pc_jump_if_false,
                                                   (BytecodeStructure::InstructionParam) {
