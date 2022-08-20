@@ -16,9 +16,13 @@ namespace XScript {
         [[nodiscard]] XIndexType Length() const;
 
         explicit EnvArrayObject(XIndexType Length);
+
+        EnvArrayObject();
     };
 
     EnvArrayObject *NewEnvArrayObject(XIndexType Size);
+
+    EnvArrayObject *NewEnvArrayObject();
 
     void FreeEnvArrayObject(EnvArrayObject *Object);
 

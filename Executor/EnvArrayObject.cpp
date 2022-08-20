@@ -13,11 +13,17 @@ namespace XScript {
         Elements.resize(Length);
     }
 
+    EnvArrayObject::EnvArrayObject() = default;
+
     EnvArrayObject *NewEnvArrayObject(XIndexType Size) {
         return new EnvArrayObject(Size);
     }
 
     void FreeEnvArrayObject(EnvArrayObject *Object) {
         delete Object;
+    }
+
+    EnvArrayObject *XScript::NewEnvArrayObject() {
+        return new EnvArrayObject();
     }
 } // XScript
