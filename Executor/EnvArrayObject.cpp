@@ -23,7 +23,7 @@ namespace XScript {
         delete Object;
     }
 
-    EnvArrayObject *XScript::NewEnvArrayObject() {
+    EnvArrayObject *NewEnvArrayObject() {
         return new EnvArrayObject();
     }
 } // XScript
