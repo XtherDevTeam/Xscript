@@ -15,7 +15,7 @@ namespace XScript {
     }
 
     EnvStringObject *CreateEnvStringObject(XIndexType StringSize) {
-        auto *Object = (EnvStringObject *) malloc(sizeof(EnvStringObject) + sizeof(XCharacter) * StringSize);
+        auto *Object = (EnvStringObject *) malloc(sizeof(EnvStringObject) + sizeof(XCharacter) * (StringSize + 1));
         (*Object) = EnvStringObject{StringSize};
         return Object;
     }
@@ -28,20 +28,20 @@ namespace XScript {
     EnvStringObject *MergeEnvStringObject(EnvStringObject *Left, EnvStringObject *Right) {
         auto Object = CreateEnvStringObject(Left->Length + Right->Length - 1);
         auto Pointer = &Object->Dest;
-        for (XIndexType Index = 0; Index < Left->Length - 1; ++Index) {
+        for (XIndexType Index = 0; Index < Left->Length; ++Index) {
             *Pointer = (&Left->Dest)[Index];
             Pointer++;
         }
-        for (XIndexType Index = 0; Index < Right->Length - 1; ++Index) {
+        for (XIndexType Index = 0; Index < Right->Length; ++Index) {
             *Pointer = (&Right->Dest)[Index];
             Pointer++;
         }
-        *Pointer = L'\0';
+        *Pointer = '\0';
         return Object;
     }
 
     EnvStringObject *CreateEnvStringObjectFromXString(const XString &Str) {
-        auto Object = CreateEnvStringObject(Str.length() + 1);
+        auto Object = CreateEnvStringObject(Str.length());
         auto Pointer = &Object->Dest;
         for (XCharacter Index: Str) {
             *Pointer = Index;
