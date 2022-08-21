@@ -26,13 +26,13 @@ namespace XScript {
     }
 
     EnvStringObject *MergeEnvStringObject(EnvStringObject *Left, EnvStringObject *Right) {
-        auto Object = CreateEnvStringObject(Left->Length + Right->Length);
+        auto Object = CreateEnvStringObject(Left->Length + Right->Length - 1);
         auto Pointer = &Object->Dest;
-        for (XIndexType Index = 0; Index < Left->Length; ++Index) {
+        for (XIndexType Index = 0; Index < Left->Length - 1; ++Index) {
             *Pointer = (&Left->Dest)[Index];
             Pointer++;
         }
-        for (XIndexType Index = 0; Index < Right->Length; ++Index) {
+        for (XIndexType Index = 0; Index < Right->Length - 1; ++Index) {
             *Pointer = (&Right->Dest)[Index];
             Pointer++;
         }
