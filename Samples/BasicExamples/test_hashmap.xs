@@ -8,11 +8,12 @@ native_class System in "libsys";
 def main () {
     var s = Map.create();
     s.insert("a", "b");
-    s.insert(1, "woshigeshabi");
+    s.insert("b", "b");
     IO.println(s["a"]);
-    IO.println(s[1]);
-    s = System.clone(s);
-    IO.println(s["a"]);
-    IO.println(s[1]);
+    var a = Array.fromBuffer(s.keys());
+    for (var i = 0;i < a.length();i += 1) {
+        IO.println(a[i]);
+        IO.println(s[a[i]]);
+    }
     return 0;
 }
