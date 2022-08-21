@@ -41,7 +41,7 @@ namespace XScript {
     }
 
     EnvBytesObject *CreateEnvBytesObjectFromXBytes(const XBytes &Str) {
-        auto Object = CreateEnvBytesObject(Str.length());
+        auto Object = CreateEnvBytesObject(Str.length() + 1);
         auto Pointer = &Object->Dest;
         for (char Index: Str) {
             *Pointer = Index;

@@ -41,7 +41,7 @@ namespace XScript {
     }
 
     EnvStringObject *CreateEnvStringObjectFromXString(const XString &Str) {
-        auto Object = CreateEnvStringObject(Str.length());
+        auto Object = CreateEnvStringObject(Str.length() + 1);
         auto Pointer = &Object->Dest;
         for (XCharacter Index: Str) {
             *Pointer = Index;
