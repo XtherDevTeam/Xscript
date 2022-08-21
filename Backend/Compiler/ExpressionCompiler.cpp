@@ -379,17 +379,10 @@ namespace XScript::Compiler {
                 break;
             }
             case AST::TreeType::IndexExpression: {
-                XArray<BytecodeStructure> Index;
-                if (IsMemberExpression) {
-                    Index.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::class_get_member,
-                                                          (BytecodeStructure::InstructionParam) {
-                                                                  Hash(Target.Node.Value)}});
-                } else {
-                    Index = Generate(Target.Subtrees[1]);
-                }
+                XArray<BytecodeStructure> Index = Generate(Target.Subtrees[1]);
                 XArray<BytecodeStructure> Node = ParseMemberExpression(Target.Subtrees[0], IsMemberExpression);
-                MergeArray(Result, Index);
                 MergeArray(Result, Node);
+                MergeArray(Result, Index);
                 Result.push_back(
                         (BytecodeStructure) {BytecodeStructure::InstructionEnum::list_get_member,
                                              (BytecodeStructure::InstructionParam) {(XIndexType) 0}});
@@ -528,17 +521,10 @@ namespace XScript::Compiler {
                 break;
             }
             case AST::TreeType::IndexExpression: {
-                XArray<BytecodeStructure> Index;
-                if (IsMemberExpression) {
-                    Index.push_back((BytecodeStructure) {BytecodeStructure::InstructionEnum::class_get_member,
-                                                         (BytecodeStructure::InstructionParam) {
-                                                                 Hash(Target.Node.Value)}});
-                } else {
-                    Index = Generate(Target.Subtrees[1]);
-                }
+                XArray<BytecodeStructure> Index = Generate(Target.Subtrees[1]);
                 XArray<BytecodeStructure> Node = ParseMemberExpression(Target.Subtrees[0], IsMemberExpression);
-                MergeArray(Result, Index);
                 MergeArray(Result, Node);
+                MergeArray(Result, Index);
                 Result.push_back(
                         (BytecodeStructure) {BytecodeStructure::InstructionEnum::list_get_member,
                                              (BytecodeStructure::InstructionParam) {(XIndexType) 0}});

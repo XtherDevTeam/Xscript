@@ -1642,8 +1642,8 @@ namespace XScript {
     }
 
     void BytecodeInterpreter::InstructionListGetMember(BytecodeStructure::InstructionParam Param) {
-        EnvironmentStackItem ListItem = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
         EnvironmentStackItem Index = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
+        EnvironmentStackItem ListItem = InterpreterEnvironment->Threads[ThreadID].Stack.PopValueFromStack();
         if (ListItem.Kind == EnvironmentStackItem::ItemKind::HeapPointer) {
             switch (InterpreterEnvironment->Heap.HeapData[ListItem.Value.HeapPointerVal].Kind) {
                 case EnvObject::ObjectKind::ArrayObject: {
